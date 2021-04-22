@@ -1,7 +1,10 @@
 module.exports = function(app, swig) {
 
     app.get('/', function (req, res) {
-        res.send("Funciona");
+        let respuesta = swig.renderFile('views/bprueba.html', {
+
+        });
+        res.send(respuesta);
     });
 
 };
