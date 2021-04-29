@@ -19,7 +19,9 @@ module.exports = function (app, swig, gestorBD) {
         gestorBD.obtenerUsuarios(
             {"email": req.body.email}, function (usuarios) {
                 if (usuarios == null) {
-                    res.send("Error al recuperar el usuario.");
+                    res.redirect("/registrarse" +
+                        "?mensaje=Error al recuperar el usuario" +
+                        "&tipoMensaje=alert-danger ");
                 } else {
                     // Se comprueba si el usuario ya existe a traves de su email
                     if (usuarios.length == 0) {
@@ -41,16 +43,23 @@ module.exports = function (app, swig, gestorBD) {
                             // Añadimos al usuario a la base de datos
                             gestorBD.insertarUsuario(usuario, function (id) {
                                 if (id == null) {
-                                    res.send("Error al insertar el usuario");
+                                    res.redirect("/registrarse" +
+                                        "?mensaje=Error al insertar el usuario" +
+                                        "&tipoMensaje=alert-danger ");
                                 } else {
+                                    req.session.usuario = req.body.email;
                                     res.send('Usuario Insertado ' + id);
                                 }
                             });
                         } else {
-                            res.send('Las contraseñas no coinciden');
+                            res.redirect("/registrarse" +
+                                "?mensaje=Las contraseñas no coinciden" +
+                                "&tipoMensaje=alert-danger ");
                         }
                     } else {
-                        res.send('El usuario ya existe');
+                        res.redirect("/registrarse" +
+                            "?mensaje=El usuario ya existe" +
+                            "&tipoMensaje=alert-danger ");
                     }
                 }
             })
