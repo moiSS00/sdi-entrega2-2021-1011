@@ -25,6 +25,14 @@ module.exports = function (app, swig, gestorBD) {
                 } else {
                     // Se comprueba si el usuario ya existe a traves de su email
                     if (usuarios.length == 0) {
+
+                        // Se comprueba si ha dejado algún campo vacío
+                        if (!req.body.email || !req.body.name || !req.body.lastName || !req.body.password) {
+                            res.redirect("/registrarse" +
+                                "?mensaje=No puede dejar campos vacíos" +
+                                "&tipoMensaje=alert-danger ");
+                        }
+
                         if (req.body.password === req.body.confirmPassword) {
                             // Ecriptamos la contraseña introudcida por el usuario
                             let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))

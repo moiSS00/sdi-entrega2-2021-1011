@@ -41,8 +41,13 @@ app.set('db','mongodb://admin:SDIadmin@tiendamusica-shard-00-00' +
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
 
-//Rutas/controladores por lógica
+// Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, gestorBD);
+
+// Ruta inicial de la apliación
+app.get('/', function (req, res) {
+    res.redirect('/registrarse');
+})
 
 // Lanzar el servidor
 app.listen(app.get('port'), function () {
