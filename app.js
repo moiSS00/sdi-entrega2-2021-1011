@@ -46,7 +46,8 @@ require("./routes/rusuarios.js")(app, swig, gestorBD);
 
 // Ruta inicial de la apliación
 app.get('/', function (req, res) {
-    res.redirect('/registrarse');
+    let respuesta = swig.renderFile('views/bindex.html', {});
+    res.send(respuesta);
 })
 
 // Lanzar el servidor
