@@ -1,5 +1,7 @@
 module.exports = function (app, swig, gestorBD) {
 
+    // ---- PETICIONES GET ----
+
     /*
     Petición GET que muestra la vista que contiene el formulario para registrar
     a un usuario.
@@ -8,6 +10,18 @@ module.exports = function (app, swig, gestorBD) {
         let respuesta = swig.renderFile('views/bregistro.html', {});
         res.send(respuesta);
     });
+
+    /*
+    Petición GET que muestra la vista que contiene el formulario de inicio
+    de sesión.
+     */
+    app.get("/identificarse", function(req, res) {
+        let respuesta = swig.renderFile('views/bidentificacion.html', {});
+        res.send(respuesta);
+    });
+
+
+    // ---- PETICIONES POST ----
 
     /*
     Petición POST que registra a un usuario añadiendolo a la base de datos
@@ -20,7 +34,7 @@ module.exports = function (app, swig, gestorBD) {
             {"email": req.body.email}, function (usuarios) {
                 if (usuarios == null) {
                     res.redirect("/registrarse" +
-                        "?mensaje=Error al recuperar el usuario" +
+                        "?mensaje=Error inesperado" +
                         "&tipoMensaje=alert-danger ");
                 } else {
                     // Se comprueba si el usuario ya existe a traves de su email
@@ -72,4 +86,24 @@ module.exports = function (app, swig, gestorBD) {
                 }
             })
     });
+
+    /*
+    Petición POST para iniciar sesión en la aplicación
+     */
+    app.post("/identificarse", function(req, res) {
+        let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
+            .update(req.body.password).digest('hex');
+        let criterio = {
+            email : req.body.email,
+            password : seguro
+        }
+        gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+            if (usuarios == null || usuarios.length == 0) {
+                res.send("No identificado");
+            } else {
+                res.send("identificado");
+            }
+        });
+    });
+
 };
