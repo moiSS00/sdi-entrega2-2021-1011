@@ -5,7 +5,7 @@ module.exports = function (app, swig, gestorBD) {
     /*
     Petición GET que muestra la vista que contiene el formulario para registrar
     a un usuario.
-     */
+    */
     app.get("/registrarse", function (req, res) {
         let respuesta = swig.renderFile('views/bregistro.html', {});
         res.send(respuesta);
@@ -14,18 +14,26 @@ module.exports = function (app, swig, gestorBD) {
     /*
     Petición GET que muestra la vista que contiene el formulario de inicio
     de sesión.
-     */
+    */
     app.get("/identificarse", function(req, res) {
         let respuesta = swig.renderFile('views/bidentificacion.html', {});
         res.send(respuesta);
     });
+
+    /*
+    Petición GET para cerrar sesión
+    */
+    app.get('/desconectarse', function (req, res) {
+        req.session.usuario = null;
+        res.redirect('views/bindex.html');
+    })
 
 
     // ---- PETICIONES POST ----
 
     /*
     Petición POST que registra a un usuario añadiendolo a la base de datos
-     */
+    */
     app.post('/usuario', function (req, res) {
 
         // Se obtienen los usuarios y se comprueba que no hubo ningun error al obenerlos
@@ -70,7 +78,12 @@ module.exports = function (app, swig, gestorBD) {
                                         "&tipoMensaje=alert-danger ");
                                 } else {
                                     req.session.usuario = req.body.email;
-                                    res.send('Usuario Insertado ' + id);
+                                    let respuesta = swig.renderFile('views/bbienvenida.html', {
+                                        email: req.body.email,
+                                        name: req.body.name,
+                                        amount: usuario.amount
+                                    });
+                                    res.send(respuesta);
                                 }
                             });
                         } else {
@@ -89,7 +102,7 @@ module.exports = function (app, swig, gestorBD) {
 
     /*
     Petición POST para iniciar sesión en la aplicación
-     */
+    */
     app.post("/identificarse", function(req, res) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
@@ -99,9 +112,17 @@ module.exports = function (app, swig, gestorBD) {
         }
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length == 0) {
-                res.send("No identificado");
+                res.redirect("/identificarse" +
+                    "?mensaje=Email o password incorrecto"+
+                    "&tipoMensaje=alert-danger ");
             } else {
-                res.send("identificado");
+                req.session.usuario = usuarios[0].email;
+                let respuesta = swig.renderFile('views/bbienvenida.html', {
+                    email: usuarios[0].email,
+                    name: usuarios[0].name,
+                    amount: usuarios[0].amount
+                });
+                res.send(respuesta);
             }
         });
     });

@@ -29,6 +29,9 @@
                 <li id="mCompras"><a href="/compras">Compras</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                {% if email %}
+                <li class="navbar-text">Email: {{ email }} | Monto: {{ amount }} Є</li>
+                {% endif %}
                 <li><a href="/registrarse"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
                 <li><a href="/identificarse"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
             </ul>
