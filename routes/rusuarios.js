@@ -25,7 +25,7 @@ module.exports = function (app, swig, gestorBD) {
     */
     app.get('/logout', function (req, res) {
         req.session.usuario = null;
-        res.redirect('/');
+        res.redirect('/login');
     })
 
 

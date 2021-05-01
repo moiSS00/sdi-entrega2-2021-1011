@@ -36,7 +36,7 @@ public class PO_NavView  extends PO_View{
 	 * @param driver
 	 */
 	public static void logOut(WebDriver driver) {
-		clickOption(driver, "/logout", "text", "¡ Bienvenido a MyWallapop !");
+		clickOption(driver, "/logout", "text", "Identificación de usuario");
 	}
 
 

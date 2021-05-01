@@ -150,16 +150,30 @@ public class SdiEntrega2Tests {
 		assertTrue("PR08 sin hacer", false);
 	}
 
-	// PR09. Sin hacer /
+	// PR09. Hacer click en la opción de salir de sesión y comprobar que se redirige
+	// a la página de
+	// inicio de sesión (Login). /
 	@Test
 	public void PR09() {
-		assertTrue("PR09 sin hacer", false);
+		
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+		
+		// Rellenamos el formulario con un usuario válido existente
+		PO_LoginView.fillForm(driver, "pueba@email.com", "123456");
+		PO_View.checkElement(driver, "text", "pueba@email.com"); 
+		
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
+		PO_View.checkElement(driver, "text", "Identificación de usuario");
+		
 	}
 
-	// PR10. Sin hacer /
+	// PR10. Comprobar que el botón cerrar sesión no está visible si el usuario no
+	// está autenticado. /
 	@Test
 	public void PR10() {
-		assertTrue("PR10 sin hacer", false);
+		SeleniumUtils.textoNoPresentePagina(driver, "Desconectar");
 	}
 
 	// PR11. Sin hacer /
