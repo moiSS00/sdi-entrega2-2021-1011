@@ -103,7 +103,7 @@ module.exports = function (app, swig, gestorBD) {
     /*
     Petición POST para iniciar sesión en la aplicación
     */
-    app.post("/signup", function(req, res) {
+    app.post("/login", function(req, res) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
         let criterio = {
