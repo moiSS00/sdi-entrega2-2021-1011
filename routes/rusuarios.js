@@ -48,8 +48,7 @@ module.exports = function (app, swig, gestorBD) {
             res.redirect("/signup" +
                 "?mensaje=Las contraseñas no coinciden" +
                 "&tipoMensaje=alert-danger ");
-        }
-        else {
+        } else {
             // Se obtienen los usuarios y se comprueba si el usuario ya existe
             gestorBD.obtenerUsuarios(
                 {"email": req.body.email}, function (usuarios) {
@@ -94,7 +93,7 @@ module.exports = function (app, swig, gestorBD) {
 
                         } else {
                             res.redirect("/signup" +
-                                "?mensaje=El usuario ya existe" +
+                                "?mensaje=El email introducido ya está en uso" +
                                 "&tipoMensaje=alert-danger ");
                         }
                     }
@@ -106,27 +105,35 @@ module.exports = function (app, swig, gestorBD) {
     Petición POST para iniciar sesión en la aplicación
     */
     app.post("/login", function (req, res) {
-        let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
-            .update(req.body.password).digest('hex');
-        let criterio = {
-            email: req.body.email,
-            password: seguro
-        }
-        gestorBD.obtenerUsuarios(criterio, function (usuarios) {
-            if (usuarios == null || usuarios.length == 0) {
-                res.redirect("/signup" +
-                    "?mensaje=Email o password incorrecto" +
-                    "&tipoMensaje=alert-danger ");
-            } else {
-                req.session.usuario = usuarios[0].email;
-                let respuesta = swig.renderFile('views/bbienvenida.html', {
-                    email: usuarios[0].email,
-                    name: usuarios[0].name,
-                    amount: usuarios[0].amount
-                });
-                res.send(respuesta);
+
+        // Se comprueba si ha dejado algún campo vacío
+        if (!req.body.email || !req.body.password) {
+            res.redirect("/login" +
+                "?mensaje=No puede dejar campos vacíos" +
+                "&tipoMensaje=alert-danger ");
+        } else {
+            let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
+                .update(req.body.password).digest('hex');
+            let criterio = {
+                email: req.body.email,
+                password: seguro
             }
-        });
+            gestorBD.obtenerUsuarios(criterio, function (usuarios) {
+                if (usuarios == null || usuarios.length == 0) {
+                    res.redirect("/login" +
+                        "?mensaje=Email incorrecto o contraseña incorrecta" +
+                        "&tipoMensaje=alert-danger ");
+                } else {
+                    req.session.usuario = usuarios[0].email;
+                    let respuesta = swig.renderFile('views/bbienvenida.html', {
+                        email: usuarios[0].email,
+                        name: usuarios[0].name,
+                        amount: usuarios[0].amount
+                    });
+                    res.send(respuesta);
+                }
+            });
+        }
     });
 
 };

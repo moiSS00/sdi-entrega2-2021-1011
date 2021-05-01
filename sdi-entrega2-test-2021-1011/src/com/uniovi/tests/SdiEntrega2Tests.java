@@ -114,40 +114,87 @@ public class SdiEntrega2Tests {
 		// Vamos al formulario de registro
 		PO_NavView.clickOption(driver, "/signup", "text", "Registrar usuario");
 
-		// Rellenamos el formulario dejando uno de los campos vacíos
+		// Rellenamos el formulario con contraseñas que no coinciden
 		PO_RegisterView.fillForm(driver, "pueba2@email.com", "prueba", "prueba", "123456", "1234567");
 		PO_View.checkElement(driver, "text", "Las contraseñas no coinciden");
 
 	}
 
-	// PR04. Sin hacer /
+	// PR04. Registro de Usuario con datos inválidos (email existente). /
 	@Test
 	public void PR04() {
-		assertTrue("PR04 sin hacer", false);
+		// Vamos al formulario de registro
+		PO_NavView.clickOption(driver, "/signup", "text", "Registrar usuario");
+
+		// Rellenamos el formulario con datos váldos y con el email de un usuario
+		// existente
+		PO_RegisterView.fillForm(driver, "pueba@email.com", "prueba2", "prueba2", "123456", "123456");
+		PO_View.checkElement(driver, "text", "El email introducido ya está en uso");
 	}
 
-	// PR05. Sin hacer /
+	// PR05. Inicio de sesión con datos válidos. /
 	@Test
 	public void PR05() {
-		assertTrue("PR05 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Rellenamos el formulario con un usuario válido existente
+		PO_LoginView.fillForm(driver, "pueba@email.com", "123456");
+		PO_View.checkElement(driver, "text", "pueba@email.com");
+		PO_View.checkElement(driver, "text", "100 Є");
+		PO_View.checkElement(driver, "text", "¡ Bienvenido prueba !");
+
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
 	}
 
-	// PR06. Sin hacer /
+	// PR06. Inicio de sesión con datos inválidos (email existente, pero contraseña
+	// incorrecta). /
 	@Test
 	public void PR06() {
-		assertTrue("PR06 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Rellenamos el formulario con un email existente pero con una 
+		// contraseña incorrecta 
+		PO_LoginView.fillForm(driver, "pueba@email.com", "1234567");
+		PO_View.checkElement(driver, "text", "Email incorrecto o contraseña incorrecta");
+
 	}
 
-	// PR07. Sin hacer /
+	// PR07. Inicio de sesión con datos inválidos (campo email o contraseña vacíos).
+	// /
 	@Test
 	public void PR07() {
-		assertTrue("PR07 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Rellenamos el formulario dejando uno de los campos en blanco
+
+		// Dejamos el email en blanco
+		PO_LoginView.fillForm(driver, "", "123456");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Dejamos la contraseña en blanco
+		PO_LoginView.fillForm(driver, "pueba@email.com", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Rellenamos el formulario dejando todos los campos en blanco
+		PO_LoginView.fillForm(driver, "", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
 	}
 
-	// PR08. Sin hacer /
+	// PR08. Inicio de sesión con datos inválidos (email no existente en la
+	// aplicación). /
 	@Test
 	public void PR08() {
-		assertTrue("PR08 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Rellenamos el formulario con un email inexistente en la aplicación
+		PO_LoginView.fillForm(driver, "pueba9999999@email.com", "123456");
+		PO_View.checkElement(driver, "text", "Email incorrecto o contraseña incorrecta");
 	}
 
 	// PR09. Hacer click en la opción de salir de sesión y comprobar que se redirige
@@ -155,18 +202,18 @@ public class SdiEntrega2Tests {
 	// inicio de sesión (Login). /
 	@Test
 	public void PR09() {
-		
+
 		// Vamos al formulario de identificacion
 		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
-		
+
 		// Rellenamos el formulario con un usuario válido existente
 		PO_LoginView.fillForm(driver, "pueba@email.com", "123456");
-		PO_View.checkElement(driver, "text", "pueba@email.com"); 
-		
+		PO_View.checkElement(driver, "text", "pueba@email.com");
+
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
 		PO_View.checkElement(driver, "text", "Identificación de usuario");
-		
+
 	}
 
 	// PR10. Comprobar que el botón cerrar sesión no está visible si el usuario no
