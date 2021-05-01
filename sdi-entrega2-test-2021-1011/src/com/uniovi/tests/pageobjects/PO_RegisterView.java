@@ -7,11 +7,14 @@ import org.openqa.selenium.WebElement;
 
 public class PO_RegisterView extends PO_NavView {	
 	
-	static public void fillForm(WebDriver driver, String dnip, String namep, String lastnamep, String passwordp, String passwordconfp) {
-		WebElement dni = driver.findElement(By.name("dni"));
-		dni.click();
-		dni.clear();
-		dni.sendKeys(dnip);
+	static public void fillForm(WebDriver driver, String emailp, String namep, String lastnamep, String passwordp,
+			String passwordconfirmp) {
+
+		//Rellenamos el formulario con los datos recibidos como paramteros.
+		WebElement email = driver.findElement(By.name("email"));
+		email.click();
+		email.clear();
+		email.sendKeys(emailp);
 		WebElement name = driver.findElement(By.name("name"));
 		name.click();
 		name.clear();
@@ -27,10 +30,12 @@ public class PO_RegisterView extends PO_NavView {
 		WebElement passwordConfirm = driver.findElement(By.name("passwordConfirm"));
 		passwordConfirm.click();
 		passwordConfirm.clear();
-		passwordConfirm.sendKeys(passwordconfp);
-		//Pulsar el boton de Alta.
+		passwordConfirm.sendKeys(passwordconfirmp);
+		
+		
+		//Pulsamos el botón para enviar el formulario. 
 		By boton = By.className("btn");
-		driver.findElement(boton).click();	
+		driver.findElement(boton).click();
 	}
 	
 }
