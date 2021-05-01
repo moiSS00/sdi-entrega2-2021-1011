@@ -14,13 +14,13 @@ import com.uniovi.tests.util.SeleniumUtils;
 //Paquetes con los Page Object
 import com.uniovi.tests.pageobjects.*;
 
-//Ordenamos las pruebas por el nombre del método
+//Ordenamos las pruebas por el nombre del mÃ©todo
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SdiEntrega2Tests {
 
 	static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 	static String Geckdriver024 = "C:\\Users\\Moises\\Desktop\\UNIVERSIDAD\\TERCERO\\"
-			+ "2 CUATRIMESTRE\\SDI\\Laboratorio\\PL5\\PL-SDI-Sesi�n5-material\\geckodriver024win64.exe";
+			+ "2 CUATRIMESTRE\\SDI\\Laboratorio\\PL5\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
 
 	static WebDriver driver = getDriver(PathFirefox65, Geckdriver024);
 	static String URL = "http://localhost:8081";
@@ -45,7 +45,7 @@ public class SdiEntrega2Tests {
 	@BeforeClass
 	static public void begin() {
 		// Configuramos las pruebas.
-		// Fijamos el timeout en cada opci�n de carga de una vista. 3 segundos.
+		// Fijamos el timeout en cada opción de carga de una vista. 3 segundos.
 		PO_View.setTimeout(3);
 
 	}
@@ -56,7 +56,7 @@ public class SdiEntrega2Tests {
 		driver.quit();
 	}
 
-	// PR01. Registro de Usuario con datos v�lidos. /
+	// PR01. Registro de Usuario con datos válidos. /
 	@Test
 	public void PR01() {
 		// Vamos al formulario de registro
@@ -65,21 +65,59 @@ public class SdiEntrega2Tests {
 		// Rellenamos el formulario con datos validos
 		PO_RegisterView.fillForm(driver, "pueba@email.com", "prueba", "prueba", "123456", "123456");
 		PO_View.checkElement(driver, "text", "pueba@email.com");
+		PO_View.checkElement(driver, "text", "100 Є");
+		PO_View.checkElement(driver, "text", "¡ Bienvenido prueba !");
 
 		// Hacemos logout
-		//PO_NavView.logOut(driver);
+		PO_NavView.logOut(driver);
 	}
 
-	// PR02. Sin hacer /
+	// PR02. Registro de Usuario con datos inválidos (email, nombre y apellidos
+	// vacíos). /
 	@Test
 	public void PR02() {
-		assertTrue("PR02 sin hacer", false);
+		// Vamos al formulario de registro
+		PO_NavView.clickOption(driver, "/signup", "text", "Registrar usuario");
+
+		// Rellenamos el formulario dejando uno de los campos vacíos
+
+		// Email vacío
+		PO_RegisterView.fillForm(driver, "", "prueba", "prueba", "123456", "123456");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Nombre vacío
+		PO_RegisterView.fillForm(driver, "pueba@email.com", "", "prueba", "123456", "123456");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Apellidos vacío
+		PO_RegisterView.fillForm(driver, "pueba@email.com", "prueba", "", "123456", "123456");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Contraseá vacía
+		PO_RegisterView.fillForm(driver, "pueba@email.com", "prueba", "prueba", "", "123456");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Confirmación de contraseña vacía
+		PO_RegisterView.fillForm(driver, "pueba@email.com", "prueba", "prueba", "123456", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Rellenamos el formulario dejando todos los campos vacíos
+		PO_RegisterView.fillForm(driver, "", "", "", "", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
 	}
 
-	// PR03. Sin hacer /
+	// PR03. Registro de Usuario con datos inválidos (repetición de contraseña
+	// inválida). /
 	@Test
 	public void PR03() {
-		assertTrue("PR03 sin hacer", false);
+		// Vamos al formulario de registro
+		PO_NavView.clickOption(driver, "/signup", "text", "Registrar usuario");
+
+		// Rellenamos el formulario dejando uno de los campos vacíos
+		PO_RegisterView.fillForm(driver, "pueba2@email.com", "prueba", "prueba", "123456", "1234567");
+		PO_View.checkElement(driver, "text", "Las contraseñas no coinciden");
+
 	}
 
 	// PR04. Sin hacer /
