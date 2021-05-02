@@ -32,10 +32,10 @@ module.exports = function (app, swig, gestorBD) {
     Si hay algún error al recuperar la lista de usuarios -> Se le pasa a la vista una lista vacía.
     Si no hubo errroes -> Se muestra la vista con todos los usuarios de la aplicación (excepto el admin).
     */
-    app.get("/user/list", function (req, res) {
+    app.get("/admin/user/list", function (req, res) {
         // Obtenemos al usuario actual
         gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (admin) {
-            if (admin == null || admin.length == 0) {
+            if (admin == null) {
                 res.redirect("/logout");
             } else {
                 // Variable que contendrá la respuesta
@@ -66,22 +66,17 @@ module.exports = function (app, swig, gestorBD) {
     Si el usuario logueado actualmente es admin -> Se llama a la petición GET /user/list.
     Si el usuario logueado actualmente es estándar -> Se muestra la página de bienvenida para ese usuario.
     */
-    app.get("/user/home", function (req, res) {
+    app.get("/standard/home", function (req, res) {
         // Variable que contendrá la respuesta
         let respuesta;
 
         // Se obtienen los usuarios y se comprueba si el usuario ya existe
         gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
-            if (usuarios == null || usuarios.length == 0) {
+            if (usuarios == null) {
                 res.redirect("/logout");
             } else {
-                if(usuarios[0].role === "ROLE_ADMIN") {
-                    res.redirect("/user/list");
-                }
-                else {
-                    let respuesta = swig.renderFile('views/bbienvenida.html', {usuario: usuarios[0]});
-                    res.send(respuesta);
-                }
+                let respuesta = swig.renderFile('views/bbienvenida.html', {usuario: usuarios[0]});
+                res.send(respuesta);
             }
         });
     });
@@ -145,7 +140,7 @@ module.exports = function (app, swig, gestorBD) {
                                         "&tipoMensaje=alert-danger ");
                                 } else {
                                     req.session.usuario = req.body.email;
-                                    res.redirect("/user/home");
+                                    res.redirect("/");
                                 }
                             });
 
@@ -187,7 +182,7 @@ module.exports = function (app, swig, gestorBD) {
                         "&tipoMensaje=alert-danger ");
                 } else {
                     req.session.usuario = usuarios[0].email;
-                    res.redirect("/user/home");
+                    res.redirect("/");
                 }
             });
         }

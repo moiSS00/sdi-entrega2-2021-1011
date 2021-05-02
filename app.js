@@ -52,7 +52,48 @@ routerUsuarioSession.use(function(req, res, next) {
     }
 });
 //Aplicar routerUsuarioSession
-// app.use("/canciones/agregar",routerUsuarioSession);
+app.use("/standard",routerUsuarioSession);
+app.use("/admin",routerUsuarioSession);
+
+// routerUsuarioStandardSession
+var routerUsuarioStandardSession = express.Router();
+routerUsuarioStandardSession.use(function(req, res, next) {
+    console.log("routerUsuarioStandardSession");
+    gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
+        if (usuarios == null) {
+            res.redirect("/");
+        } else {
+            if(usuarios[0].role === "ROLE_STANDARD") {
+                next();
+            }
+            else {
+                res.redirect("/");
+            }
+        }
+    });
+});
+//Aplicar routerUsuarioStandardSession
+app.use("/standard",routerUsuarioStandardSession);
+
+// routerUsuarioAdminSession
+var routerUsuarioAdminSession = express.Router();
+routerUsuarioAdminSession.use(function(req, res, next) {
+    console.log("routerUsuarioAdminSession");
+    gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
+        if (usuarios == null) {
+            res.redirect("/");
+        } else {
+            if(usuarios[0].role === "ROLE_ADMIN") {
+                next();
+            }
+            else {
+                res.redirect("/");
+            }
+        }
+    });
+});
+//Aplicar routerUsuarioAdminSession
+app.use("/admin",routerUsuarioAdminSession);
 
 // Directorio estático
 app.use(express.static('public'));
@@ -67,13 +108,19 @@ Si hay un usuario logueado -> Se llama a la petición GET /user/home.
 Si no hay un usuario logueado -> Se muestra la vista principal (index).
 */
 app.get('/', function (req, res) {
-    if( req.session.usuario ) {
-        res.redirect("/user/home");
-    }
-    else {
-        let respuesta = swig.renderFile('views/bindex.html', {});
-        res.send(respuesta);
-    }
+    gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
+        if (usuarios == null || usuarios.length == 0) {
+            let respuesta = swig.renderFile('views/bindex.html', {});
+            res.send(respuesta);
+        } else {
+            if(usuarios[0].role === "ROLE_ADMIN") {
+                res.redirect("/admin/user/list");
+            }
+            else {
+                res.redirect("/standard/home");
+            }
+        }
+    });
 });
 
 // Lanzar el servidor
