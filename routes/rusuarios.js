@@ -26,7 +26,25 @@ module.exports = function (app, swig, gestorBD) {
     app.get('/logout', function (req, res) {
         req.session.usuario = null;
         res.redirect('/login');
-    })
+    });
+
+    /*
+    Petición GET que muestra una vista que lista a todos los usuarios de la aplicación
+    */
+    app.get("/user/list", function (req, res) {
+        // Variable que contendrá la respuesta
+        let respuesta;
+
+        // Se obtienen los usuarios y se comprueba si el usuario ya existe
+        gestorBD.obtenerUsuarios({}, function (usuarios) {
+                if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
+                    respuesta = swig.renderFile('views/busuarios.html', {usuarios: []});
+                } else {
+                    respuesta = swig.renderFile('views/busuarios.html', {usuarios: usuarios});
+                }
+                res.send(respuesta);
+            });
+    });
 
 
     // ---- PETICIONES POST ----
@@ -125,11 +143,17 @@ module.exports = function (app, swig, gestorBD) {
                         "&tipoMensaje=alert-danger ");
                 } else {
                     req.session.usuario = usuarios[0].email;
-                    let respuesta = swig.renderFile('views/bbienvenida.html', {
-                        email: usuarios[0].email,
-                        name: usuarios[0].name,
-                        amount: usuarios[0].amount
-                    });
+                    let respuesta;
+                    if(usuarios[0].role === "ROLE_ADMIN") {
+                        res.redirect("/user/list");
+                    }
+                    else {
+                        respuesta = swig.renderFile('views/bbienvenida.html', {
+                            email: usuarios[0].email,
+                            name: usuarios[0].name,
+                            amount: usuarios[0].amount
+                        });
+                    }
                     res.send(respuesta);
                 }
             });
