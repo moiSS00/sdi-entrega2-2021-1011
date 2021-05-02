@@ -2,9 +2,6 @@
 let express = require('express');
 let app = express();
 
-// Directorio estático
-app.use(express.static('public'));
-
 // Módulos
 
 // -- ExpressSession --
@@ -41,14 +38,42 @@ app.set('db','mongodb://admin:SDIadmin@tiendamusica-shard-00-00' +
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
 
+// Routers
+
+// routerUsuarioSession
+var routerUsuarioSession = express.Router();
+routerUsuarioSession.use(function(req, res, next) {
+    console.log("routerUsuarioSession");
+    if ( req.session.usuario ) {
+        // dejamos correr la petición
+        next();
+    } else {
+        res.redirect("/login");
+    }
+});
+//Aplicar routerUsuarioSession
+// app.use("/canciones/agregar",routerUsuarioSession);
+
+// Directorio estático
+app.use(express.static('public'));
+
 // Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, gestorBD);
 require("./routes/rtesting.js")(app, swig, gestorBD);
 
-// Ruta inicial de la apliación
+/*
+Ruta inicial de la apliación.
+Si hay un usuario logueado -> Se llama a la petición GET /user/home.
+Si no hay un usuario logueado -> Se muestra la vista principal (index).
+*/
 app.get('/', function (req, res) {
-    let respuesta = swig.renderFile('views/bindex.html', {});
-    res.send(respuesta);
+    if( req.session.usuario ) {
+        res.redirect("/user/home");
+    }
+    else {
+        let respuesta = swig.renderFile('views/bindex.html', {});
+        res.send(respuesta);
+    }
 });
 
 // Lanzar el servidor

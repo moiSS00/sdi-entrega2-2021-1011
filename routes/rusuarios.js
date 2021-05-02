@@ -3,8 +3,7 @@ module.exports = function (app, swig, gestorBD) {
     // ---- PETICIONES GET ----
 
     /*
-    Petición GET que muestra la vista que contiene el formulario para registrar
-    a un usuario.
+    Muestra la vista que contiene el formulario para registrar a un usuario.
     */
     app.get("/signup", function (req, res) {
         let respuesta = swig.renderFile('views/bregistro.html', {});
@@ -12,8 +11,7 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     /*
-    Petición GET que muestra la vista que contiene el formulario de inicio
-    de sesión.
+    Muestra la vista que contiene el formulario de inicio de sesión.
     */
     app.get("/login", function (req, res) {
         let respuesta = swig.renderFile('views/bidentificacion.html', {});
@@ -21,7 +19,7 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     /*
-    Petición GET para cerrar sesión
+    Cierra la sesión actual y redirige al usuario a la página de login
     */
     app.get('/logout', function (req, res) {
         req.session.usuario = null;
@@ -29,21 +27,63 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     /*
-    Petición GET que muestra una vista que lista a todos los usuarios de la aplicación
+    Muestra una vista que lista a todos los usuarios de la aplicación.
+    Si hay algún error recuperando al usuario logueado actualmente -> Se llama a la petición GET /logout.
+    Si hay algún error al recuperar la lista de usuarios -> Se le pasa a la vista una lista vacía.
+    Si no hubo errroes -> Se muestra la vista con todos los usuarios de la aplicación (excepto el admin).
     */
     app.get("/user/list", function (req, res) {
+        // Obtenemos al usuario actual
+        gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (admin) {
+            if (admin == null || admin.length == 0) {
+                res.redirect("/logout");
+            } else {
+                // Variable que contendrá la respuesta
+                let respuesta;
+                // Se obtienen los usuarios y se comprueba si el usuario ya existe
+                let criterio = {email: {$ne: "admin@email.com"}};
+                gestorBD.obtenerUsuarios(criterio, function (usuarios) {
+                    if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
+                        respuesta = swig.renderFile('views/busuarios.html', {
+                            usuario: admin[0],
+                            usuarios: []
+                        });
+                    } else {
+                        respuesta = swig.renderFile('views/busuarios.html', {
+                            usuario: admin[0],
+                            usuarios: usuarios
+                        });
+                    }
+                    res.send(respuesta);
+                });
+            }
+        });
+    });
+
+    /*
+    Petición GET que muestra la página personal del usuario actual.
+    Si hay algún error recuperando al usuario logueado actualmente -> Se llama a la petición GET /logout.
+    Si el usuario logueado actualmente es admin -> Se llama a la petición GET /user/list.
+    Si el usuario logueado actualmente es estándar -> Se muestra la página de bienvenida para ese usuario.
+    */
+    app.get("/user/home", function (req, res) {
         // Variable que contendrá la respuesta
         let respuesta;
 
         // Se obtienen los usuarios y se comprueba si el usuario ya existe
-        gestorBD.obtenerUsuarios({}, function (usuarios) {
-                if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
-                    respuesta = swig.renderFile('views/busuarios.html', {usuarios: []});
-                } else {
-                    respuesta = swig.renderFile('views/busuarios.html', {usuarios: usuarios});
+        gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
+            if (usuarios == null || usuarios.length == 0) {
+                res.redirect("/logout");
+            } else {
+                if(usuarios[0].role === "ROLE_ADMIN") {
+                    res.redirect("/user/list");
                 }
-                res.send(respuesta);
-            });
+                else {
+                    let respuesta = swig.renderFile('views/bbienvenida.html', {usuario: usuarios[0]});
+                    res.send(respuesta);
+                }
+            }
+        });
     });
 
 
@@ -51,6 +91,11 @@ module.exports = function (app, swig, gestorBD) {
 
     /*
     Petición POST que registra a un usuario añadiendolo a la base de datos
+    Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
+    Si las contraseñas introducidas en el formulario no coinciden -> Se muestra un mensaje de error.
+    Si el email introducido en el formulario ya está en uso -> Se muestra un mensaje de error.
+    Si hubo algún error al insertar al nuevo usuario  -> Se muestra un mensaje de error.
+    Si no hubo errores -> El usuario inicia sesión y se llama a la petición GET /user/home.
     */
     app.post('/signup', function (req, res) {
 
@@ -100,12 +145,7 @@ module.exports = function (app, swig, gestorBD) {
                                         "&tipoMensaje=alert-danger ");
                                 } else {
                                     req.session.usuario = req.body.email;
-                                    let respuesta = swig.renderFile('views/bbienvenida.html', {
-                                        email: req.body.email,
-                                        name: req.body.name,
-                                        amount: usuario.amount
-                                    });
-                                    res.send(respuesta);
+                                    res.redirect("/user/home");
                                 }
                             });
 
@@ -120,7 +160,11 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     /*
-    Petición POST para iniciar sesión en la aplicación
+    Petición POST para iniciar sesión en la aplicación.
+    Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
+    Si hubo algún error recuperando al usuario que está logueado actualmente o el email ntroducido en el formulario
+    no existe -> Se muestra un mensaje de error.
+    Si no hubo errores -> El usuario inicia sesión y se llama a la petición GET /user/home.
     */
     app.post("/login", function (req, res) {
 
@@ -143,21 +187,9 @@ module.exports = function (app, swig, gestorBD) {
                         "&tipoMensaje=alert-danger ");
                 } else {
                     req.session.usuario = usuarios[0].email;
-                    let respuesta;
-                    if(usuarios[0].role === "ROLE_ADMIN") {
-                        res.redirect("/user/list");
-                    }
-                    else {
-                        respuesta = swig.renderFile('views/bbienvenida.html', {
-                            email: usuarios[0].email,
-                            name: usuarios[0].name,
-                            amount: usuarios[0].amount
-                        });
-                    }
-                    res.send(respuesta);
+                    res.redirect("/user/home");
                 }
             });
         }
     });
-
 };

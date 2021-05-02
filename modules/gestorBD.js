@@ -32,7 +32,6 @@ module.exports = {
                     if (err) {
                         funcionCallback(null);
                     } else {
-                        console.log(result);
                         funcionCallback(result);
                     }
                     db.close();

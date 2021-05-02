@@ -24,13 +24,13 @@
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-                <li id="mTienda"><a href="/tienda">Tienda</a></li>
+                <li id="mTienda"><a href="/user/list">Tienda</a></li>
                 <li id="mPublicaciones"><a href="/publicaciones">Publicaciones</a></li>
                 <li id="mCompras"><a href="/compras">Compras</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                {% if email %}
-                <li class="navbar-text">Email: {{ email }} | Monto: {{ amount }} Є</li>
+                {% if usuario %}
+                <li class="navbar-text">Email: {{ usuario.email }} | Monto: {{ usuario.amount }} Є</li>
                 <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Desconectar</a></li>
                 {% else %}
                 <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
