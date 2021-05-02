@@ -45,8 +45,12 @@ public class SdiEntrega2Tests {
 	@BeforeClass
 	static public void begin() {
 		// Configuramos las pruebas.
+		
 		// Fijamos el timeout en cada opción de carga de una vista. 3 segundos.
 		PO_View.setTimeout(3);
+		
+		// Introducimos datos de prueba 
+		driver.navigate().to(URL + "/bd/prueba");
 
 	}
 
