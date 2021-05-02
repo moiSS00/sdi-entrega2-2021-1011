@@ -52,6 +52,8 @@ public class SdiEntrega2Tests {
 
 	@AfterClass
 	static public void end() {
+		// Limpiamos la base de datos
+		driver.navigate().to(URL + "/bd/limpiar");
 		// Cerramos el navegador al finalizar las pruebas
 		driver.quit();
 	}

@@ -43,12 +43,13 @@ app.set('crypto',crypto);
 
 // Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, gestorBD);
+require("./routes/rtesting.js")(app, swig, gestorBD);
 
 // Ruta inicial de la apliación
 app.get('/', function (req, res) {
     let respuesta = swig.renderFile('views/bindex.html', {});
     res.send(respuesta);
-})
+});
 
 // Lanzar el servidor
 app.listen(app.get('port'), function () {
