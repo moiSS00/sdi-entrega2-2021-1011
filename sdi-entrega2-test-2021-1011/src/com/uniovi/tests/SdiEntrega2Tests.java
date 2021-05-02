@@ -34,6 +34,14 @@ public class SdiEntrega2Tests {
 
 	@Before
 	public void setUp() {
+		
+		// Limpiamos la base de datos
+		driver.navigate().to(URL + "/bd/limpiar");
+		
+		// Introducimos datos de prueba 
+		driver.navigate().to(URL + "/bd/prueba");
+		
+		// Vamos a la URL principal
 		driver.navigate().to(URL);
 	}
 
@@ -45,19 +53,12 @@ public class SdiEntrega2Tests {
 	@BeforeClass
 	static public void begin() {
 		// Configuramos las pruebas.
-		
 		// Fijamos el timeout en cada opción de carga de una vista. 3 segundos.
 		PO_View.setTimeout(3);
-		
-		// Introducimos datos de prueba 
-		driver.navigate().to(URL + "/bd/prueba");
-
 	}
 
 	@AfterClass
 	static public void end() {
-		// Limpiamos la base de datos
-		driver.navigate().to(URL + "/bd/limpiar");
 		// Cerramos el navegador al finalizar las pruebas
 		driver.quit();
 	}
@@ -134,7 +135,7 @@ public class SdiEntrega2Tests {
 
 		// Rellenamos el formulario con datos váldos y con el email de un usuario
 		// existente
-		PO_RegisterView.fillForm(driver, "pueba@email.com", "prueba2", "prueba2", "123456", "123456");
+		PO_RegisterView.fillForm(driver, "moises@email.com", "prueba2", "prueba2", "123456", "123456");
 		PO_View.checkElement(driver, "text", "El email introducido ya está en uso");
 	}
 
@@ -145,10 +146,10 @@ public class SdiEntrega2Tests {
 		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
 
 		// Rellenamos el formulario con un usuario válido existente
-		PO_LoginView.fillForm(driver, "pueba@email.com", "123456");
-		PO_View.checkElement(driver, "text", "pueba@email.com");
+		PO_LoginView.fillForm(driver, "moises@email.com", "123456");
+		PO_View.checkElement(driver, "text", "moises@email.com");
 		PO_View.checkElement(driver, "text", "100 Є");
-		PO_View.checkElement(driver, "text", "¡ Bienvenido prueba !");
+		PO_View.checkElement(driver, "text", "¡ Bienvenido Moisés !");
 
 		// Cerramos sesión
 		PO_NavView.logOut(driver);
@@ -213,8 +214,8 @@ public class SdiEntrega2Tests {
 		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
 
 		// Rellenamos el formulario con un usuario válido existente
-		PO_LoginView.fillForm(driver, "pueba@email.com", "123456");
-		PO_View.checkElement(driver, "text", "pueba@email.com");
+		PO_LoginView.fillForm(driver, "moises@email.com", "123456");
+		PO_View.checkElement(driver, "text", "moises@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
