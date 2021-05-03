@@ -29,13 +29,22 @@
                 <li id="mCompras"><a href="/compras">Compras</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                {% if usuario %}
-                <li class="navbar-text">Email: {{ usuario.email }} | Monto: {{ usuario.amount }} Є</li>
-                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Desconectar</a></li>
-                {% else %}
-                <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
-                <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
+
+                {% if usuario && usuario.role === "ROLE_ADMIN" %}
+                    <li class="navbar-text">Email: {{ usuario.email }}</li>
                 {% endif %}
+
+                {% if usuario && usuario.role === "ROLE_STANDARD" %}
+                    <li class="navbar-text">Email: {{ usuario.email }} | Monto: {{ usuario.amount }} Є</li>
+                {% endif %}
+
+                {% if usuario %}
+                    <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Desconectar</a></li>
+                {% else %}
+                    <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
+                    <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
+                {% endif %}
+
             </ul>
         </div>
     </div>

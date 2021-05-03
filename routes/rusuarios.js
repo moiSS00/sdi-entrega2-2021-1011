@@ -53,14 +53,13 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     /*
-    Petición GET que muestra la página personal del usuario actual (siendo este estándar).
+    Muestra la página personal del usuario actual (siendo este estándar).
     */
     app.get("/standard/home", function (req, res) {
         // Variable que contendrá la respuesta
         let respuesta = swig.renderFile('views/bbienvenida.html', {usuario: req.session.usuario});
         res.send(respuesta);
     });
-
 
     // ---- PETICIONES POST ----
 
@@ -177,4 +176,35 @@ module.exports = function (app, swig, gestorBD) {
             });
         }
     });
+
+    /*
+    Elimina los usuarios que tengan como id alguno de los ids que se pasan como parámetro
+    */
+    app.post("/admin/user/remove", function (req, res) {
+
+        // Declaramos la variable que contendrá el criterio de eliminación
+        let criterio;
+
+        // Si llega un solo id, este se recibe como string
+        if (typeof(req.body.ids) == "string") {
+            criterio = { "_id": gestorBD.mongo.ObjectID(req.body.ids)}
+        }
+        else {
+            // Si llega más de un id, los ids se reciben como un array
+            let objectIds = [];
+            req.body.ids.forEach(id => objectIds.push(gestorBD.mongo.ObjectID(id)));
+            criterio = { "_id": { $in: objectIds } }
+        }
+
+        // Elimino los usuarios
+        gestorBD.eliminarUsuario(criterio,function(usuarios){
+            if ( usuarios == null ){
+                //Este if - else es para el futuro sistema de log
+                res.redirect("/admin/user/list");
+            } else {
+                res.redirect("/admin/user/list");
+            }
+        });
+    });
+
 };
