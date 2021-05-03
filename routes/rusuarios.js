@@ -28,57 +28,37 @@ module.exports = function (app, swig, gestorBD) {
 
     /*
     Muestra una vista que lista a todos los usuarios de la aplicación.
-    Si hay algún error recuperando al usuario logueado actualmente -> Se llama a la petición GET /logout.
     Si hay algún error al recuperar la lista de usuarios -> Se le pasa a la vista una lista vacía.
     Si no hubo errroes -> Se muestra la vista con todos los usuarios de la aplicación (excepto el admin).
     */
     app.get("/admin/user/list", function (req, res) {
-        // Obtenemos al usuario actual
-        gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (admin) {
-            if (admin == null) {
-                res.redirect("/logout");
+        // Variable que contendrá la respuesta
+        let respuesta;
+        // Se obtienen los usuarios y se comprueba si el usuario ya existe
+        let criterio = {role: {$ne: "ROLE_ADMIN"}};
+        gestorBD.obtenerUsuarios(criterio, function (usuarios) {
+            if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
+                respuesta = swig.renderFile('views/busuarios.html', {
+                    usuario: req.session.usuario,
+                    usuarios: []
+                });
             } else {
-                // Variable que contendrá la respuesta
-                let respuesta;
-                // Se obtienen los usuarios y se comprueba si el usuario ya existe
-                let criterio = {email: {$ne: "admin@email.com"}};
-                gestorBD.obtenerUsuarios(criterio, function (usuarios) {
-                    if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
-                        respuesta = swig.renderFile('views/busuarios.html', {
-                            usuario: admin[0],
-                            usuarios: []
-                        });
-                    } else {
-                        respuesta = swig.renderFile('views/busuarios.html', {
-                            usuario: admin[0],
-                            usuarios: usuarios
-                        });
-                    }
-                    res.send(respuesta);
+                respuesta = swig.renderFile('views/busuarios.html', {
+                    usuario: req.session.usuario,
+                    usuarios: usuarios
                 });
             }
+            res.send(respuesta);
         });
     });
 
     /*
-    Petición GET que muestra la página personal del usuario actual.
-    Si hay algún error recuperando al usuario logueado actualmente -> Se llama a la petición GET /logout.
-    Si el usuario logueado actualmente es admin -> Se llama a la petición GET /user/list.
-    Si el usuario logueado actualmente es estándar -> Se muestra la página de bienvenida para ese usuario.
+    Petición GET que muestra la página personal del usuario actual (siendo este estándar).
     */
     app.get("/standard/home", function (req, res) {
         // Variable que contendrá la respuesta
-        let respuesta;
-
-        // Se obtienen los usuarios y se comprueba si el usuario ya existe
-        gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
-            if (usuarios == null) {
-                res.redirect("/logout");
-            } else {
-                let respuesta = swig.renderFile('views/bbienvenida.html', {usuario: usuarios[0]});
-                res.send(respuesta);
-            }
-        });
+        let respuesta = swig.renderFile('views/bbienvenida.html', {usuario: req.session.usuario});
+        res.send(respuesta);
     });
 
 
@@ -139,7 +119,7 @@ module.exports = function (app, swig, gestorBD) {
                                         "?mensaje=Error al insertar el usuario" +
                                         "&tipoMensaje=alert-danger ");
                                 } else {
-                                    req.session.usuario = req.body.email;
+                                    req.session.usuario = usuario;
                                     res.redirect("/");
                                 }
                             });
@@ -181,7 +161,7 @@ module.exports = function (app, swig, gestorBD) {
                         "?mensaje=Email incorrecto o contraseña incorrecta" +
                         "&tipoMensaje=alert-danger ");
                 } else {
-                    req.session.usuario = usuarios[0].email;
+                    req.session.usuario = usuarios[0];
                     res.redirect("/");
                 }
             });

@@ -230,10 +230,25 @@ public class SdiEntrega2Tests {
 		SeleniumUtils.textoNoPresentePagina(driver, "Desconectar");
 	}
 
-	// PR11. Sin hacer /
+	// PR11. Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el 
+	// sistema. /
 	@Test
 	public void PR11() {
-		assertTrue("PR11 sin hacer", false);
+		
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como administrador
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+
+		// Comprobamos que se muestran todos los usuarios
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
+		assertTrue(elements.size() == 1);
+		PO_View.checkElement(driver, "text", "moises@email.com");
+
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
+		PO_View.checkElement(driver, "text", "Identificación de usuario");
 	}
 
 	// PR12. Sin hacer /

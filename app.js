@@ -42,56 +42,73 @@ app.set('crypto',crypto);
 
 // routerUsuarioSession
 var routerUsuarioSession = express.Router();
+
+/*
+Comprueba si el usuario actual está logueado en la aplicación.
+Si no hay usuario logueado -> Se llama a la petición GET /login.
+Si hubo algún error al recuperar el usuario actual -> Se llama a la petición GET /.
+Si no hubo problemas -> Se deja pasar la petición.
+*/
 routerUsuarioSession.use(function(req, res, next) {
     console.log("routerUsuarioSession");
     if ( req.session.usuario ) {
-        // dejamos correr la petición
-        next();
+        gestorBD.obtenerUsuarios({email: req.session.usuario.email}, function (usuarios) {
+            if (usuarios == null) {
+                res.redirect("/");
+            } else {
+                req.session.usuario = usuarios[0];
+                // dejamos correr la petición
+                next();
+            }
+        });
     } else {
         res.redirect("/login");
     }
 });
+
 //Aplicar routerUsuarioSession
 app.use("/standard",routerUsuarioSession);
 app.use("/admin",routerUsuarioSession);
 
 // routerUsuarioStandardSession
 var routerUsuarioStandardSession = express.Router();
+
+/*
+Comprueba si el usuario actual es estándar.
+Si el usuario actual no es estándar -> Se llama a la petición GET /.
+Si el usuario actual es estándar -> Se deja pasar la petición.
+*/
 routerUsuarioStandardSession.use(function(req, res, next) {
     console.log("routerUsuarioStandardSession");
-    gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
-        if (usuarios == null) {
-            res.redirect("/");
-        } else {
-            if(usuarios[0].role === "ROLE_STANDARD") {
-                next();
-            }
-            else {
-                res.redirect("/");
-            }
-        }
-    });
+    if(req.session.usuario.role === "ROLE_STANDARD") {
+        next();
+    }
+    else {
+        res.redirect("/");
+    }
 });
+
 //Aplicar routerUsuarioStandardSession
 app.use("/standard",routerUsuarioStandardSession);
 
 // routerUsuarioAdminSession
 var routerUsuarioAdminSession = express.Router();
+
+/*
+Comprueba si el usuario actual es admin.
+Si el usuario actual no es admin -> Se llama a la petición GET /.
+Si el usuario actual es admin -> Se deja pasar la petición.
+*/
 routerUsuarioAdminSession.use(function(req, res, next) {
     console.log("routerUsuarioAdminSession");
-    gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
-        if (usuarios == null) {
-            res.redirect("/");
-        } else {
-            if(usuarios[0].role === "ROLE_ADMIN") {
-                next();
-            }
-            else {
-                res.redirect("/");
-            }
-        }
-    });
+    if(req.session.usuario.role === "ROLE_ADMIN") {
+        next();
+    }
+    else {
+        res.redirect("/");
+    }
 });
+
 //Aplicar routerUsuarioAdminSession
 app.use("/admin",routerUsuarioAdminSession);
 
@@ -104,23 +121,24 @@ require("./routes/rtesting.js")(app, swig, gestorBD);
 
 /*
 Ruta inicial de la apliación.
-Si hay un usuario logueado -> Se llama a la petición GET /user/home.
+Si hay un usuario logueado -> Se llama a la petición GET /admin/user/list si es admin o a la petición GET /standard/home
+si es estándar.
 Si no hay un usuario logueado -> Se muestra la vista principal (index).
 */
 app.get('/', function (req, res) {
-    gestorBD.obtenerUsuarios(criterio = {email: req.session.usuario}, function (usuarios) {
-        if (usuarios == null || usuarios.length == 0) {
-            let respuesta = swig.renderFile('views/bindex.html', {});
-            res.send(respuesta);
-        } else {
-            if(usuarios[0].role === "ROLE_ADMIN") {
-                res.redirect("/admin/user/list");
-            }
-            else {
-                res.redirect("/standard/home");
-            }
+    if (req.session.usuario) {
+        if (req.session.usuario.role === "ROLE_ADMIN") {
+            res.redirect("/admin/user/list");
+
         }
-    });
+        else if (req.session.usuario.role === "ROLE_STANDARD") {
+            res.redirect("/standard/home");
+        }
+    }
+    else {
+        let respuesta = swig.renderFile('views/bindex.html', {});
+        res.send(respuesta);
+    }
 });
 
 // Lanzar el servidor
