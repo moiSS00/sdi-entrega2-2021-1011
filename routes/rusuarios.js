@@ -119,7 +119,12 @@ module.exports = function (app, swig, gestorBD) {
                                         "?mensaje=Error al insertar el usuario" +
                                         "&tipoMensaje=alert-danger ");
                                 } else {
-                                    req.session.usuario = usuario;
+                                    req.session.usuario = {
+                                        email: usuario.email,
+                                        name: usuario.name,
+                                        amount: usuario.amount,
+                                        role: usuario.role
+                                    };
                                     res.redirect("/");
                                 }
                             });
@@ -161,7 +166,12 @@ module.exports = function (app, swig, gestorBD) {
                         "?mensaje=Email incorrecto o contraseña incorrecta" +
                         "&tipoMensaje=alert-danger ");
                 } else {
-                    req.session.usuario = usuarios[0];
+                    req.session.usuario = {
+                        email: usuarios[0].email,
+                        name: usuarios[0].name,
+                        amount: usuarios[0].amount,
+                        role: usuarios[0].role
+                    };
                     res.redirect("/");
                 }
             });

@@ -56,7 +56,12 @@ routerUsuarioSession.use(function(req, res, next) {
             if (usuarios == null) {
                 res.redirect("/");
             } else {
-                req.session.usuario = usuarios[0];
+                req.session.usuario = {
+                    email: usuarios[0].email,
+                    name: usuarios[0].name,
+                    amount: usuarios[0].amount,
+                    role: usuarios[0].role
+                };
                 // dejamos correr la petición
                 next();
             }
