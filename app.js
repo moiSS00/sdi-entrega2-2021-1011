@@ -52,7 +52,7 @@ Si no hubo problemas -> Se deja pasar la petición.
 routerUsuarioSession.use(function(req, res, next) {
     console.log("routerUsuarioSession");
     if ( req.session.usuario ) {
-        gestorBD.obtenerUsuarios({email: req.session.usuario.email}, function (usuarios) {
+        gestorBD.obtenerUsuarios({email: req.session.usuario.email}, {}, function (usuarios) {
             if (usuarios == null) {
                 res.redirect("/");
             } else {

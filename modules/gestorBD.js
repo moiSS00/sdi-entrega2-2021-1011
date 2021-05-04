@@ -22,13 +22,13 @@ module.exports = {
             }
         });
     },
-    obtenerUsuarios : function(criterio,funcionCallback){ // Busca los usuarios de la base de datos que cumplan un criterio
+    obtenerUsuarios : function(criterio, sort, funcionCallback){ // Busca los usuarios de la base de datos que cumplan un criterio
         this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
             if (err) {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('usuarios');
-                collection.find(criterio).toArray(function(err, result) {
+                collection.find(criterio).sort(sort).toArray(function(err, result) {
                     if (err) {
                         funcionCallback(null);
                     } else {
