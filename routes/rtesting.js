@@ -5,7 +5,7 @@ module.exports = function (app, swig, gestorBD) {
     /*
     Petición GET que vacia toda la base de datos
     */
-    app.get('/bd/limpiar', function (req, res) {
+    app.get('/bd/clear', function (req, res) {
         let criterio = {};
         gestorBD.eliminarUsuario(criterio, function (usuarios) {
             if (usuarios == null) {
@@ -20,7 +20,7 @@ module.exports = function (app, swig, gestorBD) {
     /*
     Petición GET que inserta datos de prueba en la base de datos
     */
-    app.get('/bd/prueba', function (req, res) {
+    app.get('/bd/insertSampleData', function (req, res) {
         let usuarios = [
             {
                 email: "admin@email.com",
@@ -38,6 +38,33 @@ module.exports = function (app, swig, gestorBD) {
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("123456").digest('hex'),
                 amount: 100.0,
+                role: "ROLE_STANDARD"
+            },
+            {
+                email: "juan@email.com",
+                name: "Juan",
+                lastName: "Álvarez Álvarez",
+                password: app.get("crypto").createHmac('sha256', app.get('clave'))
+                    .update("123456").digest('hex'),
+                amount: 50.0,
+                role: "ROLE_STANDARD"
+            },
+            {
+                email: "manolo@email.com",
+                name: "Manolo",
+                lastName: "Sánchez Sánchez",
+                password: app.get("crypto").createHmac('sha256', app.get('clave'))
+                    .update("123456").digest('hex'),
+                amount: 1000.0,
+                role: "ROLE_STANDARD"
+            },
+            {
+                email: "pepe@email.com",
+                name: "Pepe",
+                lastName: "Pérez Pérez",
+                password: app.get("crypto").createHmac('sha256', app.get('clave'))
+                    .update("123456").digest('hex'),
+                amount: 142.25,
                 role: "ROLE_STANDARD"
             },
         ];

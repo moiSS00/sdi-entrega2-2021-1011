@@ -36,10 +36,10 @@ public class SdiEntrega2Tests {
 	public void setUp() {
 		
 		// Limpiamos la base de datos
-		driver.navigate().to(URL + "/bd/limpiar");
+		driver.navigate().to(URL + "/bd/clear");
 		
 		// Introducimos datos de prueba 
-		driver.navigate().to(URL + "/bd/prueba");
+		driver.navigate().to(URL + "/bd/insertSampleData");
 		
 		// Vamos a la URL principal
 		driver.navigate().to(URL);
@@ -243,7 +243,7 @@ public class SdiEntrega2Tests {
 
 		// Comprobamos que se muestran todos los usuarios
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
-		assertTrue(elements.size() == 1);
+		assertTrue(elements.size() == 4);
 		PO_View.checkElement(driver, "text", "moises@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login

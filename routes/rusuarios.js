@@ -183,20 +183,18 @@ module.exports = function (app, swig, gestorBD) {
     app.post("/admin/user/remove", function (req, res) {
 
         // Declaramos la variable que contendrá el criterio de eliminación
-        let criterio;
 
         // Si llega un solo id, este se recibe como string
-        if (typeof(req.body.ids) == "string") {
-            criterio = { "_id": gestorBD.mongo.ObjectID(req.body.ids)}
-        }
-        else {
-            // Si llega más de un id, los ids se reciben como un array
-            let objectIds = [];
-            req.body.ids.forEach(id => objectIds.push(gestorBD.mongo.ObjectID(id)));
-            criterio = { "_id": { $in: objectIds } }
-        }
+        // Si llega más de un id, los ids se reciben como un array
+        let ids = [];
+        ids = ids.concat(req.body.ids);
+
+        // Convertidos los ids a objetos ObjectID
+        let objectIds = [];
+        ids.forEach(id => objectIds.push(gestorBD.mongo.ObjectID(id)));
 
         // Elimino los usuarios
+        let criterio = { "_id": { $in: objectIds } };
         gestorBD.eliminarUsuario(criterio,function(usuarios){
             if ( usuarios == null ){
                 //Este if - else es para el futuro sistema de log
