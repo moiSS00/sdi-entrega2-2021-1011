@@ -414,6 +414,16 @@ public class SdiEntrega2Tests {
 		PO_AddOfferView.fillForm(driver, "", "", "");
 		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
 		
+		// Titulo demasiado corto 
+		PO_AddOfferView.fillForm(driver, "Pru", "PruebaDescripcion", "0.21");
+		PO_View.checkElement(driver, "text", 
+				"El título debe de tener una longitud mínima de 5 carácteres y una longitud máxima de 20 carácteres");
+		
+		// Desctipción demasiado corta
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "Pru", "0.21");
+		PO_View.checkElement(driver, "text",
+				"La descripción debe de tener una longitud mínima de 5 carácteres y una longitud máxima de 50 carácteres");	
+		
 		// Rellenamos el campo precio con una cadena 
 		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "prueba");
 		PO_View.checkElement(driver, "text", "El precio debe de ser un número");

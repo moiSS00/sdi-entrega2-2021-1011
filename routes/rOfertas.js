@@ -54,40 +54,58 @@ module.exports = function (app, swig, gestorBD) {
                 "&tipoMensaje=alert-danger ");
         }
         else {
-            // Se comprueba que el precio es un número
-            let precio = parseFloat(req.body.price);
-            if(precio) {
-                // Se comprueba que el precio sea positivo
-                if(precio >= 0) {
-                    // Creamos la oferta a añadir
-                    let oferta = {
-                        title: req.body.title,
-                        description: req.body.description,
-                        price: precio.toFixed(2),
-                        creationDate: new Date(),
-                        owner: req.session.usuario.email
-                    }
-                    // Añadimos la oferta a la base de datos
-                    gestorBD.insertarOferta(oferta, function (id) {
-                        if (id == null) {
-                            res.redirect("/signup" +
-                                "?mensaje=Error al crear la oferta" +
-                                "&tipoMensaje=alert-danger ");
-                        } else {
-                            res.redirect("/standard/offer/myOffers");
-                        }
-                    });
-                }
-                else {
-                    res.redirect("/standard/offer/add" +
-                        "?mensaje=El precio debe de ser un valor positivo" +
-                        "&tipoMensaje=alert-danger ");
-                }
+            // Comprobamos la longitud del título
+            if(req.body.title.length < 5 || req.body.title.length > 20) {
+                res.redirect("/standard/offer/add" +
+                    "?mensaje=El título debe de tener una longitud mínima de 5 carácteres y una " +
+                    "longitud máxima de 20 carácteres" +
+                    "&tipoMensaje=alert-danger ");
             }
             else {
-                res.redirect("/standard/offer/add" +
-                    "?mensaje=El precio debe de ser un número" +
-                    "&tipoMensaje=alert-danger ");
+                // Comprobamos la longitud de la descripción
+                if(req.body.description.length < 5 || req.body.description.length > 50) {
+                    res.redirect("/standard/offer/add" +
+                        "?mensaje=La descripción debe de tener una longitud mínima de 5 carácteres y una " +
+                        "longitud máxima de 50 carácteres" +
+                        "&tipoMensaje=alert-danger ");
+                }
+                else {
+                    // Se comprueba que el precio es un número
+                    let precio = parseFloat(req.body.price);
+                    if(precio) {
+                        // Se comprueba que el precio sea positivo
+                        if(precio >= 0) {
+                            // Creamos la oferta a añadir
+                            let oferta = {
+                                title: req.body.title,
+                                description: req.body.description,
+                                price: precio.toFixed(2),
+                                creationDate: new Date(),
+                                owner: req.session.usuario.email
+                            }
+                            // Añadimos la oferta a la base de datos
+                            gestorBD.insertarOferta(oferta, function (id) {
+                                if (id == null) {
+                                    res.redirect("/signup" +
+                                        "?mensaje=Error al crear la oferta" +
+                                        "&tipoMensaje=alert-danger ");
+                                } else {
+                                    res.redirect("/standard/offer/myOffers");
+                                }
+                            });
+                        }
+                        else {
+                            res.redirect("/standard/offer/add" +
+                                "?mensaje=El precio debe de ser un valor positivo" +
+                                "&tipoMensaje=alert-danger ");
+                        }
+                    }
+                    else {
+                        res.redirect("/standard/offer/add" +
+                            "?mensaje=El precio debe de ser un número" +
+                            "&tipoMensaje=alert-danger ");
+                    }
+                }
             }
         }
     });
