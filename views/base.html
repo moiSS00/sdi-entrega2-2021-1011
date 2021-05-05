@@ -24,25 +24,40 @@
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-                <li id="mTienda"><a href="/user/list">Tienda</a></li>
-                <li id="mPublicaciones"><a href="/publicaciones">Publicaciones</a></li>
-                <li id="mCompras"><a href="/compras">Compras</a></li>
+
+                {% if (usuario && usuario.role === "ROLE_STANDARD") || !usuario %}
+                <li><a href="/" id="home">Home</a></li>
+                {% endif %}
+
+                {% if usuario && usuario.role === "ROLE_STANDARD" %}
+                <li id="offer-menu" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Gestión de Ofertas
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/supply/list">Buscar Ofertas</a></li>
+                        <li><a href="/supply/mySupplies">Mis ofertas</a></li>
+                        <li><a href="/supply/boughts">Mis compras</a></li>
+                        <li><a href="/supply/add">Dar de alta nueva oferta</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
             </ul>
             <ul class="nav navbar-nav navbar-right">
 
                 {% if usuario && usuario.role === "ROLE_ADMIN" %}
-                    <li class="navbar-text">Email: {{ usuario.email }}</li>
+                <li class="navbar-text">Email: {{ usuario.email }}</li>
                 {% endif %}
 
                 {% if usuario && usuario.role === "ROLE_STANDARD" %}
-                    <li class="navbar-text">Email: {{ usuario.email }} | Monto: {{ usuario.amount }} Є</li>
+                <li class="navbar-text">Email: {{ usuario.email }} | Monto: {{ usuario.amount }} Є</li>
                 {% endif %}
 
                 {% if usuario %}
-                    <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Desconectar</a></li>
+                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Desconectar</a></li>
                 {% else %}
-                    <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
-                    <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
+                <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
+                <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
                 {% endif %}
 
             </ul>
@@ -51,20 +66,20 @@
 </nav>
 
 
-
 <div class="container">
 
     <script>
         // Script para mostrar feedback de distintos tipos al usuario
         var mensaje = getUrlParameter('mensaje');
         var tipoMensaje = getUrlParameter('tipoMensaje');
-        if ( mensaje != ""){
-            if (tipoMensaje == "" ){
+        if (mensaje != "") {
+            if (tipoMensaje == "") {
                 tipoMensaje = 'alert-info';
             }
-            $( ".container" )
-                .append("<div class='alert "+tipoMensaje+"'>"+mensaje+" </div>");
+            $(".container")
+                .append("<div class='alert " + tipoMensaje + "'>" + mensaje + " </div>");
         }
+
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
