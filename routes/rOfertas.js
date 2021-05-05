@@ -14,9 +14,10 @@ module.exports = function (app, swig, gestorBD) {
 
     /*
     Muestra la vista con las ofertas creadas por el usuario que está actualmente logueado.
+    Si hay algún error al recuperar la lista de ofertas del usuario actual -> Se le pasa a la vista una lista vacía.
+    Si no hubo errroes -> Se muestra la vista con todos las ofertas del usuario actual.
     */
     app.get("/standard/offer/myOffers", function (req, res) {
-
         // Variable que contendrá la respuesta
         let respuesta;
 
@@ -41,6 +42,9 @@ module.exports = function (app, swig, gestorBD) {
 
     /*
     Elimina una oferta con un id específico.
+    Si hay algún error al eliminar la oferta -> Se llama a la petición GET /standard/offer/myOffers con
+        un mensaje de error.
+    Si no hubo errroes -> Se llama a la petición GET /standard/offer/myOffers.
     */
     app.get("/standard/offer/remove/:id", function (req, res) {
         let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
@@ -61,6 +65,14 @@ module.exports = function (app, swig, gestorBD) {
 
     /*
     Añade una oferta con los datos introducidos en el formulario
+    Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
+    Si el título tiene una lóngitud de menos de 5 carácteres o de más de 20 carácteres -> Se muestra
+        un mensaje de error.
+    Si la descripctión tiene una lóngitud de menos de 5 carácteres o de más de 50 carácteres -> Se muestra
+        un mensaje de error.
+    Si se pasa un precio con un formato incorrecto o negativo -> Se muestra un mensaje de error.
+    Si hubo algún error al insertar la nueva oferta en la base de datos -> Se muestra un mensaje de error.
+    Si no hubo errores -> Se llama a la petición GET /standard/offer/myOffers.
     */
     app.post("/standard/offer/add", function (req, res) {
 

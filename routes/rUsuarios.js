@@ -65,7 +65,7 @@ module.exports = function (app, swig, gestorBD) {
     // ---- PETICIONES POST ----
 
     /*
-    Petición POST que registra a un usuario añadiendolo a la base de datos
+    Registra a un usuario añadiendolo a la base de datos
     Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
     Si las contraseñas introducidas en el formulario no coinciden -> Se muestra un mensaje de error.
     Si el email introducido en el formulario ya está en uso -> Se muestra un mensaje de error.
@@ -140,7 +140,7 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     /*
-    Petición POST para iniciar sesión en la aplicación.
+    Se inicia sesión en la aplicación.
     Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
     Si hubo algún error recuperando al usuario que está logueado actualmente o el email ntroducido en el formulario
     no existe -> Se muestra un mensaje de error.
@@ -179,7 +179,12 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     /*
-    Elimina los usuarios que tengan como id alguno de los ids que se pasan como parámetro
+    Elimina los usuarios que tengan como id alguno de los ids que se pasan como parámetro.
+    Si ha habido algún error al eliminar los usuarios -> Se llama a la petición GET /admin/user/list con
+        un mensaje de error.
+    Si ha habido algún error al eliminar las ofertas de los usuarios eliminados -> SSe llama a la petición GET /admin/user/list con
+        un mensaje de error.
+    Si no hubo errores -> Se llama a la petición GET /admin/user/list.
     */
     app.post("/admin/user/remove", function (req, res) {
 

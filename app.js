@@ -121,12 +121,19 @@ app.use("/admin",routerUsuarioAdminSession);
 var routerUsuarioOwner = express.Router();
 
 /*
-Comprueba si el usuario actual es el creador de la oferta
+Comprueba si el usuario actual es el dueño de la oferta.
+Si hubo algún error al recuperar las ofertas -> Se llama a la petición GET /.
+Si el usuario actual no es el dueño de la oferta -> Se llama a la petición GET /.
+Si el usuario actual es el dueño de la oferta -> Se deja pasar la petición.
 */
 routerUsuarioOwner.use(function(req, res, next) {
     console.log("routerUsuarioOwner");
+
+    //Obtenemos el id de la URL
     let path = require('path');
     let id = path.basename(req.originalUrl);
+
+    // Verificamos si el usuario actual es el dueño de la oferta
     let criterio = {
         _id: mongo.ObjectID(id),
         owner: req.session.usuario.email
@@ -154,7 +161,7 @@ require("./routes/rTesting.js")(app, swig, gestorBD);
 /*
 Ruta inicial de la apliación.
 Si hay un usuario logueado -> Se llama a la petición GET /admin/user/list si es admin o a la petición GET /standard/home
-si es estándar.
+    si es estándar.
 Si no hay un usuario logueado -> Se muestra la vista principal (index).
 */
 app.get('/', function (req, res) {
