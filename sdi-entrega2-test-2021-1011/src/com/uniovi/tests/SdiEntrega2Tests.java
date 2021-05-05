@@ -426,10 +426,40 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR017. Sin hacer /
+	// PR017. Mostrar el listado de ofertas para dicho usuario y comprobar que se muestran todas las 
+	// que existen para este usuario. /
 	@Test
 	public void PR17() {
-		assertTrue("PR17 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como usuario estándar
+		PO_LoginView.fillForm(driver, "andrea@email.com", "123456");
+
+		// Ir a la opcion de dar de alta una nota 
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/myOffers");
+		
+		// Comprobamos que salen todas sus ofertas 
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 3);
+		
+		// Comprobamos títulos
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Pack material escolar");
+		PO_View.checkElement(driver, "text", "Televisión 4K");
+		
+		// Comprobamos descripciones 
+		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
+		PO_View.checkElement(driver, "text", "Pack 5 rotuladores BIC.");
+		PO_View.checkElement(driver, "text", "Para una buena tarde de Netflix.");
+		
+		// Comprobamos precios
+		PO_View.checkElement(driver, "text", "1500");
+		PO_View.checkElement(driver, "text", "2.2");
+		PO_View.checkElement(driver, "text", "80.99");
+
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
 	}
 
 	// PR18. Sin hacer /

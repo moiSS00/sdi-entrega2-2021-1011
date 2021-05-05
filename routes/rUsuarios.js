@@ -108,7 +108,7 @@ module.exports = function (app, swig, gestorBD) {
                                 name: req.body.name,
                                 lastName: req.body.lastName,
                                 password: seguro,
-                                amount: 100.0,
+                                amount: 100.00,
                                 role: "ROLE_STANDARD"
                             }
 

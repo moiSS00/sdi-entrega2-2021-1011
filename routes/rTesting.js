@@ -34,7 +34,7 @@ module.exports = function (app, swig, gestorBD) {
                 lastName: "admin",
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("admin").digest('hex'),
-                amount: 100.0,
+                amount: 100.00,
                 role: "ROLE_ADMIN"
             },
             {
@@ -43,7 +43,7 @@ module.exports = function (app, swig, gestorBD) {
                 lastName: "Sanjurjo Sánchez",
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("123456").digest('hex'),
-                amount: 100.0,
+                amount: 100.00,
                 role: "ROLE_STANDARD"
             },
             {
@@ -52,7 +52,7 @@ module.exports = function (app, swig, gestorBD) {
                 lastName: "Álvarez Álvarez",
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("123456").digest('hex'),
-                amount: 50.0,
+                amount: 50.00,
                 role: "ROLE_STANDARD"
             },
             {
@@ -61,7 +61,7 @@ module.exports = function (app, swig, gestorBD) {
                 lastName: "Sánchez Sánchez",
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("123456").digest('hex'),
-                amount: 1000.0,
+                amount: 1000.00,
                 role: "ROLE_STANDARD"
             },
             {
@@ -79,7 +79,7 @@ module.exports = function (app, swig, gestorBD) {
                 lastName: "Pérez Sánchez",
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("123456").digest('hex'),
-                amount: 191.5,
+                amount: 191.50,
                 role: "ROLE_STANDARD"
             },
         ];
@@ -91,21 +91,21 @@ module.exports = function (app, swig, gestorBD) {
                     {
                         title: "Coche SEAT",
                         description: "Coche SEAT con 500 Km.",
-                        price: 1500.0,
+                        price: 1500.00,
                         creationDate: new Date(),
                         owner: "andrea@email.com"
                     },
                     {
                         title: "Pack material escolar",
                         description: "Pack 5 rotuladores BIC.",
-                        price: 2.2,
+                        price: 2.20,
                         creationDate: new Date(),
                         owner: "andrea@email.com"
                     },
                     {
                         title: "Disco duro",
                         description: "Disco duro de 500 Gb SSD.",
-                        price: 100.0,
+                        price: 100.00,
                         creationDate: new Date(),
                         owner: "manolo@email.com"
                     },
@@ -119,7 +119,7 @@ module.exports = function (app, swig, gestorBD) {
                     {
                         title: "Película molona",
                         description: "Matrix.",
-                        price: 3.2,
+                        price: 3.20,
                         creationDate: new Date(),
                         owner: "manolo@email.com"
                     },
