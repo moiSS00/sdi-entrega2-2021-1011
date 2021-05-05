@@ -38,6 +38,20 @@ public class PO_NavView  extends PO_View{
 	public static void logOut(WebDriver driver) {
 		clickOption(driver, "/logout", "text", "Identificación de usuario");
 	}
+	
+	/**
+	 * Nos logeamos como un usuario determinado 
+	 * @param driver
+	 * @param username
+	 * @param password
+	 */
+	public static void logInAs(WebDriver driver, String username, String password) {
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como usuario estándar
+		PO_LoginView.fillForm(driver, username, password);
+	}
 
 	/**
 	 * Vamos a la lista para añadir una oferta 
