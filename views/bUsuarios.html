@@ -20,7 +20,7 @@
                 <td>{{ usuario.email }}</td>
                 <td>{{ usuario.name }}</td>
                 <td>{{ usuario.lastName }}</td>
-                <td><input type="checkbox" name="ids" value={{usuario._id.toString()}}></td>
+                <td><input type="checkbox" name="ids" value={{ usuario.email }}></td>
             </tr>
             {% endfor %}
             </tbody>

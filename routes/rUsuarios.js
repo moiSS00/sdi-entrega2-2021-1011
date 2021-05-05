@@ -6,7 +6,7 @@ module.exports = function (app, swig, gestorBD) {
     Muestra la vista que contiene el formulario para registrar a un usuario.
     */
     app.get("/signup", function (req, res) {
-        let respuesta = swig.renderFile('views/bregistro.html', {});
+        let respuesta = swig.renderFile('views/bRegistro.html', {});
         res.send(respuesta);
     });
 
@@ -14,7 +14,7 @@ module.exports = function (app, swig, gestorBD) {
     Muestra la vista que contiene el formulario de inicio de sesión.
     */
     app.get("/login", function (req, res) {
-        let respuesta = swig.renderFile('views/bidentificacion.html', {});
+        let respuesta = swig.renderFile('views/bIdentificacion.html', {});
         res.send(respuesta);
     });
 
@@ -38,12 +38,12 @@ module.exports = function (app, swig, gestorBD) {
         let criterio = {role: {$ne: "ROLE_ADMIN"}};
         gestorBD.obtenerUsuarios(criterio, { email: 1 }, function (usuarios) {
             if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
-                respuesta = swig.renderFile('views/busuarios.html', {
+                respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,
                     usuarios: []
                 });
             } else {
-                respuesta = swig.renderFile('views/busuarios.html', {
+                respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,
                     usuarios: usuarios
                 });
@@ -57,7 +57,7 @@ module.exports = function (app, swig, gestorBD) {
     */
     app.get("/standard/home", function (req, res) {
         // Variable que contendrá la respuesta
-        let respuesta = swig.renderFile('views/bbienvenida.html', {usuario: req.session.usuario});
+        let respuesta = swig.renderFile('views/bBienvenida.html', {usuario: req.session.usuario});
         res.send(respuesta);
     });
 
@@ -115,7 +115,7 @@ module.exports = function (app, swig, gestorBD) {
                             gestorBD.insertarUsuario(usuario, function (id) {
                                 if (id == null) {
                                     res.redirect("/signup" +
-                                        "?mensaje=Error al insertar el usuario" +
+                                        "?mensaje=Error al crear el usuario" +
                                         "&tipoMensaje=alert-danger ");
                                 } else {
                                     req.session.usuario = {
@@ -184,16 +184,13 @@ module.exports = function (app, swig, gestorBD) {
 
         // Declaramos la variable que contendrá el criterio de eliminación
 
-        // Si llega un solo id, este se recibe como string
-        // Si llega más de un id, los ids se reciben como un array
-        let ids = [];
-        ids = ids.concat(req.body.ids);
-
-        // Convertidos los ids a objetos ObjectID
-        let objectIds = ids.map(id => gestorBD.mongo.ObjectID(id));
+        // Si llega un solo email, este se recibe como string
+        // Si llega más de un email, los emails se reciben como un array
+        let emails = [];
+        emails = emails.concat(req.body.ids);
 
         // Elimino los usuarios
-        let criterio = { "_id": { $in: objectIds } };
+        let criterio = { "email": { $in: emails } };
         gestorBD.eliminarUsuario(criterio,function(usuarios){
             if ( usuarios == null ){
                 //Este if - else es para el futuro sistema de log

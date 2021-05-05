@@ -121,8 +121,9 @@ app.use("/admin",routerUsuarioAdminSession);
 app.use(express.static('public'));
 
 // Rutas/controladores por lógica
-require("./routes/rusuarios.js")(app, swig, gestorBD);
-require("./routes/rtesting.js")(app, swig, gestorBD);
+require("./routes/rUsuarios.js")(app, swig, gestorBD);
+require("./routes/rOfertas.js")(app, swig, gestorBD);
+require("./routes/rTesting.js")(app, swig, gestorBD);
 
 /*
 Ruta inicial de la apliación.
@@ -141,7 +142,7 @@ app.get('/', function (req, res) {
         }
     }
     else {
-        let respuesta = swig.renderFile('views/bindex.html', {});
+        let respuesta = swig.renderFile('views/bIndex.html', {});
         res.send(respuesta);
     }
 });
