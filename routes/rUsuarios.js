@@ -36,7 +36,8 @@ module.exports = function (app, swig, gestorBD) {
         let respuesta;
         // Se obtienen los usuarios (excepto los administradores) y se ordenan por email de forma ascendente
         let criterio = {role: {$ne: "ROLE_ADMIN"}};
-        gestorBD.obtenerUsuarios(criterio, { email: 1 }, function (usuarios) {
+        let sort = { email: 1 };
+        gestorBD.obtenerUsuarios(criterio, sort, function (usuarios) {
             if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
                 respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,

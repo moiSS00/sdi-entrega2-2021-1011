@@ -11,7 +11,13 @@ module.exports = function (app, swig, gestorBD) {
             if (usuarios == null) {
                 res.send("Error al limpiar la colección de usuarios");
             } else {
-                res.send("Colección de usuarios limpiada con éxito");
+                gestorBD.eliminarOferta(criterio, function (ofertas) {
+                    if (ofertas == null) {
+                        res.send("Error al limpiar la colección de ofertas");
+                    } else {
+                        res.send("Base de datos limpiada con éxito");
+                    }
+                });
             }
         });
     });
@@ -81,7 +87,57 @@ module.exports = function (app, swig, gestorBD) {
             if (id == null) {
                 res.redirect("Error al insertar usuarios de prueba");
             } else {
-                res.send("Datos de prueba insertados con éxito");
+                let ofertas = [
+                    {
+                        title: "Coche SEAT",
+                        description: "Coche SEAT con 500 Km.",
+                        price: 1500.0,
+                        creationDate: new Date(),
+                        owner: "andrea@email.com"
+                    },
+                    {
+                        title: "Pack material escolar",
+                        description: "Pack 5 rotuladores BIC.",
+                        price: 2.2,
+                        creationDate: new Date(),
+                        owner: "andrea@email.com"
+                    },
+                    {
+                        title: "Disco duro",
+                        description: "Disco duro de 500 Gb SSD.",
+                        price: 100.0,
+                        creationDate: new Date(),
+                        owner: "manolo@email.com"
+                    },
+                    {
+                        title: "Televisión 4K",
+                        description: "Para una buena tarde de Netflix.",
+                        price: 80.99,
+                        creationDate: new Date(),
+                        owner: "andrea@email.com"
+                    },
+                    {
+                        title: "Película molona",
+                        description: "Matrix.",
+                        price: 3.2,
+                        creationDate: new Date(),
+                        owner: "manolo@email.com"
+                    },
+                    {
+                        title: "Ratón oficina",
+                        description: "Ratón de uso diario inalámbrico.",
+                        price: 9.80,
+                        creationDate: new Date(),
+                        owner: "manolo@email.com"
+                    },
+                ];
+                gestorBD.insertarOferta(ofertas, function (id) {
+                    if (id == null) {
+                        res.redirect("Error al insertar ofertas de prueba");
+                    } else {
+                        res.send("Datos de prueba insertados con éxito");
+                    }
+                });
             }
         });
     });

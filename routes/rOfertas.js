@@ -12,6 +12,33 @@ module.exports = function (app, swig, gestorBD) {
         res.send(respuesta);
     });
 
+    /*
+    Muestra la vista con las ofertas creadas por el usuario que está actualmente logueado.
+    */
+    app.get("/standard/offer/myOffers", function (req, res) {
+
+        // Variable que contendrá la respuesta
+        let respuesta;
+
+        // Se obtienen las ofertas del usuario actual y se ordenan por fecha de creación de forma descendente
+        let criterio = {owner: req.session.usuario.email};
+        let sort = {creationDate: -1};
+        gestorBD.obtenerOfertas(criterio, sort, function (ofertas) {
+            if (ofertas == null) {
+                respuesta = swig.renderFile('views/bOfertasPropias.html', {
+                    usuario: req.session.usuario,
+                    ofertas: []
+                });
+            } else {
+                respuesta = swig.renderFile('views/bOfertasPropias.html', {
+                    usuario: req.session.usuario,
+                    ofertas: ofertas
+                });
+                res.send(respuesta);
+            }
+        });
+    });
+
 
     // ---- PETICIONES POST ----
 
@@ -47,7 +74,7 @@ module.exports = function (app, swig, gestorBD) {
                                 "?mensaje=Error al crear la oferta" +
                                 "&tipoMensaje=alert-danger ");
                         } else {
-                            res.redirect("/");
+                            res.redirect("/standard/offer/myOffers");
                         }
                     });
                 }
@@ -63,7 +90,6 @@ module.exports = function (app, swig, gestorBD) {
                     "&tipoMensaje=alert-danger ");
             }
         }
-
     });
 
 };
