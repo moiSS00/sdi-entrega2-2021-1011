@@ -34,10 +34,9 @@ module.exports = function (app, swig, gestorBD) {
     app.get("/admin/user/list", function (req, res) {
         // Variable que contendrá la respuesta
         let respuesta;
-        // Se obtienen los usuarios (excepto los administradores) y se ordenan por email de forma ascendente
+        // Se obtienen los usuarios (excepto los administradores)
         let criterio = {role: {$ne: "ROLE_ADMIN"}};
-        let sort = { email: 1 };
-        gestorBD.obtenerUsuarios(criterio, sort, function (usuarios) {
+        gestorBD.obtenerUsuarios(criterio,function (usuarios) {
             if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
                 respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,
@@ -89,7 +88,7 @@ module.exports = function (app, swig, gestorBD) {
         } else {
             // Se obtienen los usuarios y se comprueba si el usuario ya existe
             gestorBD.obtenerUsuarios(
-                {email: req.body.email}, {}, function (usuarios) {
+                {email: req.body.email}, function (usuarios) {
                     if (usuarios == null) {
                         res.redirect("/signup" +
                             "?mensaje=Error inesperado" +
@@ -160,7 +159,7 @@ module.exports = function (app, swig, gestorBD) {
                 email: req.body.email,
                 password: seguro
             }
-            gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
+            gestorBD.obtenerUsuarios(criterio, function (usuarios) {
                 if (usuarios == null || usuarios.length == 0) {
                     res.redirect("/login" +
                         "?mensaje=Email incorrecto o contraseña incorrecta" +
@@ -180,9 +179,9 @@ module.exports = function (app, swig, gestorBD) {
 
     /*
     Elimina los usuarios que tengan como id alguno de los ids que se pasan como parámetro.
-    Si ha habido algún error al eliminar los usuarios -> Se llama a la petición GET /admin/user/list con
-        un mensaje de error.
     Si ha habido algún error al eliminar las ofertas de los usuarios eliminados -> SSe llama a la petición GET /admin/user/list con
+        un mensaje de error.
+    Si ha habido algún error al eliminar los usuarios -> Se llama a la petición GET /admin/user/list con
         un mensaje de error.
     Si no hubo errores -> Se llama a la petición GET /admin/user/list.
     */
@@ -195,21 +194,21 @@ module.exports = function (app, swig, gestorBD) {
         let emails = [];
         emails = emails.concat(req.body.ids);
 
-        // Elimino los usuarios
-        let criterio = { email: { $in: emails } };
-        gestorBD.eliminarUsuario(criterio,function(usuarios){
-            if ( usuarios == null ){
+        // Eliminamos las ofertas de los usuarios seleccionados
+        let criterio = { owner: { $in: emails } };
+        gestorBD.eliminarOferta(criterio,function(ofertas){
+            if ( ofertas == null ){
                 //Este if - else es para el futuro sistema de log
                 res.redirect("/admin/user/list" +
-                    "?mensaje=Error al eliminar a los usuarios seleccionados" +
+                    "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
                     "&tipoMensaje=alert-danger ");
-            } else {
-                criterio = { owner: { $in: emails } };
-                gestorBD.eliminarOferta(criterio,function(ofertas){
-                    if ( ofertas == null ){
+            } else { // Eliminamos a los usuarios seleccionados
+                criterio = { email: { $in: emails } };
+                gestorBD.eliminarUsuario(criterio,function(usuarios){
+                    if ( usuarios == null ){
                         //Este if - else es para el futuro sistema de log
                         res.redirect("/admin/user/list" +
-                            "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
+                            "?mensaje=Error al eliminar a los usuarios seleccionados" +
                             "&tipoMensaje=alert-danger ");
                     } else {
                         res.redirect("/admin/user/list");

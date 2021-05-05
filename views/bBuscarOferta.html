@@ -5,8 +5,8 @@
 <p>Aquí puede buscar las ofertas que le interesen:</p>
 
 <!-- Búsqueda -->
-<div id="custom-search-input ">
-    <form method="get" action="/standard/offer/searchOffers">
+<div>
+    <form method="get" action="/standard/offer/searchOffers" id="searchTextForm">
         <div class="input-group col-xs-8 col-sm-6 col-md-4 col-lg-5">
             <input type="text" class="search-query form-control"
                    placeholder="Nombre de la canción" name="searchText"/>
@@ -53,7 +53,7 @@
 
 <!-- Paginación mostrar la actual y 2 anteriores y dos siguientes -->
 <div class="row text-center">
-    <ul class="pagination">
+    <ul class="pagination" id="pages">
         {% for pagina in paginas %}
         <li class="page-item" id="pi-{{ pagina }}">
             <a class="page-link" href="/standard/offer/searchOffers?pg={{ pagina }}">{{ pagina }}</a></li>

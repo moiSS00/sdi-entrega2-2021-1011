@@ -136,6 +136,46 @@ module.exports = function (app, swig, gestorBD) {
                         owner: "manolo@email.com",
                         buyer: "juan@email.com"
                     },
+                    {
+                        title: "Libro informática",
+                        description: "Libro 'Internet es maravilloso' de la editorial SA.",
+                        price: 10.50,
+                        creationDate: new Date(),
+                        owner: "juan@email.com",
+                        buyer: null
+                    },
+                    {
+                        title: "Ordenador fijo HP",
+                        description: "Con procesador AMD.",
+                        price: 400.21,
+                        creationDate: new Date(),
+                        owner: "juan@email.com",
+                        buyer: null
+                    },
+                    {
+                        title: "Película",
+                        description: "Jurassic Park.",
+                        price: 2.30,
+                        creationDate: new Date(),
+                        owner: "pepe@email.com",
+                        buyer: null
+                    },
+                    {
+                        title: "coche BMW",
+                        description: "Sin usar. Esta nuevo.",
+                        price: 6000.00,
+                        creationDate: new Date(),
+                        owner: "pepe@email.com",
+                        buyer: "juan@email.com"
+                    },
+                    {
+                        title: "Micrófono",
+                        description: "Para hacer ASMRs.",
+                        price: 9.80,
+                        creationDate: new Date(),
+                        owner: "juan@email.com",
+                        buyer: "pepe@email.com"
+                    },
                 ];
                 gestorBD.insertarOferta(ofertas, function (id) {
                     if (id == null) {

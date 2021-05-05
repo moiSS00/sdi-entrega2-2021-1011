@@ -21,10 +21,9 @@ module.exports = function (app, swig, gestorBD) {
         // Variable que contendrá la respuesta
         let respuesta;
 
-        // Se obtienen las ofertas del usuario actual y se ordenan por fecha de creación de forma descendente
+        // Se obtienen las ofertas del usuario actual
         let criterio = {owner: req.session.usuario.email};
-        let sort = {creationDate: -1};
-        gestorBD.obtenerOfertas(criterio, sort, function (ofertas) {
+        gestorBD.obtenerOfertas(criterio, function (ofertas) {
             if (ofertas == null) {
                 respuesta = swig.renderFile('views/bOfertasPropias.html', {
                     usuario: req.session.usuario,
@@ -49,10 +48,9 @@ module.exports = function (app, swig, gestorBD) {
         let respuesta;
 
         let criterio = {owner: {$ne: req.session.usuario.email}};
-        let sort = {creationDate: -1};
         if (req.query.searchText != null) {
             criterio = {
-                $and: [{title: {$regex: ".*" + req.query.searchText + ".*", $options: "xi"}},
+                $and: [{title: {$regex: ".*" + req.query.searchText + ".*", $options: "i"}},
                     {owner: {$ne: req.session.usuario.email}}]
             };
         }

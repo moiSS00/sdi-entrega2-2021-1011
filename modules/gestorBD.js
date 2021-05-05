@@ -22,13 +22,13 @@ module.exports = {
             }
         });
     },
-    obtenerUsuarios: function (criterio, sort, funcionCallback) { // Busca los usuarios de la base de datos que cumplan un criterio
+    obtenerUsuarios: function (criterio,funcionCallback) { // Busca los usuarios de la base de datos que cumplan un criterio
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('usuarios');
-                collection.find(criterio).sort(sort).toArray(function (err, result) {
+                collection.find(criterio).toArray(function (err, result) {
                     if (err) {
                         funcionCallback(null);
                     } else {
@@ -73,13 +73,13 @@ module.exports = {
             }
         });
     },
-    obtenerOfertas: function (criterio, sort, funcionCallback) { // Busca las ofertas de la base de datos que cumplan un criterio
+    obtenerOfertas: function (criterio,funcionCallback) { // Busca las ofertas de la base de datos que cumplan un criterio
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('ofertas');
-                collection.find(criterio).sort(sort).toArray(function (err, result) {
+                collection.find(criterio).toArray(function (err, result) {
                     if (err) {
                         funcionCallback(null);
                     } else {
@@ -113,13 +113,14 @@ module.exports = {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('ofertas');
-                collection.count(function (err, count) {
+
+                collection.count(criterio, function (err, count) {
                     collection.find(criterio).skip((pg - 1) * 5).limit(5)
-                        .toArray(function (err, canciones) {
+                        .toArray(function (err, ofertas) {
                             if (err) {
                                 funcionCallback(null);
                             } else {
-                                funcionCallback(canciones, count);
+                                funcionCallback(ofertas, count);
                             }
                             db.close();
                         });

@@ -247,14 +247,14 @@ public class SdiEntrega2Tests {
 		assertTrue(elements.size() == 1);
 		elements.get(0).click();
 
-		// Comprobamos qu eel usuario ya no esta en la tabla
+		// Comprobamos que el usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
 		PO_View.checkElement(driver, "text", "juan@email.com");
 		PO_View.checkElement(driver, "text", "manolo@email.com");
-		PO_View.checkElement(driver, "text", "moises@email.com");
 		PO_View.checkElement(driver, "text", "pepe@email.com");
-		SeleniumUtils.textoNoPresentePagina(driver, "andrea@email.com");
+		PO_View.checkElement(driver, "text", "andrea@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "moises@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
@@ -279,14 +279,14 @@ public class SdiEntrega2Tests {
 		assertTrue(elements.size() == 1);
 		elements.get(0).click();
 
-		// Comprobamos qu eel usuario ya no esta en la tabla
+		// Comprobamos que el usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
-		PO_View.checkElement(driver, "text", "andrea@email.com");
+		PO_View.checkElement(driver, "text", "moises@email.com");
 		PO_View.checkElement(driver, "text", "juan@email.com");
 		PO_View.checkElement(driver, "text", "manolo@email.com");
-		PO_View.checkElement(driver, "text", "moises@email.com");
-		SeleniumUtils.textoNoPresentePagina(driver, "pepe@email.com");
+		PO_View.checkElement(driver, "text", "pepe@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "andrea@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
@@ -316,11 +316,11 @@ public class SdiEntrega2Tests {
 		// Comprobamos qu eel usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "moises@email.com");
 		PO_View.checkElement(driver, "text", "andrea@email.com");
-		PO_View.checkElement(driver, "text", "pepe@email.com");
 		SeleniumUtils.textoNoPresentePagina(driver, "juan@email.com");
 		SeleniumUtils.textoNoPresentePagina(driver, "manolo@email.com");
-		SeleniumUtils.textoNoPresentePagina(driver, "moises@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "pepe@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
@@ -462,7 +462,8 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR19. Ir a la lista de ofertas, borrar la última oferta de la lista, comprobar que la lista se actualiza
+	// PR19. Ir a la lista de ofertas, borrar la última oferta de la lista,
+	// comprobar que la lista se actualiza
 	// y que la oferta desaparece. /
 	@Test
 	public void PR19() {
@@ -487,22 +488,91 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// P20. Sin hacer /
+	// P20. Hacer una búsqueda con el campo vacío y comprobar que se muestra la
+	// página que corresponde con el listado de las ofertas existentes en el sistema /
 	@Test
 	public void PR20() {
-		assertTrue("PR20 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "pepe@email.com", "123456");
+
+		// Ir a la opcion de buscar ofertas
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
+
+		// Hacemos una búsqueda vacía 
+		PO_SearchListView.makeSearch(driver, "");
+		
+		// Comprobar que se muestran todas las ofertas 
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"pages\"]/li/a");
+		assertTrue(elements.size() == 2);
+		
+		// Primera página
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 5);
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Pack material escolar");
+		PO_View.checkElement(driver, "text", "Disco duro");
+		PO_View.checkElement(driver, "text", "Televisión 4K");
+		PO_View.checkElement(driver, "text", "Película molona");
+
+		// Segunda página 
+		PO_View.checkElement(driver, "free", "//*[@id=\"pi-2\"]/a").get(0).click();
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"pages\"]/li/a");
+		assertTrue(elements.size() == 2);
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 4);
+		PO_View.checkElement(driver, "text", "Ratón oficina");
+		PO_View.checkElement(driver, "text", "Libro informática");
+		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
+		PO_View.checkElement(driver, "text", "Micrófono");
+		
+		// Hacemos logout
+		PO_NavView.logOut(driver);
 	}
 
-	// PR21. Sin hacer /
+	// PR21. Hacer una búsqueda escribiendo en el campo un texto que no exista y comprobar que se 
+	// muestra la página que corresponde, con la lista de ofertas vacía. /
 	@Test
 	public void PR21() {
-		assertTrue("PR21 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "pepe@email.com", "123456");
+
+		// Ir a la opcion de buscar ofertas
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
+
+		// Hacemos una búsqueda vacía 
+		PO_SearchListView.makeSearch(driver, "inexistente");
+		
+		// Comprobar que no se muestra ninguna oferta 
+		List<WebElement> elements = driver.findElements(By.xpath("//*[@id=\"tableSearchedOffers\"]/tbody/tr"));
+		assertTrue(elements.size() == 0);
+		
+		elements = driver.findElements(By.xpath("//*[@id=\"pages\"]/li/a"));
+		assertTrue(elements.size() == 0);
+		
+		// Hacemos logout
+		PO_NavView.logOut(driver);
 	}
 
-	// PR22. Sin hacer /
+	// PR22. Hacer una búsqueda escribiendo en el campo un texto en minúscula o mayúscula y 
+	// comprobar que se muestra la página que corresponde, con la lista de ofertas que contengan
+	// dicho texto, independientemente que el título esté almacenado en minúsculas o mayúscula. /
 	@Test
 	public void PR22() {
-		assertTrue("PR22 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "moises@email.com", "123456");
+
+		// Ir a la opcion de buscar ofertas
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
+
+		// Hacemos una búsqueda vacía 
+		PO_SearchListView.makeSearch(driver, "coCh");
+		
+		// Comprobar que se muestran las 2 ofertas de coches
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 2);
+		
+		// Hacemos logout
+		PO_NavView.logOut(driver);
 	}
 
 	// PR23. Sin hacer /
