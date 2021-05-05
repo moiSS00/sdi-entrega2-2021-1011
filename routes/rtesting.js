@@ -67,6 +67,15 @@ module.exports = function (app, swig, gestorBD) {
                 amount: 142.25,
                 role: "ROLE_STANDARD"
             },
+            {
+                email: "andrea@email.com",
+                name: "Andrea",
+                lastName: "Pérez Sánchez",
+                password: app.get("crypto").createHmac('sha256', app.get('clave'))
+                    .update("123456").digest('hex'),
+                amount: 191.5,
+                role: "ROLE_STANDARD"
+            },
         ];
         gestorBD.insertarUsuario(usuarios, function (id) {
             if (id == null) {

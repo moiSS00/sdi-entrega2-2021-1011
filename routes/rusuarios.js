@@ -190,8 +190,7 @@ module.exports = function (app, swig, gestorBD) {
         ids = ids.concat(req.body.ids);
 
         // Convertidos los ids a objetos ObjectID
-        let objectIds = [];
-        ids.forEach(id => objectIds.push(gestorBD.mongo.ObjectID(id)));
+        let objectIds = ids.map(id => gestorBD.mongo.ObjectID(id));
 
         // Elimino los usuarios
         let criterio = { "_id": { $in: objectIds } };

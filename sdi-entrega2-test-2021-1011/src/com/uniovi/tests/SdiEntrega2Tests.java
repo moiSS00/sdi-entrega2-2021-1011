@@ -34,13 +34,13 @@ public class SdiEntrega2Tests {
 
 	@Before
 	public void setUp() {
-		
+
 		// Limpiamos la base de datos
 		driver.navigate().to(URL + "/bd/clear");
-		
-		// Introducimos datos de prueba 
+
+		// Introducimos datos de prueba
 		driver.navigate().to(URL + "/bd/insertSampleData");
-		
+
 		// Vamos a la URL principal
 		driver.navigate().to(URL);
 	}
@@ -124,7 +124,6 @@ public class SdiEntrega2Tests {
 		// Rellenamos el formulario con contraseñas que no coinciden
 		PO_RegisterView.fillForm(driver, "pueba2@email.com", "prueba", "prueba", "123456", "1234567");
 		PO_View.checkElement(driver, "text", "Las contraseñas no coinciden");
-
 	}
 
 	// PR04. Registro de Usuario con datos inválidos (email existente). /
@@ -162,11 +161,10 @@ public class SdiEntrega2Tests {
 		// Vamos al formulario de identificacion
 		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
 
-		// Rellenamos el formulario con un email existente pero con una 
-		// contraseña incorrecta 
+		// Rellenamos el formulario con un email existente pero con una
+		// contraseña incorrecta
 		PO_LoginView.fillForm(driver, "pueba@email.com", "1234567");
 		PO_View.checkElement(driver, "text", "Email incorrecto o contraseña incorrecta");
-
 	}
 
 	// PR07. Inicio de sesión con datos inválidos (campo email o contraseña vacíos).
@@ -189,7 +187,6 @@ public class SdiEntrega2Tests {
 		// Rellenamos el formulario dejando todos los campos en blanco
 		PO_LoginView.fillForm(driver, "", "");
 		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
-
 	}
 
 	// PR08. Inicio de sesión con datos inválidos (email no existente en la
@@ -209,7 +206,6 @@ public class SdiEntrega2Tests {
 	// inicio de sesión (Login). /
 	@Test
 	public void PR09() {
-
 		// Vamos al formulario de identificacion
 		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
 
@@ -220,7 +216,6 @@ public class SdiEntrega2Tests {
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
 		PO_View.checkElement(driver, "text", "Identificación de usuario");
-
 	}
 
 	// PR10. Comprobar que el botón cerrar sesión no está visible si el usuario no
@@ -230,11 +225,11 @@ public class SdiEntrega2Tests {
 		SeleniumUtils.textoNoPresentePagina(driver, "Desconectar");
 	}
 
-	// PR11. Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el 
+	// PR11. Mostrar el listado de usuarios y comprobar que se muestran todos los
+	// que existen en el
 	// sistema. /
 	@Test
 	public void PR11() {
-		
 		// Vamos al formulario de identificacion
 		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
 
@@ -243,30 +238,117 @@ public class SdiEntrega2Tests {
 
 		// Comprobamos que se muestran todos los usuarios
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
-		assertTrue(elements.size() == 4);
+		assertTrue(elements.size() == 5);
+		PO_View.checkElement(driver, "text", "andrea@email.com");
+		PO_View.checkElement(driver, "text", "juan@email.com");
+		PO_View.checkElement(driver, "text", "manolo@email.com");
 		PO_View.checkElement(driver, "text", "moises@email.com");
+		PO_View.checkElement(driver, "text", "pepe@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
-		PO_View.checkElement(driver, "text", "Identificación de usuario");
 	}
 
-	// PR12. Sin hacer /
+	// PR12. Ir a la lista de usuarios, borrar el primer usuario de la lista,
+	// comprobar que la lista se actualiza y dicho usuario desaparece. /
 	@Test
 	public void PR12() {
-		assertTrue("PR12 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como administrador
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+
+		// Seleccionamos el primer usuario que aparece
+		List<WebElement> elements = PO_View.checkElement(driver, "free",
+				"//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
+		assertTrue(elements.size() == 5);
+		elements.get(0).click();
+		
+		// Damos al botón correspondiente para eliminar a los usuarios seleccionados
+		elements = PO_View.checkElement(driver, "id", "buttonDelete");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+		
+		// Comprobamos qu eel usuario ya no esta en la tabla
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
+		assertTrue(elements.size() == 4);
+		PO_View.checkElement(driver, "text", "juan@email.com");
+		PO_View.checkElement(driver, "text", "manolo@email.com");
+		PO_View.checkElement(driver, "text", "moises@email.com");
+		PO_View.checkElement(driver, "text", "pepe@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "andrea@email.com");
+
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
 	}
 
-	// PR13. Sin hacer /
+	// PR13. Ir a la lista de usuarios, borrar el último usuario de la lista, comprobar que la lista se
+	// actualiza y dicho usuario desaparece /
 	@Test
 	public void PR13() {
-		assertTrue("PR13 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como administrador
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+
+		// Seleccionamos el último usuario que aparece
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
+		assertTrue(elements.size() == 5);
+		elements.get(elements.size() - 1).click();
+		
+		// Damos al botón correspondiente para eliminar a los usuarios seleccionados
+		elements = PO_View.checkElement(driver, "id", "buttonDelete");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+		
+		// Comprobamos qu eel usuario ya no esta en la tabla
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
+		assertTrue(elements.size() == 4);
+		PO_View.checkElement(driver, "text", "andrea@email.com");
+		PO_View.checkElement(driver, "text", "juan@email.com");
+		PO_View.checkElement(driver, "text", "manolo@email.com");
+		PO_View.checkElement(driver, "text", "moises@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "pepe@email.com");
+
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
 	}
 
-	// PR14. Sin hacer /
+	// PR14.  Ir a la lista de usuarios, borrar 3 usuarios, comprobar que la lista se actualiza y dichos 
+	// usuarios desaparecen. /
 	@Test
 	public void PR14() {
-		assertTrue("PR14 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como administrador
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+
+		// Seleccionamos los 3 de los usuarios que aparecen
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
+		assertTrue(elements.size() == 5);
+		elements.get(1).click();
+		elements.get(2).click();
+		elements.get(3).click();
+
+		// Damos al botón correspondiente para eliminar a los usuarios seleccionados
+		elements = PO_View.checkElement(driver, "id", "buttonDelete");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+		
+		// Comprobamos qu eel usuario ya no esta en la tabla
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
+		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "andrea@email.com");
+		PO_View.checkElement(driver, "text", "pepe@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "juan@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "manolo@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "moises@email.com");
+
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
 	}
 
 	// PR15. Sin hacer /
