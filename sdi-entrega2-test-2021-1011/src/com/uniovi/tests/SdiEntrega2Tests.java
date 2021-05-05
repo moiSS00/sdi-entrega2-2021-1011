@@ -264,12 +264,12 @@ public class SdiEntrega2Tests {
 				"//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
 		assertTrue(elements.size() == 5);
 		elements.get(0).click();
-		
+
 		// Damos al botón correspondiente para eliminar a los usuarios seleccionados
 		elements = PO_View.checkElement(driver, "id", "buttonDelete");
 		assertTrue(elements.size() == 1);
 		elements.get(0).click();
-		
+
 		// Comprobamos qu eel usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
@@ -283,7 +283,8 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR13. Ir a la lista de usuarios, borrar el último usuario de la lista, comprobar que la lista se
+	// PR13. Ir a la lista de usuarios, borrar el último usuario de la lista,
+	// comprobar que la lista se
 	// actualiza y dicho usuario desaparece /
 	@Test
 	public void PR13() {
@@ -294,15 +295,16 @@ public class SdiEntrega2Tests {
 		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
 
 		// Seleccionamos el último usuario que aparece
-		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
+		List<WebElement> elements = PO_View.checkElement(driver, "free",
+				"//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
 		assertTrue(elements.size() == 5);
 		elements.get(elements.size() - 1).click();
-		
+
 		// Damos al botón correspondiente para eliminar a los usuarios seleccionados
 		elements = PO_View.checkElement(driver, "id", "buttonDelete");
 		assertTrue(elements.size() == 1);
 		elements.get(0).click();
-		
+
 		// Comprobamos qu eel usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
@@ -316,7 +318,8 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR14.  Ir a la lista de usuarios, borrar 3 usuarios, comprobar que la lista se actualiza y dichos 
+	// PR14. Ir a la lista de usuarios, borrar 3 usuarios, comprobar que la lista se
+	// actualiza y dichos
 	// usuarios desaparecen. /
 	@Test
 	public void PR14() {
@@ -327,7 +330,8 @@ public class SdiEntrega2Tests {
 		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
 
 		// Seleccionamos los 3 de los usuarios que aparecen
-		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
+		List<WebElement> elements = PO_View.checkElement(driver, "free",
+				"//*[@id=\"tableUsers\"]/tbody/tr/td[4]/input");
 		assertTrue(elements.size() == 5);
 		elements.get(1).click();
 		elements.get(2).click();
@@ -337,7 +341,7 @@ public class SdiEntrega2Tests {
 		elements = PO_View.checkElement(driver, "id", "buttonDelete");
 		assertTrue(elements.size() == 1);
 		elements.get(0).click();
-		
+
 		// Comprobamos qu eel usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
@@ -351,16 +355,75 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR15. Sin hacer /
+	// PR15. Ir al formulario de alta de oferta, rellenarla con datos válidos y
+	// pulsar el botón Submit. Comprobar que la oferta sale en el listado de ofertas 
+	// de dicho usuario
 	@Test
 	public void PR15() {
-		assertTrue("PR15 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como usuario estándar
+		PO_LoginView.fillForm(driver, "manolo@email.com", "123456");
+
+		// Ir a la opcion de dar de alta una nota 
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/add");
+		
+		// Rellenamos el formulario de alta de oferta con datos validos
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "0.21");
+
+		// Comprobamos que la oferta recien añadida sale en la lista de ofertas propias
+		// del usuario
+		PO_View.checkElement(driver, "text", "PruebaTitulo");
+		PO_View.checkElement(driver, "text", "PruebaDescripcion");
+		PO_View.checkElement(driver, "text", "0.21");
+
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
 	}
 
-	// PR16. Sin hacer /
+	// PR16.  Ir al formulario de alta de oferta, rellenarla con datos inválidos (campo título vacío y 
+	// precio en negativo) y pulsar el botón Submit. Comprobar que se muestra el mensaje de campo 
+	// obligatorio. /
 	@Test
 	public void PR16() {
-		assertTrue("PR16 sin hacer", false);
+		// Vamos al formulario de identificacion
+		PO_NavView.clickOption(driver, "/login", "text", "Identificación de usuario");
+
+		// Iniciamos sesión como usuario estándar
+		PO_LoginView.fillForm(driver, "moises@email.com", "123456");
+
+		// Ir a la opcion de dar de alta una nota 
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/add");
+		
+		// Rellenamos el formulario de alta de oferta dejando algún campo vacío 
+		
+		// Título vacío 
+		PO_AddOfferView.fillForm(driver, "", "PruebaDescripcion", "0.21");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Descripción vacía 
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "", "0.21");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Precio vacío 
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+
+		// Rellenamos el formulario de alta de oferta dejando todos los campos vacíos 
+		PO_AddOfferView.fillForm(driver, "", "", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+		
+		// Rellenamos el campo precio con una cadena 
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "prueba");
+		PO_View.checkElement(driver, "text", "El precio debe de ser un número");
+		
+		// Introducimos un precio negativo
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "-0.21");
+		PO_View.checkElement(driver, "text", "El precio debe de ser un valor positivo");
+		
+		// Cerramos sesión y comprobamos que nos redirige a la página de login
+		PO_NavView.logOut(driver);
 	}
 
 	// PR017. Sin hacer /

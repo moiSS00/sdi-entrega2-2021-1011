@@ -195,9 +195,21 @@ module.exports = function (app, swig, gestorBD) {
         gestorBD.eliminarUsuario(criterio,function(usuarios){
             if ( usuarios == null ){
                 //Este if - else es para el futuro sistema de log
-                res.redirect("/admin/user/list");
+                res.redirect("/admin/user/list" +
+                    "?mensaje=Error al eliminar a los usuarios seleccionados" +
+                    "&tipoMensaje=alert-danger ");
             } else {
-                res.redirect("/admin/user/list");
+                criterio = { "owner": { $in: emails } };
+                gestorBD.eliminarUsuario(criterio,function(ofertas){
+                    if ( ofertas == null ){
+                        //Este if - else es para el futuro sistema de log
+                        res.redirect("/admin/user/list" +
+                            "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
+                            "&tipoMensaje=alert-danger ");
+                    } else {
+                        res.redirect("/admin/user/list");
+                    }
+                });
             }
         });
     });

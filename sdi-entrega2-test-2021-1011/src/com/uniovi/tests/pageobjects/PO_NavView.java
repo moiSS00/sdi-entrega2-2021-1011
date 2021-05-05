@@ -39,6 +39,17 @@ public class PO_NavView  extends PO_View{
 		clickOption(driver, "/logout", "text", "Identificación de usuario");
 	}
 
+	/**
+	 * Vamos a la lista para añadir una oferta 
+	 * @param driver
+	 */
+	public static void displayOffersMenu(WebDriver driver, String href) {
+		List<WebElement> elements = PO_View.checkElement(driver, "id", "offers-menu");
+		elements.get(0).click();
+		elements = PO_View.checkElement(driver, "@href", href);
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+	}
 
 
 }
