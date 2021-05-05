@@ -35,8 +35,60 @@ module.exports = function (app, swig, gestorBD) {
                     usuario: req.session.usuario,
                     ofertas: ofertas
                 });
-                res.send(respuesta);
             }
+            res.send(respuesta);
+        });
+    });
+
+    /*
+    Muestra la vista que contiene todas las ofertas de la aplicación (excepto las del usuario logueado).
+    */
+    app.get("/standard/offer/searchOffers", function (req, res) {
+
+        // Variable que contendrá la respuesta
+        let respuesta;
+
+        let criterio = {owner: {$ne: req.session.usuario.email}};
+        let sort = {creationDate: -1};
+        if (req.query.searchText != null) {
+            criterio = {
+                $and: [{title: {$regex: ".*" + req.query.searchText + ".*", $options: "xi"}},
+                    {owner: {$ne: req.session.usuario.email}}]
+            };
+        }
+
+        // Puede no venir el param
+        let pg = parseInt(req.query.pg);
+        if (req.query.pg == null) {
+            pg = 1;
+        }
+
+        // Buscamos las ofertas correspondientes
+        gestorBD.obtenerOfertasPg(criterio, pg, function (ofertas, total) {
+            if (ofertas == null) {
+                respuesta = swig.renderFile('views/bBuscarOferta.html', {
+                    usuario: req.session.usuario,
+                    ofertas: []
+                });
+            } else {
+                let ultimaPg = total / 5;
+                if (total % 5 > 0) { // Sobran decimales
+                    ultimaPg = ultimaPg + 1;
+                }
+                let paginas = []; // paginas mostrar
+                for (let i = pg - 2; i <= pg + 2; i++) {
+                    if (i > 0 && i <= ultimaPg) {
+                        paginas.push(i);
+                    }
+                }
+                respuesta = swig.renderFile('views/bBuscarOferta.html', {
+                    usuario: req.session.usuario,
+                    ofertas: ofertas,
+                    paginas : paginas,
+                    actual : pg
+                });
+            }
+            res.send(respuesta);
         });
     });
 
@@ -48,8 +100,8 @@ module.exports = function (app, swig, gestorBD) {
     */
     app.get("/standard/offer/remove/:id", function (req, res) {
         let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
-        gestorBD.eliminarOferta(criterio,function(ofertas){
-            if ( ofertas == null ){
+        gestorBD.eliminarOferta(criterio, function (ofertas) {
+            if (ofertas == null) {
                 //Este if - else es para el futuro sistema de log
                 res.redirect("/standard/offer/myOffers" +
                     "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
@@ -107,7 +159,8 @@ module.exports = function (app, swig, gestorBD) {
                                 description: req.body.description,
                                 price: precio.toFixed(2),
                                 creationDate: new Date(),
-                                owner: req.session.usuario.email
+                                owner: req.session.usuario.email,
+                                buyer: null
                             }
                             // Añadimos la oferta a la base de datos
                             gestorBD.insertarOferta(oferta, function (id) {

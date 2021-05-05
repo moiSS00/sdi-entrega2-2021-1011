@@ -93,42 +93,48 @@ module.exports = function (app, swig, gestorBD) {
                         description: "Coche SEAT con 500 Km.",
                         price: 1500.00,
                         creationDate: new Date(),
-                        owner: "andrea@email.com"
+                        owner: "andrea@email.com",
+                        buyer: null
                     },
                     {
                         title: "Pack material escolar",
                         description: "Pack 5 rotuladores BIC.",
                         price: 2.20,
                         creationDate: new Date(),
-                        owner: "andrea@email.com"
+                        owner: "andrea@email.com",
+                        buyer: "juan@email.com"
                     },
                     {
                         title: "Disco duro",
                         description: "Disco duro de 500 Gb SSD.",
                         price: 100.00,
                         creationDate: new Date(),
-                        owner: "manolo@email.com"
+                        owner: "manolo@email.com",
+                        buyer: "andrea@email.com"
                     },
                     {
                         title: "Televisión 4K",
                         description: "Para una buena tarde de Netflix.",
                         price: 80.99,
                         creationDate: new Date(),
-                        owner: "andrea@email.com"
+                        owner: "andrea@email.com",
+                        buyer: null
                     },
                     {
                         title: "Película molona",
                         description: "Matrix.",
                         price: 3.20,
                         creationDate: new Date(),
-                        owner: "manolo@email.com"
+                        owner: "manolo@email.com",
+                        buyer: null
                     },
                     {
                         title: "Ratón oficina",
                         description: "Ratón de uso diario inalámbrico.",
                         price: 9.80,
                         creationDate: new Date(),
-                        owner: "manolo@email.com"
+                        owner: "manolo@email.com",
+                        buyer: "juan@email.com"
                     },
                 ];
                 gestorBD.insertarOferta(ofertas, function (id) {

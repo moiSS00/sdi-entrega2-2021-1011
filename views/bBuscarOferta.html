@@ -1,0 +1,67 @@
+{% extends "base.html" %} {% block titulo %} Mis publicaciones {% endblock %}
+
+{% block contenido_principal %}
+<h2>Buscar ofertas</h2>
+<p>Aquí puede buscar las ofertas que le interesen:</p>
+
+<!-- Búsqueda -->
+<div id="custom-search-input ">
+    <form method="get" action="/standard/offer/searchOffers">
+        <div class="input-group col-xs-8 col-sm-6 col-md-4 col-lg-5">
+            <input type="text" class="search-query form-control"
+                   placeholder="Nombre de la canción" name="searchText"/>
+            <span class="input-group-btn">
+                    <button class="btn" type="submit">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+            </span>
+        </div>
+    </form>
+</div>
+
+
+<div class="table-responsive">
+    <table class="table table-hover" id="tableOffers">
+        <thead>
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Precio(€)</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for oferta in ofertas %}
+        <tr>
+            <td>{{ oferta.title }}</td>
+            <td>{{ oferta.description }}</td>
+            <td>{{ oferta.price }}</td>
+            <td>
+
+                {% if oferta.buyer %}
+                    <span class="text-danger">Vendido</span>
+                {% else %}
+                    <a href="/standard/offer/buy/{{ oferta._id.toString() }}" >Comprar</a>
+                {% endif %}
+
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginación mostrar la actual y 2 anteriores y dos siguientes -->
+<div class="row text-center">
+    <ul class="pagination">
+        {% for pagina in paginas %}
+        <li class="page-item" id="pi-{{ pagina }}">
+            <a class="page-link" href="/standard/offer/searchOffers?pg={{ pagina }}">{{ pagina }}</a></li>
+        {% endfor %}
+        <script>
+            $("#pi-" + "{{ actual }}").addClass("active");
+        </script>
+    </ul>
+</div>
+
+{% endblock %}
