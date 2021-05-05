@@ -117,6 +117,32 @@ routerUsuarioAdminSession.use(function(req, res, next) {
 //Aplicar routerUsuarioAdminSession
 app.use("/admin",routerUsuarioAdminSession);
 
+// //routerUsuarioOwner
+var routerUsuarioOwner = express.Router();
+
+/*
+Comprueba si el usuario actual es el creador de la oferta
+*/
+routerUsuarioOwner.use(function(req, res, next) {
+    console.log("routerUsuarioOwner");
+    let path = require('path');
+    let id = path.basename(req.originalUrl);
+    let criterio = {
+        _id: mongo.ObjectID(id),
+        owner: req.session.usuario.email
+    }
+    gestorBD.obtenerOfertas(criterio, {} , function (ofertas) {
+            if(ofertas == null || ofertas.length == 0){
+                res.redirect("/");
+            } else {
+                next();
+            }
+    });
+});
+
+//Aplicar routerUsuarioOwner
+app.use("/standard/offer/remove",routerUsuarioOwner);
+
 // Directorio estático
 app.use(express.static('public'));
 

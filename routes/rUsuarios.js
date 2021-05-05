@@ -89,7 +89,7 @@ module.exports = function (app, swig, gestorBD) {
         } else {
             // Se obtienen los usuarios y se comprueba si el usuario ya existe
             gestorBD.obtenerUsuarios(
-                {"email": req.body.email}, {}, function (usuarios) {
+                {email: req.body.email}, {}, function (usuarios) {
                     if (usuarios == null) {
                         res.redirect("/signup" +
                             "?mensaje=Error inesperado" +
@@ -191,7 +191,7 @@ module.exports = function (app, swig, gestorBD) {
         emails = emails.concat(req.body.ids);
 
         // Elimino los usuarios
-        let criterio = { "email": { $in: emails } };
+        let criterio = { email: { $in: emails } };
         gestorBD.eliminarUsuario(criterio,function(usuarios){
             if ( usuarios == null ){
                 //Este if - else es para el futuro sistema de log
@@ -199,8 +199,8 @@ module.exports = function (app, swig, gestorBD) {
                     "?mensaje=Error al eliminar a los usuarios seleccionados" +
                     "&tipoMensaje=alert-danger ");
             } else {
-                criterio = { "owner": { $in: emails } };
-                gestorBD.eliminarUsuario(criterio,function(ofertas){
+                criterio = { owner: { $in: emails } };
+                gestorBD.eliminarOferta(criterio,function(ofertas){
                     if ( ofertas == null ){
                         //Este if - else es para el futuro sistema de log
                         res.redirect("/admin/user/list" +
