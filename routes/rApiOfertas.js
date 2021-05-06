@@ -2,6 +2,21 @@ module.exports = function (app, gestorBD) {
 
     // ---- PETICIONES GET ----
 
+    app.get("/api/offer/availableOffers", function(req, res) {
+        let criterio = {owner: {$ne: res.usuario}};
+        gestorBD.obtenerOfertas( criterio, {}, function(ofertas) {
+            if (ofertas == null) {
+                res.status(500);
+                res.json({
+                    error : "se ha producido un error"
+                })
+            } else {
+                res.status(200);
+                res.send( JSON.stringify(ofertas) );
+            }
+        });
+    });
+
 
     // ---- PETICIONES POST ----
 

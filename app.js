@@ -183,7 +183,7 @@ routerUsuarioToken.use(function (req, res, next) {
     }
 });
 // Aplicar routerUsuarioToken
-// app.use('/api/cancion', routerUsuarioToken);
+app.use('/api/offer', routerUsuarioToken);
 
 
 // Directorio estático
