@@ -166,7 +166,6 @@ routerUsuarioToken.use(function (req, res, next) {
                     acceso: false,
                     error: 'Token invalido o caducado'
                 });
-                // También podríamos comprobar que intoToken.usuario existe
                 return;
             } else {
                 // dejamos correr la petición
@@ -184,6 +183,7 @@ routerUsuarioToken.use(function (req, res, next) {
 });
 // Aplicar routerUsuarioToken
 app.use('/api/offer', routerUsuarioToken);
+app.use('/api/message', routerUsuarioToken);
 
 
 // Directorio estático
@@ -211,6 +211,18 @@ app.get('/', function (req, res) {
         }
     } else {
         let respuesta = swig.renderFile('views/bIndex.html', {});
+        res.send(respuesta);
+    }
+});
+
+app.use( function (err, req , res, next) {
+    console.error(err);
+    if(! res.headersSent) {
+        res.status(400);
+        let respuesta = swig.renderFile('views/error.html',
+            {
+                mensajeError : "Recurso no disponible",
+            });
         res.send(respuesta);
     }
 });

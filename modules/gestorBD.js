@@ -162,5 +162,21 @@ module.exports = {
             }
         });
     },
-
+    insertarMensaje: function (mensaje, funcionCallback) { //Inserta una oferta en la base de datos
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('messages');
+                collection.insert(mensaje, function (err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result.ops[0]._id);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },
 };

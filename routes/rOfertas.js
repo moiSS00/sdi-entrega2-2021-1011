@@ -135,7 +135,10 @@ module.exports = function (app, swig, gestorBD) {
     */
     app.get("/standard/offer/buy/:id", function (req, res) {
 
-        let params = "&pg=" + req.query.pg;
+        let params = "";
+        if (req.query.pg != null) {
+            params += "&pg=" + req.query.pg;
+        }
         if (req.query.searchText != null) {
             params += "&searchText=" + req.query.searchText;
         }
