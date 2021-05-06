@@ -102,7 +102,7 @@ module.exports = function (app, swig, gestorBD) {
     app.get("/standard/offer/remove/:id", function (req, res) {
         let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
 
-        gestorBD.obtenerOfertas(criterio, {}, function (ofertas, total) {
+        gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
             if (ofertas == null) {
                 res.redirect("/standard/offer/myOffers" +
                     "?mensaje=Error al recuperar la oferta a eliminar" +
@@ -123,6 +123,56 @@ module.exports = function (app, swig, gestorBD) {
                             res.redirect("/standard/offer/myOffers");
                         }
                     });
+                }
+            }
+        });
+    });
+
+
+    /*
+    Comprar una oferta con un id en específico
+    */
+    app.get("/standard/offer/buy/:id", function (req, res) {
+        let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
+        gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
+            if (ofertas == null) {
+                res.redirect("/standard/offer/searchOffers" +
+                    "?mensaje=Error al recuperar la oferta a comprar" +
+                    "&tipoMensaje=alert-danger ");
+            } else {
+                if (ofertas[0].buyer) {
+                    res.redirect("/standard/offer/searchOffers" +
+                        "?mensaje=No se puede comprar una oferta que se haya vendido" +
+                        "&tipoMensaje=alert-danger ");
+                } else {
+                    if (req.session.usuario.amount >= ofertas[0].price) {
+                        gestorBD.modificarOferta(
+                            criterio, {buyer: req.session.usuario.email}, function (result) {
+                                if (result == null) {
+                                    res.redirect("/standard/offer/myOffers" +
+                                        "?mensaje=Error al comprar la oferta" +
+                                        "&tipoMensaje=alert-danger ");
+                                } else {
+                                    criterio = {email: req.session.usuario.email};
+                                    let newAmount = req.session.usuario.amount - ofertas[0].price;
+                                    gestorBD.modificarUsuario(
+                                        criterio, {amount: newAmount}, function (result) {
+                                            if (result == null) {
+                                                res.redirect("/standard/offer/searchOffers" +
+                                                    "?mensaje=Error al comprar la oferta" +
+                                                    "&tipoMensaje=alert-danger ");
+                                            } else {
+                                                res.redirect("/standard/offer/searchOffers" +
+                                                    "?mensaje=Oferta comprada con éxito");
+                                            }
+                                        });
+                                }
+                            });
+                    } else {
+                        res.redirect("/standard/offer/myOffers" +
+                            "?mensaje=Saldo insuficiente para realizar la compra" +
+                            "&tipoMensaje=alert-danger ");
+                    }
                 }
             }
         });
