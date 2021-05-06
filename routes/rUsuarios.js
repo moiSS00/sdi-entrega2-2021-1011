@@ -212,7 +212,8 @@ module.exports = function (app, swig, gestorBD) {
                             "?mensaje=Error al eliminar a los usuarios seleccionados" +
                             "&tipoMensaje=alert-danger ");
                     } else {
-                        res.redirect("/admin/user/list");
+                        res.redirect("/admin/user/list" +
+                            "?mensaje=Usuarios eliminados con éxito");
                     }
                 });
             }

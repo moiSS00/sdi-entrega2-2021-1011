@@ -248,6 +248,7 @@ public class SdiEntrega2Tests {
 		elements.get(0).click();
 
 		// Comprobamos que el usuario ya no esta en la tabla
+		PO_View.checkElement(driver, "text", "Usuarios eliminados con éxito");
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
 		PO_View.checkElement(driver, "text", "juan@email.com");
@@ -280,6 +281,7 @@ public class SdiEntrega2Tests {
 		elements.get(0).click();
 
 		// Comprobamos que el usuario ya no esta en la tabla
+		PO_View.checkElement(driver, "text", "Usuarios eliminados con éxito");
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
 		PO_View.checkElement(driver, "text", "andrea@email.com");
@@ -314,6 +316,7 @@ public class SdiEntrega2Tests {
 		elements.get(0).click();
 
 		// Comprobamos qu eel usuario ya no esta en la tabla
+		PO_View.checkElement(driver, "text", "Usuarios eliminados con éxito");
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
 		PO_View.checkElement(driver, "text", "andrea@email.com");
@@ -453,6 +456,7 @@ public class SdiEntrega2Tests {
 		elements.get(0).click();
 
 		// Comprobar que se ha eliminado correctamente
+		PO_View.checkElement(driver, "text", "Oferta eliminada con éxito");
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
 		SeleniumUtils.textoNoPresentePagina(driver, "Coche SEAT");
@@ -479,6 +483,7 @@ public class SdiEntrega2Tests {
 		elements.get(2).click();
 
 		// Comprobar que se ha eliminado correctamente
+		PO_View.checkElement(driver, "text", "Oferta eliminada con éxito");
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
 		SeleniumUtils.textoNoPresentePagina(driver, "Pack material escolar");
@@ -508,19 +513,18 @@ public class SdiEntrega2Tests {
 		// Primera página
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 5);
-		PO_View.checkElement(driver, "text", "Micrófono");
 		PO_View.checkElement(driver, "text", "Disco duro");
 		PO_View.checkElement(driver, "text", "Película molona");
 		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
 		PO_View.checkElement(driver, "text", "Ratón oficina");
+		PO_View.checkElement(driver, "text", "Coche SEAT"); 
 
 		// Segunda página 
 		PO_View.checkElement(driver, "free", "//*[@id=\"pi-2\"]/a").get(0).click();
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"pages\"]/li/a");
 		assertTrue(elements.size() == 2);
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
-		assertTrue(elements.size() == 4);
-		PO_View.checkElement(driver, "text", "Coche SEAT");
+		assertTrue(elements.size() == 3);
 		PO_View.checkElement(driver, "text", "Televisión 4K");
 		PO_View.checkElement(driver, "text", "Pack material escolar");
 		PO_View.checkElement(driver, "text", "Libro informática");

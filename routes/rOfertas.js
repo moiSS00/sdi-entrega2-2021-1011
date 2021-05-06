@@ -120,7 +120,8 @@ module.exports = function (app, swig, gestorBD) {
                                 "?mensaje=Error al eliminar la ofertas" +
                                 "&tipoMensaje=alert-danger ");
                         } else {
-                            res.redirect("/standard/offer/myOffers");
+                            res.redirect("/standard/offer/myOffers" +
+                                "?mensaje=Oferta eliminada con éxito");
                         }
                     });
                 }
