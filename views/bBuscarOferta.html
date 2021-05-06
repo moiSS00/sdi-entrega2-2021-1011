@@ -39,9 +39,10 @@
             <td>
 
                 {% if oferta.buyer %}
-                    <span class="text-danger">Vendido</span>
+                <span class="text-danger">Vendido</span>
                 {% else %}
-                    <a href="/standard/offer/buy/{{ oferta._id.toString() }}">Comprar</a>
+                <a href="/standard/offer/buy/{{ oferta._id.toString() }}?pg={{ actual }}
+                    &searchText={{ searchText}}">Comprar</a>
                 {% endif %}
 
             </td>
@@ -55,13 +56,13 @@
 <div class="row text-center">
     <ul class="pagination" id="pages">
         {% for pagina in paginas %}
-            <li class="page-item" id="pi-{{ pagina }}">
+        <li class="page-item" id="pi-{{ pagina }}">
             {% if searchText %}
-                <a class="page-link"
-                   href="/standard/offer/searchOffers?searchText={{ searchText }}&pg={{ pagina }}">{{ pagina }}</a></li>
-            {% else %}
-                <a class="page-link" href="/standard/offer/searchOffers?pg={{ pagina }}">{{ pagina }}</a></li>
-            {% endif %}
+            <a class="page-link"
+               href="/standard/offer/searchOffers?searchText={{ searchText }}&pg={{ pagina }}">{{ pagina }}</a></li>
+        {% else %}
+            <a class="page-link" href="/standard/offer/searchOffers?pg={{ pagina }}">{{ pagina }}</a></li>
+        {% endif %}
         {% endfor %}
         <script>
             $("#pi-" + "{{ actual }}").addClass("active");

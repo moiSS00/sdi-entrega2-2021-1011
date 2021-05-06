@@ -577,10 +577,42 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR23. Sin hacer /
+	// PR23. Sobre una búsqueda determinada (a elección de desarrollador), comprar una oferta que 
+	// deja un saldo positivo en el contador del comprobador. Y comprobar que el contador se 
+	// actualiza correctamente en la vista del comprador. /
 	@Test
 	public void PR23() {
-		assertTrue("PR23 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "manolo@email.com", "123456");
+
+		// Ir a la opcion de buscar ofertas
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
+
+		// Hacemos una búsqueda vacía 
+		PO_SearchListView.makeSearch(driver, "4K");
+		
+		// Comprobar que se muestra la oferta específica
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 1);
+		PO_View.checkElement(driver, "text", "Televisión 4K");
+		PO_View.checkElement(driver, "text", "Para una buena tarde de Netflix.");
+		PO_View.checkElement(driver, "text", "Comprar");
+		
+		// Compramos la oferta 
+		PO_View.checkElement(driver, "text", "1000 Є");
+		elements.get(0).click();
+		PO_View.checkElement(driver, "text", "Oferta comprada con éxito");
+		PO_View.checkElement(driver, "text", "919.01 Є");
+		
+		// Comprobamos que se mantiene la búsqueda 
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 1);
+		PO_View.checkElement(driver, "text", "Televisión 4K");
+		PO_View.checkElement(driver, "text", "Para una buena tarde de Netflix.");
+		PO_View.checkElement(driver, "text", "Vendido");
+
+		// Hacemos logout
+		PO_NavView.logOut(driver);
 	}
 
 	// PR24. Sin hacer /
