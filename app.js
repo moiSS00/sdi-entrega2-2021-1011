@@ -4,6 +4,10 @@ let app = express();
 
 // Módulos
 
+// -- Jsonwebtoken  --
+let jwt = require('jsonwebtoken');
+app.set('jwt', jwt);
+
 // -- ExpressSession --
 let expressSession = require('express-session');
 app.use(expressSession({
@@ -18,7 +22,7 @@ let crypto = require('crypto');
 // -- MongoDB --
 let mongo = require('mongodb');
 let gestorBD = require("./modules/gestorBD.js");
-gestorBD.init(app,mongo);
+gestorBD.init(app, mongo);
 
 // -- Swig --
 let swig = require('swig');
@@ -26,17 +30,17 @@ let swig = require('swig');
 // -- Body Parser --
 let bodyParser = require('body-parser');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 // Variables
 app.set('port', 8081);
-app.set('db','mongodb://admin:SDIadmin@tiendamusica-shard-00-00' +
+app.set('db', 'mongodb://admin:SDIadmin@tiendamusica-shard-00-00' +
     '.bnsce.mongodb.net:27017,tiendamusica-shard-00-01' +
     '.bnsce.mongodb.net:27017,tiendamusica-shard-00-02' +
     '.bnsce.mongodb.net:27017/tiendamusica?ssl=true&replicaSet=atlas-2mlqk1-shard-' +
     '0&authSource=admin&retryWrites=true&w=majority');
-app.set('clave','abcdefg');
-app.set('crypto',crypto);
+app.set('clave', 'abcdefg');
+app.set('crypto', crypto);
 
 // Routers
 
@@ -49,9 +53,9 @@ Si no hay usuario logueado -> Se llama a la petición GET /login.
 Si hubo algún error al recuperar el usuario actual -> Se llama a la petición GET /.
 Si no hubo problemas -> Se deja pasar la petición.
 */
-routerUsuarioSession.use(function(req, res, next) {
+routerUsuarioSession.use(function (req, res, next) {
     console.log("routerUsuarioSession");
-    if ( req.session.usuario ) {
+    if (req.session.usuario) {
         gestorBD.obtenerUsuarios({email: req.session.usuario.email}, {}, function (usuarios) {
             if (usuarios == null) {
                 res.redirect("/");
@@ -72,8 +76,8 @@ routerUsuarioSession.use(function(req, res, next) {
 });
 
 //Aplicar routerUsuarioSession
-app.use("/standard",routerUsuarioSession);
-app.use("/admin",routerUsuarioSession);
+app.use("/standard", routerUsuarioSession);
+app.use("/admin", routerUsuarioSession);
 
 // routerUsuarioStandardSession
 var routerUsuarioStandardSession = express.Router();
@@ -83,18 +87,17 @@ Comprueba si el usuario actual es estándar.
 Si el usuario actual no es estándar -> Se llama a la petición GET /.
 Si el usuario actual es estándar -> Se deja pasar la petición.
 */
-routerUsuarioStandardSession.use(function(req, res, next) {
+routerUsuarioStandardSession.use(function (req, res, next) {
     console.log("routerUsuarioStandardSession");
-    if(req.session.usuario.role === "ROLE_STANDARD") {
+    if (req.session.usuario.role === "ROLE_STANDARD") {
         next();
-    }
-    else {
+    } else {
         res.redirect("/");
     }
 });
 
 //Aplicar routerUsuarioStandardSession
-app.use("/standard",routerUsuarioStandardSession);
+app.use("/standard", routerUsuarioStandardSession);
 
 // routerUsuarioAdminSession
 var routerUsuarioAdminSession = express.Router();
@@ -104,18 +107,17 @@ Comprueba si el usuario actual es admin.
 Si el usuario actual no es admin -> Se llama a la petición GET /.
 Si el usuario actual es admin -> Se deja pasar la petición.
 */
-routerUsuarioAdminSession.use(function(req, res, next) {
+routerUsuarioAdminSession.use(function (req, res, next) {
     console.log("routerUsuarioAdminSession");
-    if(req.session.usuario.role === "ROLE_ADMIN") {
+    if (req.session.usuario.role === "ROLE_ADMIN") {
         next();
-    }
-    else {
+    } else {
         res.redirect("/");
     }
 });
 
 //Aplicar routerUsuarioAdminSession
-app.use("/admin",routerUsuarioAdminSession);
+app.use("/admin", routerUsuarioAdminSession);
 
 // //routerUsuarioOwner
 var routerUsuarioOwner = express.Router();
@@ -126,7 +128,7 @@ Si hubo algún error al recuperar las ofertas -> Se llama a la petición GET /.
 Si el usuario actual no es el dueño de la oferta -> Se llama a la petición GET /.
 Si el usuario actual es el dueño de la oferta -> Se deja pasar la petición.
 */
-routerUsuarioOwner.use(function(req, res, next) {
+routerUsuarioOwner.use(function (req, res, next) {
     console.log("routerUsuarioOwner");
 
     //Obtenemos el id de la URL
@@ -139,16 +141,50 @@ routerUsuarioOwner.use(function(req, res, next) {
         owner: req.session.usuario.email
     }
     gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
-            if(ofertas == null || ofertas.length == 0){
-                res.redirect("/");
-            } else {
-                next();
-            }
+        if (ofertas == null || ofertas.length == 0) {
+            res.redirect("/");
+        } else {
+            next();
+        }
     });
 });
 
 //Aplicar routerUsuarioOwner
-app.use("/standard/offer/remove",routerUsuarioOwner);
+app.use("/standard/offer/remove", routerUsuarioOwner);
+
+// routerUsuarioToken
+let routerUsuarioToken = express.Router();
+routerUsuarioToken.use(function (req, res, next) {
+    // obtener el token, vía headers (opcionalmente GET y/o POST).
+    let token = req.headers['token'] || req.body.token || req.query.token;
+    if (token != null) {
+        // verificar el token
+        jwt.verify(token, 'secreto', function (err, infoToken) {
+            if (err || (Date.now() / 1000 - infoToken.tiempo) > 240) {
+                res.status(403); // Forbidden
+                res.json({
+                    acceso: false,
+                    error: 'Token invalido o caducado'
+                });
+                // También podríamos comprobar que intoToken.usuario existe
+                return;
+            } else {
+                // dejamos correr la petición
+                res.usuario = infoToken.usuario;
+                next();
+            }
+        });
+    } else {
+        res.status(403); // Forbidden
+        res.json({
+            acceso: false,
+            mensaje: 'No hay Token'
+        });
+    }
+});
+// Aplicar routerUsuarioToken
+// app.use('/api/cancion', routerUsuarioToken);
+
 
 // Directorio estático
 app.use(express.static('public'));
@@ -156,7 +192,8 @@ app.use(express.static('public'));
 // Rutas/controladores por lógica
 require("./routes/rUsuarios.js")(app, swig, gestorBD);
 require("./routes/rOfertas.js")(app, swig, gestorBD);
-require("./routes/rTesting.js")(app, swig, gestorBD);
+require("./routes/rTesting.js")(app, gestorBD);
+require("./routes/rApiOfertas.js")(app, gestorBD);
 
 /*
 Ruta inicial de la apliación.
@@ -169,12 +206,10 @@ app.get('/', function (req, res) {
         if (req.session.usuario.role === "ROLE_ADMIN") {
             res.redirect("/admin/user/list");
 
-        }
-        else if (req.session.usuario.role === "ROLE_STANDARD") {
+        } else if (req.session.usuario.role === "ROLE_STANDARD") {
             res.redirect("/standard/home");
         }
-    }
-    else {
+    } else {
         let respuesta = swig.renderFile('views/bIndex.html', {});
         res.send(respuesta);
     }

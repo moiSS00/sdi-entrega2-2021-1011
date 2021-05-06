@@ -1,4 +1,4 @@
-module.exports = function (app, swig, gestorBD) {
+module.exports = function (app, gestorBD) {
 
     // ---- PETICIONES GET ----
 
