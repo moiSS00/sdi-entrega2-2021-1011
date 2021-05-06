@@ -102,7 +102,7 @@ module.exports = function (app, swig, gestorBD) {
                         price: 2.20,
                         creationDate: new Date(2018, 2, 7, 1, 3, 2 , 1),
                         owner: "andrea@email.com",
-                        buyer: "juan@email.com"
+                        buyer: null
                     },
                     {
                         title: "Disco duro",

@@ -55,8 +55,13 @@
 <div class="row text-center">
     <ul class="pagination" id="pages">
         {% for pagina in paginas %}
-        <li class="page-item" id="pi-{{ pagina }}">
-            <a class="page-link" href="/standard/offer/searchOffers?pg={{ pagina }}">{{ pagina }}</a></li>
+            <li class="page-item" id="pi-{{ pagina }}">
+            {% if searchText %}
+                <a class="page-link"
+                   href="/standard/offer/searchOffers?searchText={{ searchText }}&pg={{ pagina }}">{{ pagina }}</a></li>
+            {% else %}
+                <a class="page-link" href="/standard/offer/searchOffers?pg={{ pagina }}">{{ pagina }}</a></li>
+            {% endif %}
         {% endfor %}
         <script>
             $("#pi-" + "{{ actual }}").addClass("active");

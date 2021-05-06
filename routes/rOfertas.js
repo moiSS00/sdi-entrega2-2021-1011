@@ -84,8 +84,9 @@ module.exports = function (app, swig, gestorBD) {
                 respuesta = swig.renderFile('views/bBuscarOferta.html', {
                     usuario: req.session.usuario,
                     ofertas: ofertas,
-                    paginas : paginas,
-                    actual : pg
+                    paginas: paginas,
+                    actual: pg,
+                    searchText: req.query.searchText
                 });
             }
             res.send(respuesta);
@@ -100,14 +101,29 @@ module.exports = function (app, swig, gestorBD) {
     */
     app.get("/standard/offer/remove/:id", function (req, res) {
         let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
-        gestorBD.eliminarOferta(criterio, function (ofertas) {
+
+        gestorBD.obtenerOfertas(criterio, {}, function (ofertas, total) {
             if (ofertas == null) {
-                //Este if - else es para el futuro sistema de log
                 res.redirect("/standard/offer/myOffers" +
-                    "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
+                    "?mensaje=Error al recuperar la oferta a eliminar" +
                     "&tipoMensaje=alert-danger ");
             } else {
-                res.redirect("/standard/offer/myOffers");
+                if (ofertas[0].buyer) {
+                    res.redirect("/standard/offer/myOffers" +
+                        "?mensaje=No se puede dar de baja una oferta que se haya vendido" +
+                        "&tipoMensaje=alert-danger ");
+                } else {
+                    gestorBD.eliminarOferta(criterio, function (ofertas) {
+                        if (ofertas == null) {
+                            //Este if - else es para el futuro sistema de log
+                            res.redirect("/standard/offer/myOffers" +
+                                "?mensaje=Error al eliminar la ofertas" +
+                                "&tipoMensaje=alert-danger ");
+                        } else {
+                            res.redirect("/standard/offer/myOffers");
+                        }
+                    });
+                }
             }
         });
     });
