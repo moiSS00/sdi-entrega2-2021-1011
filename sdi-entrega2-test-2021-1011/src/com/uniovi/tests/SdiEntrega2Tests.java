@@ -702,10 +702,28 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR26. Sin hacer /
+	// PR26. Ir a la opción de ofertas compradas del usuario y mostrar la lista. Comprobar que 
+	// aparecen las ofertas que deben aparecer. /
 	@Test
 	public void PR26() {
-		assertTrue("PR26 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "juan@email.com", "123456");
+
+		// Ir a la opcion de buscar ofertas
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/purchasedOffers");
+		
+		// Comprobar que se muestran todas las ofertas compradas
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 3);
+		PO_View.checkElement(driver, "text", "Disco duro");
+		PO_View.checkElement(driver, "text", "Disco duro de 500 Gb SSD.");
+		PO_View.checkElement(driver, "text", "Ratón oficina");
+		PO_View.checkElement(driver, "text", "Ratón de uso diario inalámbrico.");
+		PO_View.checkElement(driver, "text", "Micrófono");
+		PO_View.checkElement(driver, "text", "Para hacer ASMRs.");
+		
+		// Hacemos logout
+		PO_NavView.logOut(driver);
 	}
 
 	// PR27. Sin hacer /

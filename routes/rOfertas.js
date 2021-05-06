@@ -185,6 +185,32 @@ module.exports = function (app, swig, gestorBD) {
         });
     });
 
+    /*
+    Muestra la vista con las ofertas compradas por el usuario que está actualmente logueado.
+    */
+    app.get("/standard/offer/purchasedOffers", function (req, res) {
+
+        // Variable que contendrá la respuesta
+        let respuesta;
+
+        // Se obtienen las ofertas del usuario actual
+        let criterio = {buyer: req.session.usuario.email};
+        let sort = {creationDate: -1};
+        gestorBD.obtenerOfertas(criterio, sort, function (ofertas) {
+            if (ofertas == null) {
+                respuesta = swig.renderFile('views/bOfertasCompradas.html', {
+                    usuario: req.session.usuario,
+                    ofertas: []
+                });
+            } else {
+                respuesta = swig.renderFile('views/bOfertasCompradas.html', {
+                    usuario: req.session.usuario,
+                    ofertas: ofertas
+                });
+            }
+            res.send(respuesta);
+        });
+    });
 
     // ---- PETICIONES POST ----
 
