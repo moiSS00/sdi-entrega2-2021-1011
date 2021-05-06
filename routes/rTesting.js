@@ -52,7 +52,7 @@ module.exports = function (app, swig, gestorBD) {
                 lastName: "Álvarez Álvarez",
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("123456").digest('hex'),
-                amount: 50.00,
+                amount: 1500.00,
                 role: "ROLE_STANDARD"
             },
             {
@@ -110,7 +110,7 @@ module.exports = function (app, swig, gestorBD) {
                         price: 100.00,
                         creationDate: new Date(2021, 2, 2, 23, 12, 1 , 3),
                         owner: "manolo@email.com",
-                        buyer: "andrea@email.com"
+                        buyer: "juan@email.com"
                     },
                     {
                         title: "Televisión 4K",
@@ -166,15 +166,15 @@ module.exports = function (app, swig, gestorBD) {
                         price: 6000.00,
                         creationDate: new Date(),
                         owner: "pepe@email.com",
-                        buyer: "juan@email.com"
+                        buyer: null,
                     },
                     {
                         title: "Micrófono",
                         description: "Para hacer ASMRs.",
                         price: 9.80,
                         creationDate: new Date(),
-                        owner: "juan@email.com",
-                        buyer: "pepe@email.com"
+                        owner: "pepe@email.com",
+                        buyer: "juan@email.com"
                     },
                 ];
                 gestorBD.insertarOferta(ofertas, function (id) {

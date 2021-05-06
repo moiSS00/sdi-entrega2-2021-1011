@@ -134,7 +134,6 @@ module.exports = function (app, swig, gestorBD) {
     */
     app.get("/standard/offer/buy/:id", function (req, res) {
 
-
         let params = "&pg=" + req.query.pg;
         if (req.query.searchText != null) {
             params += "&searchText=" + req.query.searchText;
@@ -162,12 +161,13 @@ module.exports = function (app, swig, gestorBD) {
                                 } else {
                                     criterio = {email: req.session.usuario.email};
                                     let newAmount = req.session.usuario.amount - ofertas[0].price;
+                                    newAmount = parseFloat(newAmount.toFixed(2));
                                     gestorBD.modificarUsuario(
                                         criterio, {amount: newAmount}, function (result) {
                                             if (result == null) {
                                                 res.redirect("/standard/offer/searchOffers" +
                                                     "?mensaje=Error al comprar la oferta" +
-                                                    "&tipoMensaje=alert-danger " + params);
+                                                    "&tipoMensaje=alert-danger" + params);
                                             } else {
                                                 res.redirect("/standard/offer/searchOffers" +
                                                     "?mensaje=Oferta comprada con éxito" + params);
@@ -177,7 +177,7 @@ module.exports = function (app, swig, gestorBD) {
                             });
                     } else {
                         res.redirect("/standard/offer/searchOffers" +
-                            "&mensaje=Saldo insuficiente para realizar la compra" +
+                            "?mensaje=Saldo insuficiente para realizar la compra" +
                             "&tipoMensaje=alert-danger" + params);
                     }
                 }
@@ -230,7 +230,7 @@ module.exports = function (app, swig, gestorBD) {
                             let oferta = {
                                 title: req.body.title,
                                 description: req.body.description,
-                                price: precio.toFixed(2),
+                                price: parseFloat(precio.toFixed(2)),
                                 creationDate: new Date(),
                                 owner: req.session.usuario.email,
                                 buyer: null

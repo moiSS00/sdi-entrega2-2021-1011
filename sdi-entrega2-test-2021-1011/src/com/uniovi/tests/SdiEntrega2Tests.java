@@ -615,16 +615,91 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR24. Sin hacer /
+	// PR24.  Sobre una búsqueda determinada (a elección de desarrollador), comprar una oferta que 
+	// deja un saldo 0 en el contador del comprobador. Y comprobar que el contador se actualiza 
+	// correctamente en la vista del comprador.  /
 	@Test
 	public void PR24() {
-		assertTrue("PR24 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "juan@email.com", "123456");
+
+		// Ir a la opcion de buscar ofertas
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
+
+		// Hacemos una búsqueda vacía 
+		PO_SearchListView.makeSearch(driver, "CoCh");
+		
+		// Comprobar que se muestra la oferta específica
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
+		PO_View.checkElement(driver, "text", "coche BMW");
+		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
+		PO_View.checkElement(driver, "text", "Comprar");		
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendido", PO_View.getTimeout());
+		
+		// Compramos la oferta 
+		PO_View.checkElement(driver, "text", "1500 Є");
+		elements.get(1).click();
+		PO_View.checkElement(driver, "text", "Oferta comprada con éxito");
+		PO_View.checkElement(driver, "text", "0 Є");
+		
+		// Comprobamos que se mantiene la búsqueda 
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
+		PO_View.checkElement(driver, "text", "coche BMW");
+		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
+		PO_View.checkElement(driver, "text", "Vendido");
+
+		// Hacemos logout
+		PO_NavView.logOut(driver);	
 	}
 
-	// PR25. Sin hacer /
+	// PR25.  Sobre una búsqueda determinada (a elección de desarrollador), intentar comprar una 
+	// oferta que esté por encima de saldo disponible del comprador. Y comprobar que se muestra el 
+	// mensaje de saldo no suficiente. /
 	@Test
 	public void PR25() {
-		assertTrue("PR25 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "juan@email.com", "123456");
+
+		// Ir a la opcion de buscar ofertas
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
+
+		// Hacemos una búsqueda vacía 
+		PO_SearchListView.makeSearch(driver, "CoCh");
+		
+		// Comprobar que se muestra la oferta específica
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
+		PO_View.checkElement(driver, "text", "coche BMW");
+		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
+		PO_View.checkElement(driver, "text", "Comprar");		
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendido", PO_View.getTimeout());
+		
+		// Compramos la oferta 
+		PO_View.checkElement(driver, "text", "1500 Є");
+		elements.get(0).click();
+		PO_View.checkElement(driver, "text", "Saldo insuficiente para realizar la compra");
+		PO_View.checkElement(driver, "text", "1500 Є");
+		
+		// Comprobamos que se mantiene la búsqueda 
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
+		PO_View.checkElement(driver, "text", "coche BMW");
+		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
+		PO_View.checkElement(driver, "text", "Comprar");		
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendido", PO_View.getTimeout());
+
+		// Hacemos logout
+		PO_NavView.logOut(driver);
 	}
 
 	// PR26. Sin hacer /
