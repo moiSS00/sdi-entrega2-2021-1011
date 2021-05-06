@@ -92,7 +92,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Coche SEAT",
                         description: "Coche SEAT con 500 Km.",
                         price: 1500.00,
-                        creationDate: new Date(),
+                        creationDate: new Date(2020, 5, 2, 23, 21, 2 , 1),
                         owner: "andrea@email.com",
                         buyer: null
                     },
@@ -100,7 +100,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Pack material escolar",
                         description: "Pack 5 rotuladores BIC.",
                         price: 2.20,
-                        creationDate: new Date(),
+                        creationDate: new Date(2018, 2, 7, 1, 3, 2 , 1),
                         owner: "andrea@email.com",
                         buyer: "juan@email.com"
                     },
@@ -108,7 +108,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Disco duro",
                         description: "Disco duro de 500 Gb SSD.",
                         price: 100.00,
-                        creationDate: new Date(),
+                        creationDate: new Date(2021, 2, 2, 23, 12, 1 , 3),
                         owner: "manolo@email.com",
                         buyer: "andrea@email.com"
                     },
@@ -116,7 +116,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Televisión 4K",
                         description: "Para una buena tarde de Netflix.",
                         price: 80.99,
-                        creationDate: new Date(),
+                        creationDate: new Date(2018, 7, 21, 12, 21, 2 , 30),
                         owner: "andrea@email.com",
                         buyer: null
                     },
@@ -124,7 +124,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Película molona",
                         description: "Matrix.",
                         price: 3.20,
-                        creationDate: new Date(),
+                        creationDate: new Date(2021, 2, 2, 2, 2, 5 , 5),
                         owner: "manolo@email.com",
                         buyer: null
                     },
@@ -132,7 +132,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Ratón oficina",
                         description: "Ratón de uso diario inalámbrico.",
                         price: 9.80,
-                        creationDate: new Date(),
+                        creationDate: new Date(2020, 7, 12, 21, 12, 7 , 16),
                         owner: "manolo@email.com",
                         buyer: "juan@email.com"
                     },
@@ -140,7 +140,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Libro informática",
                         description: "Libro 'Internet es maravilloso' de la editorial SA.",
                         price: 10.50,
-                        creationDate: new Date(),
+                        creationDate: new Date(2017, 2, 30, 12, 12, 2 , 5),
                         owner: "juan@email.com",
                         buyer: null
                     },
@@ -148,7 +148,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Ordenador fijo HP",
                         description: "Con procesador AMD.",
                         price: 400.21,
-                        creationDate: new Date(),
+                        creationDate: new Date(2020, 8, 10, 23, 21, 10 , 32),
                         owner: "juan@email.com",
                         buyer: null
                     },
@@ -156,7 +156,7 @@ module.exports = function (app, swig, gestorBD) {
                         title: "Película",
                         description: "Jurassic Park.",
                         price: 2.30,
-                        creationDate: new Date(),
+                        creationDate: new Date(2017, 5, 2, 23, 32, 15 , 1),
                         owner: "pepe@email.com",
                         buyer: null
                     },

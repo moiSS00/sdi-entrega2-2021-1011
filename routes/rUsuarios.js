@@ -36,7 +36,8 @@ module.exports = function (app, swig, gestorBD) {
         let respuesta;
         // Se obtienen los usuarios (excepto los administradores)
         let criterio = {role: {$ne: "ROLE_ADMIN"}};
-        gestorBD.obtenerUsuarios(criterio,function (usuarios) {
+        let sort = {email: 1};
+        gestorBD.obtenerUsuarios(criterio,sort, function (usuarios) {
             if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
                 respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,
@@ -88,7 +89,7 @@ module.exports = function (app, swig, gestorBD) {
         } else {
             // Se obtienen los usuarios y se comprueba si el usuario ya existe
             gestorBD.obtenerUsuarios(
-                {email: req.body.email}, function (usuarios) {
+                {email: req.body.email}, {}, function (usuarios) {
                     if (usuarios == null) {
                         res.redirect("/signup" +
                             "?mensaje=Error inesperado" +
@@ -159,7 +160,7 @@ module.exports = function (app, swig, gestorBD) {
                 email: req.body.email,
                 password: seguro
             }
-            gestorBD.obtenerUsuarios(criterio, function (usuarios) {
+            gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
                 if (usuarios == null || usuarios.length == 0) {
                     res.redirect("/login" +
                         "?mensaje=Email incorrecto o contraseña incorrecta" +

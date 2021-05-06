@@ -252,9 +252,9 @@ public class SdiEntrega2Tests {
 		assertTrue(elements.size() == 4);
 		PO_View.checkElement(driver, "text", "juan@email.com");
 		PO_View.checkElement(driver, "text", "manolo@email.com");
+		PO_View.checkElement(driver, "text", "moises@email.com");
 		PO_View.checkElement(driver, "text", "pepe@email.com");
-		PO_View.checkElement(driver, "text", "andrea@email.com");
-		SeleniumUtils.textoNoPresentePagina(driver, "moises@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "andrea@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
@@ -282,11 +282,11 @@ public class SdiEntrega2Tests {
 		// Comprobamos que el usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
-		PO_View.checkElement(driver, "text", "moises@email.com");
+		PO_View.checkElement(driver, "text", "andrea@email.com");
 		PO_View.checkElement(driver, "text", "juan@email.com");
 		PO_View.checkElement(driver, "text", "manolo@email.com");
-		PO_View.checkElement(driver, "text", "pepe@email.com");
-		SeleniumUtils.textoNoPresentePagina(driver, "andrea@email.com");
+		PO_View.checkElement(driver, "text", "moises@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "pepe@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
@@ -316,11 +316,11 @@ public class SdiEntrega2Tests {
 		// Comprobamos qu eel usuario ya no esta en la tabla
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableUsers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
-		PO_View.checkElement(driver, "text", "moises@email.com");
 		PO_View.checkElement(driver, "text", "andrea@email.com");
+		PO_View.checkElement(driver, "text", "pepe@email.com");
 		SeleniumUtils.textoNoPresentePagina(driver, "juan@email.com");
 		SeleniumUtils.textoNoPresentePagina(driver, "manolo@email.com");
-		SeleniumUtils.textoNoPresentePagina(driver, "pepe@email.com");
+		SeleniumUtils.textoNoPresentePagina(driver, "moises@email.com");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
 		PO_NavView.logOut(driver);
@@ -481,8 +481,8 @@ public class SdiEntrega2Tests {
 		// Comprobar que se ha eliminado correctamente
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
-		SeleniumUtils.textoNoPresentePagina(driver, "Televisión 4K");
-		SeleniumUtils.textoNoPresentePagina(driver, "Para una buena tarde de Netflix.");
+		SeleniumUtils.textoNoPresentePagina(driver, "Pack material escolar");
+		SeleniumUtils.textoNoPresentePagina(driver, "Pack 5 rotuladores BIC.");
 
 		// Hacemos logout
 		PO_NavView.logOut(driver);
@@ -508,11 +508,11 @@ public class SdiEntrega2Tests {
 		// Primera página
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 5);
-		PO_View.checkElement(driver, "text", "Coche SEAT");
-		PO_View.checkElement(driver, "text", "Pack material escolar");
+		PO_View.checkElement(driver, "text", "Micrófono");
 		PO_View.checkElement(driver, "text", "Disco duro");
-		PO_View.checkElement(driver, "text", "Televisión 4K");
 		PO_View.checkElement(driver, "text", "Película molona");
+		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
+		PO_View.checkElement(driver, "text", "Ratón oficina");
 
 		// Segunda página 
 		PO_View.checkElement(driver, "free", "//*[@id=\"pi-2\"]/a").get(0).click();
@@ -520,10 +520,10 @@ public class SdiEntrega2Tests {
 		assertTrue(elements.size() == 2);
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 4);
-		PO_View.checkElement(driver, "text", "Ratón oficina");
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Televisión 4K");
+		PO_View.checkElement(driver, "text", "Pack material escolar");
 		PO_View.checkElement(driver, "text", "Libro informática");
-		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
-		PO_View.checkElement(driver, "text", "Micrófono");
 		
 		// Hacemos logout
 		PO_NavView.logOut(driver);
@@ -570,6 +570,8 @@ public class SdiEntrega2Tests {
 		// Comprobar que se muestran las 2 ofertas de coches
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "coche BMW");
 		
 		// Hacemos logout
 		PO_NavView.logOut(driver);

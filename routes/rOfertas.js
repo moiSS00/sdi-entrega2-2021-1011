@@ -23,7 +23,8 @@ module.exports = function (app, swig, gestorBD) {
 
         // Se obtienen las ofertas del usuario actual
         let criterio = {owner: req.session.usuario.email};
-        gestorBD.obtenerOfertas(criterio, function (ofertas) {
+        let sort = {creationDate: -1};
+        gestorBD.obtenerOfertas(criterio, sort, function (ofertas) {
             if (ofertas == null) {
                 respuesta = swig.renderFile('views/bOfertasPropias.html', {
                     usuario: req.session.usuario,
@@ -62,7 +63,8 @@ module.exports = function (app, swig, gestorBD) {
         }
 
         // Buscamos las ofertas correspondientes
-        gestorBD.obtenerOfertasPg(criterio, pg, function (ofertas, total) {
+        let sort = {creationDate: -1};
+        gestorBD.obtenerOfertasPg(criterio, sort, pg, function (ofertas, total) {
             if (ofertas == null) {
                 respuesta = swig.renderFile('views/bBuscarOferta.html', {
                     usuario: req.session.usuario,
