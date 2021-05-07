@@ -1,4 +1,4 @@
-module.exports = function (app, gestorBD) {
+module.exports = function (app, gestorBD, logger) {
 
     // ---- PETICIONES GET ----
 
@@ -12,11 +12,14 @@ module.exports = function (app, gestorBD) {
         let criterio = {owner: {$ne: res.usuario}};
         gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
             if (ofertas == null) {
+                logger.error(res.usuario + " tuvo algún problema al recuperar las ofertas " +
+                    "disponibles de la base de datos");
                 res.status(500);
                 res.json({
                     error: "Se ha producido un error al recuperar las ofertas disponibles"
                 })
             } else {
+                logger.info(res.usuario + " ha accedido a la lista de ofertas dosponibles");
                 res.status(200);
                 res.send(JSON.stringify(ofertas));
             }
@@ -39,11 +42,14 @@ module.exports = function (app, gestorBD) {
         let sort = {creationDate: 1};
         gestorBD.obtenerMensajes(criterio, sort, function (mensajes) {
             if (mensajes == null) {
+                logger.error(res.usuario + " tuvo algún problema al recuperar los mensajes " +
+                    "disponibles de la base de datos");
                 res.status(500);
                 res.json({
                     error: "Se ha producido un error al recuperar los mensajes"
                 })
             } else {
+                logger.info(res.usuario + " ha accedido a la lista de mensajes para la oferta " + req.params.offerId);
                 res.status(200);
                 res.send(JSON.stringify(mensajes));
             }
@@ -63,7 +69,7 @@ module.exports = function (app, gestorBD) {
         errores encontrados).
     Si hay algún error al recuperar la oferta -> Error del servidor 500 (Error al recuperar la oferta).
     Si el usuario logueado es el propitario de la oferta -> Error del cliente 401 (Es el dueño de esta oferta).
-    Si la oferta esta comprada 402 (No se puede mandar un mensaje a una oferta comprada).
+    Si la oferta esta comprada -> Error del cliente402 (No se puede mandar un mensaje a una oferta comprada).
     Si hay algún error al insertar el mensaje -> Error del servidor 500 (Error al crear el mensaje).
     Si no hubo errroes -> Respuesta satisfactoria  200 y se devuelve un mensaje informativo y el id del
         mensaje insertado en la base de datos.
@@ -83,6 +89,8 @@ module.exports = function (app, gestorBD) {
             let criterio = {_id: gestorBD.mongo.ObjectID(req.body.offerId)};
             gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
                 if (ofertas == null || ofertas.length == 0) {
+                    logger.error(res.usuario + " tuvo algún problema al recuperar las oferats " +
+                        "disponibles de la base de datos");
                     res.status(500);
                     res.json({
                         error: "Error al recuperar la oferta"
@@ -100,11 +108,15 @@ module.exports = function (app, gestorBD) {
                             }
                             gestorBD.insertarMensaje(mensaje, function (id) {
                                 if (id == null) {
+                                    logger.error(res.usuario + " tuvo algún problema al insertar el mensaje " +
+                                        "en la base de datos");
                                     res.status(501);
                                     res.json({
                                         error: "Error al crear el mensaje"
                                     });
                                 } else {
+                                    logger.info(res.usuario + " ha mandado un mensaje correctamente a la oferat " +
+                                        req.body.offerId);
                                     res.status(200);
                                     res.json({
                                         mensaje: "mensaje insertado",
@@ -113,12 +125,16 @@ module.exports = function (app, gestorBD) {
                                 }
                             });
                         } else {
+                            logger.error(res.usuario + " ha intenta mandar un mensaje utilizando " +
+                                "una oferta comprada");
                             res.status(402);
                             res.json({
                                 error: "No se puede mandar un mensaje a una oferta comprada"
                             });
                         }
                     } else {
+                        logger.error(res.usuario + " ha intenta mandar un mensaje utilizando " +
+                            "una oferta de su propiedad");
                         res.status(401);
                         res.json({
                             error: "Es el dueño de esta oferta"
@@ -127,6 +143,7 @@ module.exports = function (app, gestorBD) {
                 }
             });
         } else {
+            logger.error(res.usuario + " ha pasado un mensaje vacío o un id de oferta inválido");
             res.status(400);
             res.json({
                 errores: errores
@@ -152,6 +169,8 @@ module.exports = function (app, gestorBD) {
 
         gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
             if (usuarios == null || usuarios.length == 0) {
+                logger.error("No se ha encontrado el usuario con las credenciales inroducidas " +
+                    "en el formulario de inicio de sesión");
                 res.status(400);
                 res.json({
                     autenticado: false
@@ -160,6 +179,7 @@ module.exports = function (app, gestorBD) {
                 let token = app.get('jwt').sign(
                     {usuario: criterio.email, tiempo: Date.now() / 1000},
                     "secreto");
+                logger.info(criterio.email + " ha iniciado sesión correctamente");
                 res.status(200);
                 res.json({
                     autenticado: true,

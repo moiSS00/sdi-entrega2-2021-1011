@@ -1,4 +1,4 @@
-module.exports = function (app, gestorBD) {
+module.exports = function (app, gestorBD, logger) {
 
     // ---- PETICIONES GET ----
 
@@ -9,16 +9,20 @@ module.exports = function (app, gestorBD) {
         let criterio = {};
         gestorBD.eliminarUsuario(criterio, function (usuarios) {
             if (usuarios == null) {
+                logger.error("Error al limpiar la colección de usuarios");
                 res.send("Error al limpiar la colección de usuarios");
             } else {
                 gestorBD.eliminarOferta(criterio, function (ofertas) {
                     if (ofertas == null) {
+                        logger.error("Error al limpiar la colección de ofertas");
                         res.send("Error al limpiar la colección de ofertas");
                     } else {
                         gestorBD.eliminarMensaje(criterio, function (mensajes) {
                             if (mensajes == null) {
+                                logger.error("Error al limpiar la colección de mensajes");
                                 res.send("Error al limpiar la colección de mensajes");
                             } else {
+                                logger.info("Base de datos limpiada con éxito");
                                 res.send("Base de datos limpiada con éxito");
                             }
                         });
@@ -91,7 +95,8 @@ module.exports = function (app, gestorBD) {
         ];
         gestorBD.insertarUsuario(usuarios, function (userId) {
             if (userId == null) {
-                res.redirect("Error al insertar usuarios de prueba");
+                logger.error("Error al insertar usuarios de prueba");
+                res.send("Error al insertar usuarios de prueba");
             } else {
                 let ofertas = [
                     {
@@ -185,7 +190,8 @@ module.exports = function (app, gestorBD) {
                 ];
                 gestorBD.insertarOferta(ofertas, function (offerId) {
                     if (offerId == null) {
-                        res.redirect("Error al insertar ofertas de prueba");
+                        logger.error("Error al insertar ofertas de prueba");
+                        res.send("Error al insertar ofertas de prueba");
                     } else {
                         let mensajes = [
                             {
@@ -207,8 +213,10 @@ module.exports = function (app, gestorBD) {
                         ];
                         gestorBD.insertarMensaje(mensajes, function (id) {
                             if (id == null) {
-                                res.redirect("Error al insertar mensajes de prueba");
+                                logger.error("Error al insertar mensajes de prueba");
+                                res.send("Error al insertar mensajes de prueba");
                             } else {
+                                logger.info("Datos de prueba insertados con éxito");
                                 res.send("Datos de prueba insertados con éxito");
                             }
                         });

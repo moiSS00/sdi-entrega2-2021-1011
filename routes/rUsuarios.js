@@ -1,4 +1,4 @@
-module.exports = function (app, swig, gestorBD) {
+module.exports = function (app, swig, gestorBD, logger) {
 
     // ---- PETICIONES GET ----
 
@@ -6,6 +6,7 @@ module.exports = function (app, swig, gestorBD) {
     Muestra la vista que contiene el formulario para registrar a un usuario.
     */
     app.get("/signup", function (req, res) {
+        logger.info("Se ha accedido al formulario de registro de usuario");
         let respuesta = swig.renderFile('views/bRegistro.html', {});
         res.send(respuesta);
     });
@@ -14,6 +15,7 @@ module.exports = function (app, swig, gestorBD) {
     Muestra la vista que contiene el formulario de inicio de sesión.
     */
     app.get("/login", function (req, res) {
+        logger.info("Se ha accedido al formulario de inicio de sesión");
         let respuesta = swig.renderFile('views/bIdentificacion.html', {});
         res.send(respuesta);
     });
@@ -22,6 +24,7 @@ module.exports = function (app, swig, gestorBD) {
     Cierra la sesión actual y redirige al usuario a la página de login
     */
     app.get('/logout', function (req, res) {
+        logger.info(req.session.usuario.email + " ha cerrado sesión");
         req.session.usuario = null;
         res.redirect('/login');
     });
@@ -39,11 +42,14 @@ module.exports = function (app, swig, gestorBD) {
         let sort = {email: 1};
         gestorBD.obtenerUsuarios(criterio,sort, function (usuarios) {
             if (usuarios == null) { // Si hay error con la BD, se manda una lista vacía
+                logger.error(req.session.usuario.email + " tuvo algún problema recuperando a los usuarios de la base de " +
+                    "datos al acceder a la lista de usuarios");
                 respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,
                     usuarios: []
                 });
             } else {
+                logger.info(req.session.usuario.email + " ha accedido a la lista de usuarios");
                 respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,
                     usuarios: usuarios
@@ -57,6 +63,7 @@ module.exports = function (app, swig, gestorBD) {
     Muestra la página personal del usuario actual (siendo este estándar).
     */
     app.get("/standard/home", function (req, res) {
+        logger.info(req.session.usuario.email + " ha accedido a su página personal");
         // Variable que contendrá la respuesta
         let respuesta = swig.renderFile('views/bBienvenida.html', {usuario: req.session.usuario});
         res.send(respuesta);
@@ -77,12 +84,14 @@ module.exports = function (app, swig, gestorBD) {
         // Se comprueba si ha dejado algún campo vacío
         if (!req.body.email || !req.body.name || !req.body.lastName || !req.body.password
             || !req.body.passwordConfirm) {
+            logger.error("Se ha dejado algún campo vacío en el formulario de registro de un nuevo usuario");
             res.redirect("/signup" +
                 "?mensaje=No puede dejar campos vacíos" +
                 "&tipoMensaje=alert-danger ");
         }
         // Se comprueba si las contraseñas coinciden
         else if (!(req.body.password === req.body.passwordConfirm)) {
+            logger.error("Las contraseñas no coinciden en el formulario de registro de un nuevo usuario");
             res.redirect("/signup" +
                 "?mensaje=Las contraseñas no coinciden" +
                 "&tipoMensaje=alert-danger ");
@@ -91,6 +100,8 @@ module.exports = function (app, swig, gestorBD) {
             gestorBD.obtenerUsuarios(
                 {email: req.body.email}, {}, function (usuarios) {
                     if (usuarios == null) {
+                        logger.error("Hubo algún problema al recuperar de la base de datos a los usuarios " +
+                            "en el formulario de registro de un nuevo usuario");
                         res.redirect("/signup" +
                             "?mensaje=Error inesperado" +
                             "&tipoMensaje=alert-danger ");
@@ -115,6 +126,8 @@ module.exports = function (app, swig, gestorBD) {
                             // Añadimos al usuario a la base de datos
                             gestorBD.insertarUsuario(usuario, function (id) {
                                 if (id == null) {
+                                    logger.error("Hubo algún problema al insertar en la base de datos el usuario " +
+                                        "en el formulario de registro de un nuevo usuario");
                                     res.redirect("/signup" +
                                         "?mensaje=Error al crear el usuario" +
                                         "&tipoMensaje=alert-danger ");
@@ -125,11 +138,14 @@ module.exports = function (app, swig, gestorBD) {
                                         amount: usuario.amount,
                                         role: usuario.role
                                     };
+                                    logger.info(req.session.usuario.email + " ha iniciado sesión correctamente");
                                     res.redirect("/");
                                 }
                             });
 
                         } else {
+                            logger.error("El email utilizado en el formulario de registro de un" +
+                                " nuevo usuario ya existe");
                             res.redirect("/signup" +
                                 "?mensaje=El email introducido ya está en uso" +
                                 "&tipoMensaje=alert-danger ");
@@ -150,6 +166,7 @@ module.exports = function (app, swig, gestorBD) {
 
         // Se comprueba si ha dejado algún campo vacío
         if (!req.body.email || !req.body.password) {
+            logger.error("Se ha dejado algún campo vacío en el formulario de inicio de sesión");
             res.redirect("/login" +
                 "?mensaje=No puede dejar campos vacíos" +
                 "&tipoMensaje=alert-danger ");
@@ -162,6 +179,8 @@ module.exports = function (app, swig, gestorBD) {
             }
             gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
                 if (usuarios == null || usuarios.length == 0) {
+                    logger.error("No se ha encontrado el usuario con las credenciales inroducidas " +
+                        "en el formulario de inicio de sesión");
                     res.redirect("/login" +
                         "?mensaje=Email incorrecto o contraseña incorrecta" +
                         "&tipoMensaje=alert-danger ");
@@ -172,6 +191,7 @@ module.exports = function (app, swig, gestorBD) {
                         amount: usuarios[0].amount,
                         role: usuarios[0].role
                     };
+                    logger.info(req.session.usuario.email + " ha iniciado sesión correctamente");
                     res.redirect("/");
                 }
             });
@@ -200,7 +220,8 @@ module.exports = function (app, swig, gestorBD) {
         let criterio = { owner: { $in: emails } };
         gestorBD.eliminarOferta(criterio,function(ofertas){
             if ( ofertas == null ){
-                //Este if - else es para el futuro sistema de log
+                logger.error(req.session.usuario.email + " tuvo algún problema al eliminar las ofertas de los usuarios " +
+                    "que se quieren eliminar de la lista de usuarios");
                 res.redirect("/admin/user/list" +
                     "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
                     "&tipoMensaje=alert-danger ");
@@ -208,11 +229,14 @@ module.exports = function (app, swig, gestorBD) {
                 criterio = { email: { $in: emails } };
                 gestorBD.eliminarUsuario(criterio,function(usuarios){
                     if ( usuarios == null ){
-                        //Este if - else es para el futuro sistema de log
+                        logger.error(req.session.usuario.email + " tuvo algún problema al eliminar en la " +
+                            "base de datos a los usuarios seleccionados en la lista de usuarios");
                         res.redirect("/admin/user/list" +
                             "?mensaje=Error al eliminar a los usuarios seleccionados" +
                             "&tipoMensaje=alert-danger ");
                     } else {
+                        logger.info(req.session.usuario.email + " ha eliminado usuarios marcados en la " +
+                            "lista de usuarios con éxito");
                         res.redirect("/admin/user/list" +
                             "?mensaje=Usuarios eliminados con éxito");
                     }
