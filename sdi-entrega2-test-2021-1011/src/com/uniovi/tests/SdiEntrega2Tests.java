@@ -785,5 +785,37 @@ public class SdiEntrega2Tests {
 		// Comprobamos que se muestra el mensaje de error
 		PO_View.checkElement(driver, "text", "Usuario no encontrado");
 	}
+	
+	// PR031. Mostrar el listado de ofertas disponibles y comprobar que se muestran todas las que 
+	// existen, menos las del usuario identificado. /
+	@Test
+	public void PR33() {
+		// Navegamos al cliente 
+		driver.navigate().to(URL + "/cliente.html");
+		
+		// Introducimos credenciales válidas
+		PO_LoginView.fillForm(driver, "juan@email.com", "123456");
+		
+		// Comprobamos que se muestra la lista de ofeats 
+		PO_View.checkElement(driver, "text", "Lista de ofertas disponibles");
+		
+		// Comprobamos que se muestran todas las ofertas
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr");
+		assertTrue(elements.size() == 9);
+		PO_View.checkElement(driver, "text", "Coche SEAT");
+		PO_View.checkElement(driver, "text", "Pack material escolar");
+		PO_View.checkElement(driver, "text", "Disco duro");
+		PO_View.checkElement(driver, "text", "Televisión 4K");
+		PO_View.checkElement(driver, "text", "Película molona");
+		PO_View.checkElement(driver, "text", "Ratón oficina");
+		PO_View.checkElement(driver, "text", "Película");
+		PO_View.checkElement(driver, "text", "coche BMW"); 
+		PO_View.checkElement(driver, "text", "Micrófono"); 
+		
+		// Comprobamos que no salen las ofertas del usuario logueado
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Libro informática", PO_View.getTimeout());
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Ordenador fijo HP", PO_View.getTimeout());
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Libro informática", PO_View.getTimeout());
+	}
 
 }
