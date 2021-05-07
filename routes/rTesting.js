@@ -15,7 +15,13 @@ module.exports = function (app, gestorBD) {
                     if (ofertas == null) {
                         res.send("Error al limpiar la colección de ofertas");
                     } else {
-                        res.send("Base de datos limpiada con éxito");
+                        gestorBD.eliminarMensaje(criterio, function (mensajes) {
+                            if (mensajes == null) {
+                                res.send("Error al limpiar la colección de mensajes");
+                            } else {
+                                res.send("Base de datos limpiada con éxito");
+                            }
+                        });
                     }
                 });
             }
@@ -83,8 +89,8 @@ module.exports = function (app, gestorBD) {
                 role: "ROLE_STANDARD"
             },
         ];
-        gestorBD.insertarUsuario(usuarios, function (id) {
-            if (id == null) {
+        gestorBD.insertarUsuario(usuarios, function (userId) {
+            if (userId == null) {
                 res.redirect("Error al insertar usuarios de prueba");
             } else {
                 let ofertas = [
@@ -92,7 +98,7 @@ module.exports = function (app, gestorBD) {
                         title: "Coche SEAT",
                         description: "Coche SEAT con 500 Km.",
                         price: 1500.00,
-                        creationDate: new Date(2020, 5, 2, 23, 21, 2 , 1),
+                        creationDate: new Date(2020, 5, 2, 23, 21, 2, 1),
                         owner: "andrea@email.com",
                         buyer: null
                     },
@@ -100,7 +106,7 @@ module.exports = function (app, gestorBD) {
                         title: "Pack material escolar",
                         description: "Pack 5 rotuladores BIC.",
                         price: 2.20,
-                        creationDate: new Date(2018, 2, 7, 1, 3, 2 , 1),
+                        creationDate: new Date(2018, 2, 7, 1, 3, 2, 1),
                         owner: "andrea@email.com",
                         buyer: null
                     },
@@ -108,7 +114,7 @@ module.exports = function (app, gestorBD) {
                         title: "Disco duro",
                         description: "Disco duro de 500 Gb SSD.",
                         price: 100.00,
-                        creationDate: new Date(2021, 2, 2, 23, 12, 1 , 3),
+                        creationDate: new Date(2021, 2, 2, 23, 12, 1, 3),
                         owner: "manolo@email.com",
                         buyer: "juan@email.com"
                     },
@@ -116,7 +122,7 @@ module.exports = function (app, gestorBD) {
                         title: "Televisión 4K",
                         description: "Para una buena tarde de Netflix.",
                         price: 80.99,
-                        creationDate: new Date(2018, 7, 21, 12, 21, 2 , 30),
+                        creationDate: new Date(2018, 7, 21, 12, 21, 2, 30),
                         owner: "andrea@email.com",
                         buyer: null
                     },
@@ -124,7 +130,7 @@ module.exports = function (app, gestorBD) {
                         title: "Película molona",
                         description: "Matrix.",
                         price: 3.20,
-                        creationDate: new Date(2021, 2, 2, 2, 2, 5 , 5),
+                        creationDate: new Date(2021, 2, 2, 2, 2, 5, 5),
                         owner: "manolo@email.com",
                         buyer: null
                     },
@@ -132,7 +138,7 @@ module.exports = function (app, gestorBD) {
                         title: "Ratón oficina",
                         description: "Ratón de uso diario inalámbrico.",
                         price: 9.80,
-                        creationDate: new Date(2020, 7, 12, 21, 12, 7 , 16),
+                        creationDate: new Date(2020, 7, 12, 21, 12, 7, 16),
                         owner: "manolo@email.com",
                         buyer: "juan@email.com"
                     },
@@ -140,7 +146,7 @@ module.exports = function (app, gestorBD) {
                         title: "Libro informática",
                         description: "Libro 'Internet es maravilloso' de la editorial SA.",
                         price: 10.50,
-                        creationDate: new Date(2017, 2, 30, 12, 12, 2 , 5),
+                        creationDate: new Date(2017, 2, 30, 12, 12, 2, 5),
                         owner: "juan@email.com",
                         buyer: null
                     },
@@ -148,7 +154,7 @@ module.exports = function (app, gestorBD) {
                         title: "Ordenador fijo HP",
                         description: "Con procesador AMD.",
                         price: 400.21,
-                        creationDate: new Date(2020, 8, 10, 23, 21, 10 , 32),
+                        creationDate: new Date(2020, 8, 10, 23, 21, 10, 32),
                         owner: "juan@email.com",
                         buyer: null
                     },
@@ -156,7 +162,7 @@ module.exports = function (app, gestorBD) {
                         title: "Película",
                         description: "Jurassic Park.",
                         price: 2.30,
-                        creationDate: new Date(2017, 5, 2, 23, 32, 15 , 1),
+                        creationDate: new Date(2017, 5, 2, 23, 32, 15, 1),
                         owner: "pepe@email.com",
                         buyer: null
                     },
@@ -177,16 +183,38 @@ module.exports = function (app, gestorBD) {
                         buyer: "juan@email.com"
                     },
                 ];
-                gestorBD.insertarOferta(ofertas, function (id) {
-                    if (id == null) {
+                gestorBD.insertarOferta(ofertas, function (offerId) {
+                    if (offerId == null) {
                         res.redirect("Error al insertar ofertas de prueba");
                     } else {
-                        res.send("Datos de prueba insertados con éxito");
+                        let mensajes = [
+                            {
+                                sender: "moises@email.com",
+                                receiver: "andrea@email.com",
+                                offerId: offerId,
+                                message: "Me intersea la oferta",
+                                creationDate: new Date(2020, 7, 10, 12, 14, 2, 3),
+                                read: true
+                            },
+                            {
+                                sender: "andrea@email.com",
+                                receiver: "moises@email.com",
+                                offerId: offerId,
+                                message: "¿ De cuanto estariamos hablando ?",
+                                creationDate: new Date(),
+                                read: false
+                            }
+                        ];
+                        gestorBD.insertarMensaje(mensajes, function (id) {
+                            if (id == null) {
+                                res.redirect("Error al insertar mensajes de prueba");
+                            } else {
+                                res.send("Datos de prueba insertados con éxito");
+                            }
+                        });
                     }
                 });
             }
         });
     });
-
-
 };

@@ -494,7 +494,8 @@ public class SdiEntrega2Tests {
 	}
 
 	// P20. Hacer una búsqueda con el campo vacío y comprobar que se muestra la
-	// página que corresponde con el listado de las ofertas existentes en el sistema /
+	// página que corresponde con el listado de las ofertas existentes en el sistema
+	// /
 	@Test
 	public void PR20() {
 		// Iniciamos sesión como usuario estándar
@@ -503,13 +504,13 @@ public class SdiEntrega2Tests {
 		// Ir a la opcion de buscar ofertas
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
 
-		// Hacemos una búsqueda vacía 
+		// Hacemos una búsqueda vacía
 		PO_SearchListView.makeSearch(driver, "");
-		
-		// Comprobar que se muestran todas las ofertas 
+
+		// Comprobar que se muestran todas las ofertas
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"pages\"]/li/a");
 		assertTrue(elements.size() == 2);
-		
+
 		// Primera página
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 5);
@@ -517,9 +518,9 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Película molona");
 		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
 		PO_View.checkElement(driver, "text", "Ratón oficina");
-		PO_View.checkElement(driver, "text", "Coche SEAT"); 
+		PO_View.checkElement(driver, "text", "Coche SEAT");
 
-		// Segunda página 
+		// Segunda página
 		PO_View.checkElement(driver, "free", "//*[@id=\"pi-2\"]/a").get(0).click();
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"pages\"]/li/a");
 		assertTrue(elements.size() == 2);
@@ -528,12 +529,13 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Televisión 4K");
 		PO_View.checkElement(driver, "text", "Pack material escolar");
 		PO_View.checkElement(driver, "text", "Libro informática");
-		
+
 		// Hacemos logout
 		PO_NavView.logOut(driver);
 	}
 
-	// PR21. Hacer una búsqueda escribiendo en el campo un texto que no exista y comprobar que se 
+	// PR21. Hacer una búsqueda escribiendo en el campo un texto que no exista y
+	// comprobar que se
 	// muestra la página que corresponde, con la lista de ofertas vacía. /
 	@Test
 	public void PR21() {
@@ -543,23 +545,26 @@ public class SdiEntrega2Tests {
 		// Ir a la opcion de buscar ofertas
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
 
-		// Hacemos una búsqueda vacía 
+		// Hacemos una búsqueda vacía
 		PO_SearchListView.makeSearch(driver, "inexistente");
-		
-		// Comprobar que no se muestra ninguna oferta 
+
+		// Comprobar que no se muestra ninguna oferta
 		List<WebElement> elements = driver.findElements(By.xpath("//*[@id=\"tableSearchedOffers\"]/tbody/tr"));
 		assertTrue(elements.size() == 0);
-		
+
 		elements = driver.findElements(By.xpath("//*[@id=\"pages\"]/li/a"));
 		assertTrue(elements.size() == 0);
-		
+
 		// Hacemos logout
 		PO_NavView.logOut(driver);
 	}
 
-	// PR22. Hacer una búsqueda escribiendo en el campo un texto en minúscula o mayúscula y 
-	// comprobar que se muestra la página que corresponde, con la lista de ofertas que contengan
-	// dicho texto, independientemente que el título esté almacenado en minúsculas o mayúscula. /
+	// PR22. Hacer una búsqueda escribiendo en el campo un texto en minúscula o
+	// mayúscula y
+	// comprobar que se muestra la página que corresponde, con la lista de ofertas
+	// que contengan
+	// dicho texto, independientemente que el título esté almacenado en minúsculas o
+	// mayúscula. /
 	@Test
 	public void PR22() {
 		// Iniciamos sesión como usuario estándar
@@ -568,21 +573,23 @@ public class SdiEntrega2Tests {
 		// Ir a la opcion de buscar ofertas
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
 
-		// Hacemos una búsqueda vacía 
+		// Hacemos una búsqueda vacía
 		PO_SearchListView.makeSearch(driver, "coCh");
-		
+
 		// Comprobar que se muestran las 2 ofertas de coches
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
 		PO_View.checkElement(driver, "text", "Coche SEAT");
 		PO_View.checkElement(driver, "text", "coche BMW");
-		
+
 		// Hacemos logout
 		PO_NavView.logOut(driver);
 	}
 
-	// PR23. Sobre una búsqueda determinada (a elección de desarrollador), comprar una oferta que 
-	// deja un saldo positivo en el contador del comprobador. Y comprobar que el contador se 
+	// PR23. Sobre una búsqueda determinada (a elección de desarrollador), comprar
+	// una oferta que
+	// deja un saldo positivo en el contador del comprobador. Y comprobar que el
+	// contador se
 	// actualiza correctamente en la vista del comprador. /
 	@Test
 	public void PR23() {
@@ -592,23 +599,23 @@ public class SdiEntrega2Tests {
 		// Ir a la opcion de buscar ofertas
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
 
-		// Hacemos una búsqueda vacía 
+		// Hacemos una búsqueda vacía
 		PO_SearchListView.makeSearch(driver, "4K");
-		
+
 		// Comprobar que se muestra la oferta específica
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
 		assertTrue(elements.size() == 1);
 		PO_View.checkElement(driver, "text", "Televisión 4K");
 		PO_View.checkElement(driver, "text", "Para una buena tarde de Netflix.");
 		PO_View.checkElement(driver, "text", "Comprar");
-		
-		// Compramos la oferta 
+
+		// Compramos la oferta
 		PO_View.checkElement(driver, "text", "1000 Є");
 		elements.get(0).click();
 		PO_View.checkElement(driver, "text", "Oferta comprada con éxito");
 		PO_View.checkElement(driver, "text", "919.01 Є");
-		
-		// Comprobamos que se mantiene la búsqueda 
+
+		// Comprobamos que se mantiene la búsqueda
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 1);
 		PO_View.checkElement(driver, "text", "Televisión 4K");
@@ -619,9 +626,11 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR24.  Sobre una búsqueda determinada (a elección de desarrollador), comprar una oferta que 
-	// deja un saldo 0 en el contador del comprobador. Y comprobar que el contador se actualiza 
-	// correctamente en la vista del comprador.  /
+	// PR24. Sobre una búsqueda determinada (a elección de desarrollador), comprar
+	// una oferta que
+	// deja un saldo 0 en el contador del comprobador. Y comprobar que el contador
+	// se actualiza
+	// correctamente en la vista del comprador. /
 	@Test
 	public void PR24() {
 		// Iniciamos sesión como usuario estándar
@@ -630,9 +639,9 @@ public class SdiEntrega2Tests {
 		// Ir a la opcion de buscar ofertas
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
 
-		// Hacemos una búsqueda vacía 
+		// Hacemos una búsqueda vacía
 		PO_SearchListView.makeSearch(driver, "CoCh");
-		
+
 		// Comprobar que se muestra la oferta específica
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
 		assertTrue(elements.size() == 2);
@@ -640,16 +649,16 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
 		PO_View.checkElement(driver, "text", "coche BMW");
 		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
-		PO_View.checkElement(driver, "text", "Comprar");		
+		PO_View.checkElement(driver, "text", "Comprar");
 		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendido", PO_View.getTimeout());
-		
-		// Compramos la oferta 
+
+		// Compramos la oferta
 		PO_View.checkElement(driver, "text", "1500 Є");
 		elements.get(1).click();
 		PO_View.checkElement(driver, "text", "Oferta comprada con éxito");
 		PO_View.checkElement(driver, "text", "0 Є");
-		
-		// Comprobamos que se mantiene la búsqueda 
+
+		// Comprobamos que se mantiene la búsqueda
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
 		PO_View.checkElement(driver, "text", "Coche SEAT");
@@ -659,11 +668,13 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Vendido");
 
 		// Hacemos logout
-		PO_NavView.logOut(driver);	
+		PO_NavView.logOut(driver);
 	}
 
-	// PR25.  Sobre una búsqueda determinada (a elección de desarrollador), intentar comprar una 
-	// oferta que esté por encima de saldo disponible del comprador. Y comprobar que se muestra el 
+	// PR25. Sobre una búsqueda determinada (a elección de desarrollador), intentar
+	// comprar una
+	// oferta que esté por encima de saldo disponible del comprador. Y comprobar que
+	// se muestra el
 	// mensaje de saldo no suficiente. /
 	@Test
 	public void PR25() {
@@ -673,9 +684,9 @@ public class SdiEntrega2Tests {
 		// Ir a la opcion de buscar ofertas
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/searchOffers");
 
-		// Hacemos una búsqueda vacía 
+		// Hacemos una búsqueda vacía
 		PO_SearchListView.makeSearch(driver, "CoCh");
-		
+
 		// Comprobar que se muestra la oferta específica
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
 		assertTrue(elements.size() == 2);
@@ -683,30 +694,31 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
 		PO_View.checkElement(driver, "text", "coche BMW");
 		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
-		PO_View.checkElement(driver, "text", "Comprar");		
+		PO_View.checkElement(driver, "text", "Comprar");
 		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendido", PO_View.getTimeout());
-		
-		// Compramos la oferta 
+
+		// Compramos la oferta
 		PO_View.checkElement(driver, "text", "1500 Є");
 		elements.get(0).click();
 		PO_View.checkElement(driver, "text", "Saldo insuficiente para realizar la compra");
 		PO_View.checkElement(driver, "text", "1500 Є");
-		
-		// Comprobamos que se mantiene la búsqueda 
+
+		// Comprobamos que se mantiene la búsqueda
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 2);
 		PO_View.checkElement(driver, "text", "Coche SEAT");
 		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
 		PO_View.checkElement(driver, "text", "coche BMW");
 		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
-		PO_View.checkElement(driver, "text", "Comprar");		
+		PO_View.checkElement(driver, "text", "Comprar");
 		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendido", PO_View.getTimeout());
 
 		// Hacemos logout
 		PO_NavView.logOut(driver);
 	}
 
-	// PR26. Ir a la opción de ofertas compradas del usuario y mostrar la lista. Comprobar que 
+	// PR26. Ir a la opción de ofertas compradas del usuario y mostrar la lista.
+	// Comprobar que
 	// aparecen las ofertas que deben aparecer. /
 	@Test
 	public void PR26() {
@@ -715,7 +727,7 @@ public class SdiEntrega2Tests {
 
 		// Ir a la opcion de buscar ofertas
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/purchasedOffers");
-		
+
 		// Comprobar que se muestran todas las ofertas compradas
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 3);
@@ -725,7 +737,7 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Ratón de uso diario inalámbrico.");
 		PO_View.checkElement(driver, "text", "Micrófono");
 		PO_View.checkElement(driver, "text", "Para hacer ASMRs.");
-		
+
 		// Hacemos logout
 		PO_NavView.logOut(driver);
 	}
@@ -744,61 +756,62 @@ public class SdiEntrega2Tests {
 
 	// PR030. Inicio de sesión con datos válido /
 	@Test
-	public void PR30() {	
-		// Navegamos al cliente 
+	public void PR30() {
+		// Navegamos al cliente
 		driver.navigate().to(URL + "/cliente.html");
-		
-		// Introducimos credenciales válidas 
+
+		// Introducimos credenciales válidas
 		PO_LoginView.fillForm(driver, "moises@email.com", "123456");
-		
-		// Comprobamos que se muestra el widget correspondiente a la lista de 
+
+		// Comprobamos que se muestra el widget correspondiente a la lista de
 		// ofertas disponibles
 		PO_View.checkElement(driver, "text", "Lista de ofertas disponibles");
 	}
 
-	// PR031. Inicio de sesión con datos inválidos 
+	// PR031. Inicio de sesión con datos inválidos
 	// (email existente, pero contraseña incorrecta). /
 	@Test
 	public void PR31() {
-		// Navegamos al cliente 
+		// Navegamos al cliente
 		driver.navigate().to(URL + "/cliente.html");
-		
+
 		// Introducimos credenciales inválidas
 		// (email existente, pero contraseña incorrecta)
 		PO_LoginView.fillForm(driver, "moises@email.com", "1234567");
-		
+
 		// Comprobamos que se muestra el mensaje de error
 		PO_View.checkElement(driver, "text", "Usuario no encontrado");
 	}
-	
-	// PR031. Inicio de sesión con datos válidos (campo email o contraseña vacíos). 
+
+	// PR032. Inicio de sesión con datos válidos (campo email o contraseña vacíos).
 	// (campo email o contraseña vacíos). /
 	@Test
 	public void PR32() {
-		// Navegamos al cliente 
+		// Navegamos al cliente
 		driver.navigate().to(URL + "/cliente.html");
-		
+
 		// Introducimos credenciales inválidas
 		// (campo email o contraseña vacíos)
 		PO_LoginView.fillForm(driver, "", "");
-		
+
 		// Comprobamos que se muestra el mensaje de error
 		PO_View.checkElement(driver, "text", "Usuario no encontrado");
 	}
-	
-	// PR031. Mostrar el listado de ofertas disponibles y comprobar que se muestran todas las que 
+
+	// PR033. Mostrar el listado de ofertas disponibles y comprobar que se muestran
+	// todas las que
 	// existen, menos las del usuario identificado. /
 	@Test
 	public void PR33() {
-		// Navegamos al cliente 
+		// Navegamos al cliente
 		driver.navigate().to(URL + "/cliente.html");
-		
+
 		// Introducimos credenciales válidas
 		PO_LoginView.fillForm(driver, "juan@email.com", "123456");
-		
-		// Comprobamos que se muestra la lista de ofeats 
+
+		// Comprobamos que se muestra la lista de ofeats
 		PO_View.checkElement(driver, "text", "Lista de ofertas disponibles");
-		
+
 		// Comprobamos que se muestran todas las ofertas
 		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr");
 		assertTrue(elements.size() == 9);
@@ -809,13 +822,99 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Película molona");
 		PO_View.checkElement(driver, "text", "Ratón oficina");
 		PO_View.checkElement(driver, "text", "Película");
-		PO_View.checkElement(driver, "text", "coche BMW"); 
-		PO_View.checkElement(driver, "text", "Micrófono"); 
-		
+		PO_View.checkElement(driver, "text", "coche BMW");
+		PO_View.checkElement(driver, "text", "Micrófono");
+
 		// Comprobamos que no salen las ofertas del usuario logueado
 		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Libro informática", PO_View.getTimeout());
 		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Ordenador fijo HP", PO_View.getTimeout());
 		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Libro informática", PO_View.getTimeout());
+	}
+
+	// PR034. Sobre una búsqueda determinada de ofertas (a elección de
+	// desarrollador), enviar un mensaje a una oferta concreta. Se abriría dicha
+	// conversación por primera vez. Comprobar que el mensaje aparece en el listado de mensajes.
+	// /
+	@Test
+	public void PR34() {
+		// Navegamos al cliente
+		driver.navigate().to(URL + "/cliente.html");
+
+		// Introducimos credenciales válidas
+		PO_LoginView.fillForm(driver, "moises@email.com", "123456");
+
+		// Comprobamos que se muestra la lista de ofeats
+		PO_View.checkElement(driver, "text", "Lista de ofertas disponibles");
+
+		// Buscamos la oferta deseada
+		List<WebElement> elements = PO_View.checkElement(driver, "id", "filtro-titulo");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+		elements.get(0).sendKeys("Di");
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr/td[5]/button");
+		assertTrue(elements.size() == 1);
+
+		// Entramos a su respectiva conversación
+		elements.get(0).click();
+
+		// Enviar un mensaje
+		elements = PO_View.checkElement(driver, "id", "message");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+		elements.get(0).sendKeys("Mensaje de prueba");
+		elements = PO_View.checkElement(driver, "id", "enviar-mensaje");
+		elements.get(0).click();
+
+		// Comprobamos que sale el mensaje recien creado (el único)
+		// (¡CUIDADO! Se espera primero a que aparezce el texto del mensaje,
+		// ya que tarda en cargar)
+		PO_View.checkElement(driver, "text", "Mensaje de prueba");
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr");
+		assertTrue(elements.size() == 1);
+	}
+
+	// PR035. Sobre el listado de conversaciones enviar un mensaje a una
+	// conversación ya abierta. Comprobar que el mensaje aparece en el listado de mensajes. /
+	@Test
+	public void PR35() {
+		// Navegamos al cliente
+		driver.navigate().to(URL + "/cliente.html");
+
+		// Introducimos credenciales válidas
+		PO_LoginView.fillForm(driver, "moises@email.com", "123456");
+
+		// Comprobamos que se muestra la lista de ofeats
+		PO_View.checkElement(driver, "text", "Lista de ofertas disponibles");
+
+		// Buscamos la oferta deseada
+		List<WebElement> elements = PO_View.checkElement(driver, "id", "filtro-titulo");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+		elements.get(0).sendKeys("seat");
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr/td[5]/button");
+		assertTrue(elements.size() == 1);
+
+		// Entramos a su respectiva conversación
+		elements.get(0).click();
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr");
+		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "Me intersea la oferta");
+		PO_View.checkElement(driver, "text", "¿ De cuanto estariamos hablando ?");
+
+		// Enviar un mensaje
+		elements = PO_View.checkElement(driver, "id", "message");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+		elements.get(0).sendKeys("Mensaje de prueba");
+		elements = PO_View.checkElement(driver, "id", "enviar-mensaje");
+		elements.get(0).click();
+
+		// Comprobamos que sale el mensaje recien creado
+		// (¡CUIDADO! Se espera primero a que aparezce el texto del mensaje,
+		// ya que tarda en cargar)
+		PO_View.checkElement(driver, "text", "Mensaje de prueba");
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr");
+		assertTrue(elements.size() == 3);
 	}
 
 }

@@ -30,7 +30,7 @@ module.exports = function (app, gestorBD) {
     */
     app.get("/api/message/list/:offerId", function (req, res) {
         let criterio = {
-            $and: [{offerId: req.params.offerId},
+            $and: [{offerId: gestorBD.mongo.ObjectID(req.params.offerId)},
                 {$or: [{sender: res.usuario}, {receiver: res.usuario}]}]
         };
         let sort = {creationDate: 1};
@@ -86,7 +86,7 @@ module.exports = function (app, gestorBD) {
                         let mensaje = {
                             sender: res.usuario,
                             receiver: ofertas[0].owner,
-                            offerId: req.body.offerId,
+                            offerId: gestorBD.mongo.ObjectID(req.body.offerId),
                             message: req.body.message,
                             creationDate: new Date(),
                             read: false

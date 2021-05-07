@@ -1,6 +1,7 @@
 <div id="widget-ofertas" >
     <h2>Lista de ofertas disponibles:</h2>
-    <button class="btn" onclick="cargarOfertas()" >Actualizar</button>
+    <input type="text" class="form-control" placeholder="Filtrar por título"
+           id="filtro-titulo"/>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -56,6 +57,19 @@
             //la id tiene que ir entre comillas ' '
         }
     }
+
+    $('#filtro-titulo').on('input',function(e){
+        var ofertasFiltradas = [];
+        var tituloFiltro = $("#filtro-titulo").val().toLowerCase();
+        for (i = 0; i < ofertas.length; i++) {
+            if (ofertas[i].title.toLowerCase().indexOf(tituloFiltro) != -1 ){
+                ofertasFiltradas.push(ofertas[i]);
+            }
+        }
+        actualizarTablaOfertas(ofertasFiltradas);
+    });
+
     cargarOfertas();
+
 </script>
 

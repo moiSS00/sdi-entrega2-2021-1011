@@ -278,4 +278,28 @@ module.exports = {
             }
         });
     },
+
+    /*
+    Eliminar los mensajes de la base de datos que cumplan un criterio.
+    Recibe el criterio de eliminación y la función de callback a usar.
+    Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
+    Si no hubo problemas -> La función de callback recibe el resultado de la operación de borrado.
+    */
+    eliminarMensaje: function (criterio, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('messages');
+                collection.remove(criterio, function (err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },
 };
