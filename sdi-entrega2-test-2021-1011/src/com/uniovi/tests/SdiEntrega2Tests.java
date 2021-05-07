@@ -768,6 +768,7 @@ public class SdiEntrega2Tests {
 
 		// Comprobamos que se muestra el widget correspondiente a la lista de
 		// ofertas disponibles
+		PO_View.checkElement(driver, "text", "moises@email.com");
 		PO_View.checkElement(driver, "text", "Lista de ofertas disponibles");
 	}
 

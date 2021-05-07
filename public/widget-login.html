@@ -34,10 +34,14 @@
                 console.log(respuesta.token);
                 token = respuesta.token;
                 Cookies.set('token', respuesta.token);
+                Cookies.set('email', $("#email").val());
+                $("#barra-menu-derecha").prepend("<li class='navbar-text' id='email-menu'>Email: "
+                    + $("#email").val() + "</li>");
                 $("#contenedor-principal").load("widget-ofertas.html");
             },
             error: function (error) {
                 Cookies.remove('token');
+                Cookies.remove('email');
                 $("#widget-login")
                     .prepend("<div class='alert alert-danger'>Usuario no encontrado</div>");
             }
