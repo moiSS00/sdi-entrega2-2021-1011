@@ -742,16 +742,48 @@ public class SdiEntrega2Tests {
 		assertTrue("PR29 sin hacer", false);
 	}
 
-	// PR030. Sin hacer /
+	// PR030. Inicio de sesión con datos válido /
 	@Test
-	public void PR30() {
-		assertTrue("PR30 sin hacer", false);
+	public void PR30() {	
+		// Navegamos al cliente 
+		driver.navigate().to(URL + "/cliente.html");
+		
+		// Introducimos credenciales válidas 
+		PO_LoginView.fillForm(driver, "moises@email.com", "123456");
+		
+		// Comprobamos que se muestra el widget correspondiente a la lista de 
+		// ofertas disponibles
+		PO_View.checkElement(driver, "text", "Lista de ofertas disponibles");
 	}
 
-	// PR031. Sin hacer /
+	// PR031. Inicio de sesión con datos inválidos 
+	// (email existente, pero contraseña incorrecta). /
 	@Test
 	public void PR31() {
-		assertTrue("PR31 sin hacer", false);
+		// Navegamos al cliente 
+		driver.navigate().to(URL + "/cliente.html");
+		
+		// Introducimos credenciales inválidas
+		// (email existente, pero contraseña incorrecta)
+		PO_LoginView.fillForm(driver, "moises@email.com", "1234567");
+		
+		// Comprobamos que se muestra el mensaje de error
+		PO_View.checkElement(driver, "text", "Usuario no encontrado");
+	}
+	
+	// PR031. Inicio de sesión con datos válidos (campo email o contraseña vacíos). 
+	// (campo email o contraseña vacíos). /
+	@Test
+	public void PR32() {
+		// Navegamos al cliente 
+		driver.navigate().to(URL + "/cliente.html");
+		
+		// Introducimos credenciales inválidas
+		// (campo email o contraseña vacíos)
+		PO_LoginView.fillForm(driver, "", "");
+		
+		// Comprobamos que se muestra el mensaje de error
+		PO_View.checkElement(driver, "text", "Usuario no encontrado");
 	}
 
 }

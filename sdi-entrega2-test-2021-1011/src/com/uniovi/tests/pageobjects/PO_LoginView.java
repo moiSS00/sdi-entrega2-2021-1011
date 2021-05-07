@@ -20,7 +20,7 @@ public class PO_LoginView extends PO_NavView {
 
 
 		// Pulsamos el botón para enviar el formulario.
-		By boton = By.className("btn");
+		By boton = By.id("boton-login");
 		driver.findElement(boton).click();
 	}
 
