@@ -40,19 +40,26 @@
         ofertaSeleccionada = idOferta;
         $( "#contenedor-principal" ).load( "widget-mensajes.html");
     }
-    function actualizarTablaOfertas(ofertasMostrar){
+    function actualizarTablaOfertas(ofertasMostrar) {
         $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
         for (i = 0; i < ofertasMostrar.length; i++) {
+            var cadena = "";
+            if (ofertasMostrar[i].buyer) {
+                cadena = "<span class='text-danger'>Vendido</span>"
+            }
+            else {
+                cadena = "<button class='btn' onclick=widgetMensajes('"+ofertasMostrar[i]._id+"')>" +
+                    "Contactar</button>";
+            }
             $( "#tablaCuerpo" ).append(
                 "<tr id="+ofertasMostrar[i]._id+">"+
                 "<td>"+ofertasMostrar[i].title+"</td>" +
                 "<td>"+ofertasMostrar[i].description+"</td>" +
                 "<td>"+ofertasMostrar[i].price+"</td>" +
                 "<td>"+ofertasMostrar[i].owner+"</td>" +
-                "<td>"+
-                "<button class='btn' onclick=widgetMensajes('"+ofertasMostrar[i]._id+"')>Contactar</button><br>"+
-                "</td>"+
-                "</tr>" );
+                "<td>"+ cadena + "</td>"+
+                "</tr>"
+            );
             // Mucho cuidado con las comillas del eliminarCancion
             //la id tiene que ir entre comillas ' '
         }

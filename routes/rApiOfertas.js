@@ -59,10 +59,11 @@ module.exports = function (app, gestorBD) {
         mensaje.
     Se debe recibir en formato JSON un mensaje (que no puede ser vacío) y el id de la oferta (que debe ser un id
         válido)
-    Si se recibe un mensaje vacío o un id de oferta inválido -> Error del cliente 401 (Array con todos los
+    Si se recibe un mensaje vacío o un id de oferta inválido -> Error del cliente 400 (Array con todos los
         errores encontrados).
     Si hay algún error al recuperar la oferta -> Error del servidor 500 (Error al recuperar la oferta).
-    Si el usuario logueado es el propitario de la oferta -> Error del cliente 402 (Es el dueño de esta oferta).
+    Si el usuario logueado es el propitario de la oferta -> Error del cliente 401 (Es el dueño de esta oferta).
+    Si la oferta esta comprada 402 (No se puede mandar un mensaje a una oferta comprada).
     Si hay algún error al insertar el mensaje -> Error del servidor 500 (Error al crear el mensaje).
     Si no hubo errroes -> Respuesta satisfactoria  200 y se devuelve un mensaje informativo y el id del
         mensaje insertado en la base de datos.
@@ -88,30 +89,37 @@ module.exports = function (app, gestorBD) {
                     });
                 } else {
                     if (ofertas[0].owner != res.usuario) {
-                        let mensaje = {
-                            sender: res.usuario,
-                            receiver: ofertas[0].owner,
-                            offerId: gestorBD.mongo.ObjectID(req.body.offerId),
-                            message: req.body.message,
-                            creationDate: new Date(),
-                            read: false
-                        }
-                        gestorBD.insertarMensaje(mensaje, function (id) {
-                            if (id == null) {
-                                res.status(500);
-                                res.json({
-                                    error: "Error al crear el mensaje"
-                                });
-                            } else {
-                                res.status(200);
-                                res.json({
-                                    mensaje: "mensaje insertado",
-                                    _id: id
-                                });
+                        if (!ofertas[0].buyer) {
+                            let mensaje = {
+                                sender: res.usuario,
+                                receiver: ofertas[0].owner,
+                                offerId: gestorBD.mongo.ObjectID(req.body.offerId),
+                                message: req.body.message,
+                                creationDate: new Date(),
+                                read: false
                             }
-                        });
+                            gestorBD.insertarMensaje(mensaje, function (id) {
+                                if (id == null) {
+                                    res.status(501);
+                                    res.json({
+                                        error: "Error al crear el mensaje"
+                                    });
+                                } else {
+                                    res.status(200);
+                                    res.json({
+                                        mensaje: "mensaje insertado",
+                                        _id: id
+                                    });
+                                }
+                            });
+                        } else {
+                            res.status(402);
+                            res.json({
+                                error: "No se puede mandar un mensaje a una oferta comprada"
+                            });
+                        }
                     } else {
-                        res.status(402);
+                        res.status(401);
                         res.json({
                             error: "Es el dueño de esta oferta"
                         });
@@ -119,7 +127,7 @@ module.exports = function (app, gestorBD) {
                 }
             });
         } else {
-            res.status(401);
+            res.status(400);
             res.json({
                 errores: errores
             });
@@ -128,7 +136,7 @@ module.exports = function (app, gestorBD) {
 
     /*
     Loguea al usuario en la aplicación (generando un Token único para este).
-    Si hay algún error al eliminar la oferta -> Error del cliente 401 (valor booleano de autenticado a
+    Si hay algún error al eliminar la oferta -> Error del cliente 400 (valor booleano de autenticado a
         false, indicando que el usuario no se ha podido autenticar correctamente).
     Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelve el token creado (junto con un booleano a true
         indicando que no hubo errores).
@@ -144,7 +152,7 @@ module.exports = function (app, gestorBD) {
 
         gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
             if (usuarios == null || usuarios.length == 0) {
-                res.status(401);
+                res.status(400);
                 res.json({
                     autenticado: false
                 });

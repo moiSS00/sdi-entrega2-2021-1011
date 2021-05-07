@@ -850,7 +850,7 @@ public class SdiEntrega2Tests {
 		List<WebElement> elements = PO_View.checkElement(driver, "id", "filtro-titulo");
 		assertTrue(elements.size() == 1);
 		elements.get(0).click();
-		elements.get(0).sendKeys("Di");
+		elements.get(0).sendKeys("matERiaL");
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr/td[5]/button");
 		assertTrue(elements.size() == 1);
 
