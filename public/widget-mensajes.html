@@ -69,10 +69,15 @@
             },
             error: function (error) {
                 $("#widget-login")
-                    .prepend("<div class='alert alert-danger'>Usuario no encontrado</div>");
+                    .prepend("<div class='alert alert-danger'>Error al enviar el mensaje</div>");
             }
         });
     }
+
     cargarMensajes();
+
+    setInterval(function() {
+        cargarMensajes();
+    }, 1000);
 
 </script>
