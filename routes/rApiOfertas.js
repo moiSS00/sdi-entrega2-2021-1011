@@ -4,8 +4,9 @@ module.exports = function (app, gestorBD) {
 
     /*
     Busca todas las ofertas disponibles (ofertas en las que el usuario logueado no es el propietario)
-    Si hay algún error al eliminar la oferta -> 500 (se ha producido un error)
-    Si no hubo errroes -> 200 y se devuelven las ofertas encontradas.
+    Si hay algún error al eliminar la oferta -> Error del servidor 500 (Se ha producido un error al
+        recuperar las ofertas disponibles)
+    Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelven las ofertas encontradas.
     */
     app.get("/api/offer/availableOffers", function (req, res) {
         let criterio = {owner: {$ne: res.usuario}};
@@ -13,7 +14,7 @@ module.exports = function (app, gestorBD) {
             if (ofertas == null) {
                 res.status(500);
                 res.json({
-                    error: "se ha producido un error"
+                    error: "Se ha producido un error al recuperar las ofertas disponibles"
                 })
             } else {
                 res.status(200);
@@ -25,8 +26,10 @@ module.exports = function (app, gestorBD) {
     /*
     Busca todos los mensajes enviado por el usuario logueado y recibidos por el propitario de la oferta
         con el id especificado (offerId).
-    Si hay algún error al recupear la oferta -> 500 (se ha producido un error)
-    Si no hubo errroes -> 200 y se devuelven los mensajes encontradas ordenados por fecha de forma ascendente.
+    Si hay algún error al recupear la oferta -> Error del servidor 500 (Se ha producido un error al
+        recuperar los mensajes)
+    Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelven los mensajes encontradas ordenados
+        por fecha de forma ascendente.
     */
     app.get("/api/message/list/:offerId", function (req, res) {
         let criterio = {
@@ -38,7 +41,7 @@ module.exports = function (app, gestorBD) {
             if (mensajes == null) {
                 res.status(500);
                 res.json({
-                    error: "se ha producido un error"
+                    error: "Se ha producido un error al recuperar los mensajes"
                 })
             } else {
                 res.status(200);
@@ -56,11 +59,13 @@ module.exports = function (app, gestorBD) {
         mensaje.
     Se debe recibir en formato JSON un mensaje (que no puede ser vacío) y el id de la oferta (que debe ser un id
         válido)
-    Si se recibe un mensaje vacío o un id de oferta inválido -> 400 (Array con todos los errores encontrados).
-    Si hay algún error al recuperar la oferta -> 401 (Error al recuperar la oferta).
-    Si el usuario logueado es el propitario de la oferta -> 402 (Es el dueño de esta oferta).
-    Si hay algún error al insertar el mensaje -> 402 (Error al crear el mensaje).
-    Si no hubo errroes -> 200 y se devuelve un mensaje informativo y el id del mensaje insertado en la base de datos.
+    Si se recibe un mensaje vacío o un id de oferta inválido -> Error del cliente 401 (Array con todos los
+        errores encontrados).
+    Si hay algún error al recuperar la oferta -> Error del servidor 500 (Error al recuperar la oferta).
+    Si el usuario logueado es el propitario de la oferta -> Error del cliente 402 (Es el dueño de esta oferta).
+    Si hay algún error al insertar el mensaje -> Error del servidor 500 (Error al crear el mensaje).
+    Si no hubo errroes -> Respuesta satisfactoria  200 y se devuelve un mensaje informativo y el id del
+        mensaje insertado en la base de datos.
     */
     app.post("/api/message/add", function (req, res) {
         let errores = [];
@@ -77,7 +82,7 @@ module.exports = function (app, gestorBD) {
             let criterio = {_id: gestorBD.mongo.ObjectID(req.body.offerId)};
             gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
                 if (ofertas == null || ofertas.length == 0) {
-                    res.status(401);
+                    res.status(500);
                     res.json({
                         error: "Error al recuperar la oferta"
                     });
@@ -93,7 +98,7 @@ module.exports = function (app, gestorBD) {
                         }
                         gestorBD.insertarMensaje(mensaje, function (id) {
                             if (id == null) {
-                                res.status(403);
+                                res.status(500);
                                 res.json({
                                     error: "Error al crear el mensaje"
                                 });
@@ -114,7 +119,7 @@ module.exports = function (app, gestorBD) {
                 }
             });
         } else {
-            res.status(400);
+            res.status(401);
             res.json({
                 errores: errores
             });
@@ -123,9 +128,9 @@ module.exports = function (app, gestorBD) {
 
     /*
     Loguea al usuario en la aplicación (generando un Token único para este).
-    Si hay algún error al eliminar la oferta -> 401 (valor booleano de autenticado a false, indicando que el
-        usuario no se ha podido autenticar correctamente).
-    Si no hubo errroes -> 200 y se devuelve el token creado (junto con un booleano a true
+    Si hay algún error al eliminar la oferta -> Error del cliente 401 (valor booleano de autenticado a
+        false, indicando que el usuario no se ha podido autenticar correctamente).
+    Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelve el token creado (junto con un booleano a true
         indicando que no hubo errores).
     */
     app.post("/api/login", function (req, res) {
