@@ -217,28 +217,39 @@ module.exports = function (app, swig, gestorBD, logger) {
         emails = emails.concat(req.body.ids);
 
         // Eliminamos las ofertas de los usuarios seleccionados
-        let criterio = { owner: { $in: emails } };
-        gestorBD.eliminarOferta(criterio,function(ofertas){
-            if ( ofertas == null ){
-                logger.error(req.session.usuario.email + " tuvo algún problema al eliminar las ofertas de los usuarios " +
-                    "que se quieren eliminar de la lista de usuarios");
+        let criterio = { $or: [{sender: res.usuario}, {receiver: res.usuario}] };
+        gestorBD.eliminarMensaje(criterio,function(mensajes){
+            if ( mensajes == null ){
+                logger.error(req.session.usuario.email + " tuvo algún problema al eliminar en la " +
+                    "base de datos a los mensajes relacionados con la oferta que se quiere eliminar");
                 res.redirect("/admin/user/list" +
-                    "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
+                    "?mensaje=Error al eliminar a los usuarios seleccionados" +
                     "&tipoMensaje=alert-danger ");
-            } else { // Eliminamos a los usuarios seleccionados
-                criterio = { email: { $in: emails } };
-                gestorBD.eliminarUsuario(criterio,function(usuarios){
-                    if ( usuarios == null ){
-                        logger.error(req.session.usuario.email + " tuvo algún problema al eliminar en la " +
-                            "base de datos a los usuarios seleccionados en la lista de usuarios");
+            } else {
+                criterio = { owner: { $in: emails } };
+                gestorBD.eliminarOferta(criterio,function(ofertas){
+                    if ( ofertas == null ){
+                        logger.error(req.session.usuario.email + " tuvo algún problema al eliminar las ofertas de los usuarios " +
+                            "que se quieren eliminar de la lista de usuarios");
                         res.redirect("/admin/user/list" +
-                            "?mensaje=Error al eliminar a los usuarios seleccionados" +
+                            "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
                             "&tipoMensaje=alert-danger ");
-                    } else {
-                        logger.info(req.session.usuario.email + " ha eliminado usuarios marcados en la " +
-                            "lista de usuarios con éxito");
-                        res.redirect("/admin/user/list" +
-                            "?mensaje=Usuarios eliminados con éxito");
+                    } else { // Eliminamos a los usuarios seleccionados
+                        criterio = { email: { $in: emails } };
+                        gestorBD.eliminarUsuario(criterio,function(usuarios){
+                            if ( usuarios == null ){
+                                logger.error(req.session.usuario.email + " tuvo algún problema al eliminar en la " +
+                                    "base de datos a los usuarios seleccionados en la lista de usuarios");
+                                res.redirect("/admin/user/list" +
+                                    "?mensaje=Error al eliminar a los usuarios seleccionados" +
+                                    "&tipoMensaje=alert-danger ");
+                            } else {
+                                logger.info(req.session.usuario.email + " ha eliminado usuarios marcados en la " +
+                                    "lista de usuarios con éxito");
+                                res.redirect("/admin/user/list" +
+                                    "?mensaje=Usuarios eliminados con éxito");
+                            }
+                        });
                     }
                 });
             }

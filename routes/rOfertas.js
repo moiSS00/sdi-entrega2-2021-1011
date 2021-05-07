@@ -124,17 +124,29 @@ module.exports = function (app, swig, gestorBD, logger) {
                         "?mensaje=No se puede dar de baja una oferta que se haya vendido" +
                         "&tipoMensaje=alert-danger ");
                 } else {
-                    gestorBD.eliminarOferta(criterio, function (ofertas) {
-                        if (ofertas == null) {
+                    criterio = {offerId: gestorBD.mongo.ObjectID(req.params.id)};
+                    gestorBD.eliminarMensaje(criterio, function (mensajes) {
+                        if (mensajes == null) {
                             logger.error(req.session.usuario.email + " tuvo algún problema elimando de la base " +
-                                "de datos la oferta de la base de datos");
+                                "de datos los mensajes relacionados con la oferta dque se quiere eliminar");
                             res.redirect("/standard/offer/myOffers" +
                                 "?mensaje=Error al eliminar la ofertas" +
                                 "&tipoMensaje=alert-danger ");
                         } else {
-                            logger.info(req.session.usuario.email + " ha eliminado la oferta con éxito");
-                            res.redirect("/standard/offer/myOffers" +
-                                "?mensaje=Oferta eliminada con éxito");
+                            criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
+                            gestorBD.eliminarOferta(criterio, function (ofertas) {
+                                if (ofertas == null) {
+                                    logger.error(req.session.usuario.email + " tuvo algún problema elimando " +
+                                        "la oferta de la base de datos");
+                                    res.redirect("/standard/offer/myOffers" +
+                                        "?mensaje=Error al eliminar la ofertas" +
+                                        "&tipoMensaje=alert-danger ");
+                                } else {
+                                    logger.info(req.session.usuario.email + " ha eliminado la oferta con éxito");
+                                    res.redirect("/standard/offer/myOffers" +
+                                        "?mensaje=Oferta eliminada con éxito");
+                                }
+                            });
                         }
                     });
                 }
