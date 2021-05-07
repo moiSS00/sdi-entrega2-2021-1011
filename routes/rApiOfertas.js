@@ -2,6 +2,11 @@ module.exports = function (app, gestorBD) {
 
     // ---- PETICIONES GET ----
 
+    /*
+    Busca todas las ofertas disponibles (ofertas en las que el usuario logueado no es el propietario)
+    Si hay algún error al eliminar la oferta -> 500 (se ha producido un error)
+    Si no hubo errroes -> 200 y se devuelven las ofertas encontradas.
+    */
     app.get("/api/offer/availableOffers", function (req, res) {
         let criterio = {owner: {$ne: res.usuario}};
         gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
@@ -17,6 +22,12 @@ module.exports = function (app, gestorBD) {
         });
     });
 
+    /*
+    Busca todos los mensajes enviado por el usuario logueado y recibidos por el propitario de la oferta
+        con el id especificado (offerId).
+    Si hay algún error al recupear la oferta -> 500 (se ha producido un error)
+    Si no hubo errroes -> 200 y se devuelven los mensajes encontradas ordenados por fecha de forma ascendente.
+    */
     app.get("/api/message/list/:offerId", function (req, res) {
         let criterio = {
             $and: [{offerId: req.params.offerId},
@@ -39,6 +50,18 @@ module.exports = function (app, gestorBD) {
 
     // ---- PETICIONES POST ----
 
+
+    /*
+    Añade un mensaje a una conversación. Solo el intersado puede iniciar una conversación, es decir, crear el primer
+        mensaje.
+    Se debe recibir en formato JSON un mensaje (que no puede ser vacío) y el id de la oferta (que debe ser un id
+        válido)
+    Si se recibe un mensaje vacío o un id de oferta inválido -> 400 (Array con todos los errores encontrados).
+    Si hay algún error al recuperar la oferta -> 401 (Error al recuperar la oferta).
+    Si el usuario logueado es el propitario de la oferta -> 402 (Es el dueño de esta oferta).
+    Si hay algún error al insertar el mensaje -> 402 (Error al crear el mensaje).
+    Si no hubo errroes -> 200 y se devuelve un mensaje informativo y el id del mensaje insertado en la base de datos.
+    */
     app.post("/api/message/add", function (req, res) {
         let errores = [];
 
@@ -98,6 +121,13 @@ module.exports = function (app, gestorBD) {
         }
     });
 
+    /*
+    Loguea al usuario en la aplicación (generando un Token único para este).
+    Si hay algún error al eliminar la oferta -> 401 (valor booleano de autenticado a false, indicando que el
+        usuario no se ha podido autenticar correctamente).
+    Si no hubo errroes -> 200 y se devuelve el token creado (junto con un booleano a true
+        indicando que no hubo errores).
+    */
     app.post("/api/login", function (req, res) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');

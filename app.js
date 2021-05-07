@@ -55,6 +55,14 @@ app.set('crypto', crypto);
 // Routers
 
 // routerUsuarioToken
+
+/*
+Usado para el cliente ligero JQuery/Ajax. Comprueba si el usuario actual está logueado en la aplicación
+    haciendo uso de un token.
+Si no se ha encontrado token -> 403 (No hay Token).
+Si se encontró token y este no es válido -> 403 (Token invalido o caducado).
+Si se encontró token y este es válido -> Se deja pasar la petición.
+*/
 let routerUsuarioToken = express.Router();
 routerUsuarioToken.use(function(req, res, next) {
     // obtener el token, vía headers (opcionalmente GET y/o POST).
@@ -68,9 +76,7 @@ routerUsuarioToken.use(function(req, res, next) {
                     acceso : false,
                     error: 'Token invalido o caducado'
                 });
-                // También podríamos comprobar que intoToken.usuario existe
                 return;
-
             } else {
                 // dejamos correr la petición
                 res.usuario = infoToken.usuario;

@@ -184,7 +184,8 @@ module.exports = function (app, swig, gestorBD) {
         un mensaje de error.
     Si ha habido algún error al eliminar los usuarios -> Se llama a la petición GET /admin/user/list con
         un mensaje de error.
-    Si no hubo errores -> Se llama a la petición GET /admin/user/list.
+    Si no hubo errores -> Se llama a la petición GET /admin/user/list junto con un mensaje indicando que
+        el borrado se realizó correctamente..
     */
     app.post("/admin/user/remove", function (req, res) {
 

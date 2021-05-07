@@ -97,7 +97,8 @@ module.exports = function (app, swig, gestorBD) {
     Elimina una oferta con un id específico.
     Si hay algún error al eliminar la oferta -> Se llama a la petición GET /standard/offer/myOffers con
         un mensaje de error.
-    Si no hubo errroes -> Se llama a la petición GET /standard/offer/myOffers.
+    Si no hubo errroes -> Se llama a la petición GET /standard/offer/myOffers junto con un mensaje indicando que
+        el borrado se realizó correctamente.
     */
     app.get("/standard/offer/remove/:id", function (req, res) {
         let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
