@@ -19,6 +19,12 @@
 </div>
 
 <script>
+
+    if (Cookies.get('email')){
+        $("#barra-menu-derecha").prepend("<li class='navbar-text' id='email-menu'>Email: "
+            + Cookies.get('email') + "</li>");
+    }
+
     var ofertas;
     function cargarOfertas(){
         $.ajax({

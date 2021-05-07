@@ -46,9 +46,6 @@
 
     if ( Cookies.get('token') != null ){
       token = Cookies.get('token');
-      email = Cookies.get('email');
-      $("#barra-menu-derecha").prepend("<li class='navbar-text' id='email-menu'>Email: "
-              + email + "</li>");
       $( "#contenedor-principal" ).load( "widget-ofertas.html");
     }
 

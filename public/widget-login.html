@@ -35,8 +35,6 @@
                 token = respuesta.token;
                 Cookies.set('token', respuesta.token);
                 Cookies.set('email', $("#email").val());
-                $("#barra-menu-derecha").prepend("<li class='navbar-text' id='email-menu'>Email: "
-                    + $("#email").val() + "</li>");
                 $("#contenedor-principal").load("widget-ofertas.html");
             },
             error: function (error) {
