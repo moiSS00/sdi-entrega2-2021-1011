@@ -179,4 +179,21 @@ module.exports = {
             }
         });
     },
+    obtenerMensajes: function (criterio, sort, funcionCallback) { // Busca los mensajes de la base de datos que cumplan un criterio
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('messages');
+                collection.find(criterio).sort(sort).toArray(function (err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },
 };

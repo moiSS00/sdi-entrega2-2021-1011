@@ -1,0 +1,60 @@
+<div id="widget-ofertas" >
+    <button class="btn" onclick="cargarOfertas()" >Actualizar</button>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Email vendedor</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody id="tablaCuerpo">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var ofertas;
+    function cargarOfertas(){
+        $.ajax({
+            url: URLbase + "/offer/availableOffers",
+            type: "GET",
+            data: { },
+            dataType: 'json',
+            headers: { "token": token },
+            success: function(respuesta) {
+                ofertas = respuesta;
+                actualizarTablaOfertas(ofertas);
+            },
+            error : function (error){
+                $( "#contenedor-principal" ).load("widget-login.html");
+            }
+        });
+    }
+    function widgetMensajes(idOferta){
+        ofertaSeleccionada = idOferta;
+        $( "#contenedor-principal" ).load( "widget-mensajes.html");
+    }
+    function actualizarTablaOfertas(ofertasMostrar){
+        $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
+        for (i = 0; i < ofertasMostrar.length; i++) {
+            $( "#tablaCuerpo" ).append(
+                "<tr id="+ofertasMostrar[i]._id+">"+
+                "<td>"+ofertasMostrar[i].title+"</td>" +
+                "<td>"+ofertasMostrar[i].description+"</td>" +
+                "<td>"+ofertasMostrar[i].price+"</td>" +
+                "<td>"+ofertasMostrar[i].owner+"</td>" +
+                "<td>"+
+                "<button class='btn' onclick=widgetMensajes('"+ofertasMostrar[i]._id+"')>Contactar</button><br>"+
+                "</td>"+
+                "</tr>" );
+            // Mucho cuidado con las comillas del eliminarCancion
+            //la id tiene que ir entre comillas ' '
+        }
+    }
+    cargarOfertas();
+</script>
+

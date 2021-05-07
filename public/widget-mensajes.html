@@ -1,0 +1,78 @@
+<div id="widget-mensajes" >
+    <h2 id="titulo">Lista de mensajes:</h2>
+    <div class="form-group">
+        <input type="text" class="form-control"
+               placeholder="Escribe un mensaje" id="message"  name="mensaje"/>
+        <span class="input-group-btn">
+             <button class="btn btn-primary" onclick="enviarMensaje()">Enviar Mensaje</button>
+        </span>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Autor del mensaje</th>
+            <th>Fecha</th>
+            <th>Contenido</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody id="tablaCuerpo">
+
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+
+    function actualizarTablaMensajes(mensajesMostrar) {
+        $("#tablaCuerpo").empty(); // Vaciar la tabla
+        for (i = 0; i < mensajesMostrar.length; i++) {
+            $("#tablaCuerpo").append(
+                "<tr id="+mensajesMostrar[i]._id+">" + "<td>"
+                + mensajesMostrar[i].sender + "</td>" + "<td>"
+                + mensajesMostrar[i].creationDate + "</td>" + "<td>"
+                + mensajesMostrar[i].message + "</td>" + "<td>" +
+                "</tr>");
+        }
+    }
+
+    function cargarMensajes() {
+        $.ajax({
+            url: URLbase + "/message/list/" + ofertaSeleccionada,
+            type: "GET",
+            data: { },
+            dataType: 'json',
+            headers: { "token": token },
+            success: function(respuesta) {
+                mensajes = respuesta;
+                actualizarTablaMensajes(mensajes);
+            },
+            error : function (error){
+                $( "#contenedor-principal" ).load("widget-login.html");
+            }
+        });
+    }
+
+    function enviarMensaje() {
+        $.ajax({
+            url: URLbase + "/message/add",
+            type: "POST",
+            data: {
+                message: $("#message").val(),
+                offerId: ofertaSeleccionada
+            },
+            dataType: 'json',
+            headers: { "token": token },
+            success: function () {
+                cargarMensajes();
+            },
+            error: function (error) {
+                $("#widget-login")
+                    .prepend("<div class='alert alert-danger'>Usuario no encontrado</div>");
+            }
+        });
+    }
+    cargarMensajes();
+
+</script>
