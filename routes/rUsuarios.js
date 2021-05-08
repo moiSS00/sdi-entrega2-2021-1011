@@ -73,10 +73,12 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     /*
     Registra a un usuario añadiendolo a la base de datos
-    Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
-    Si las contraseñas introducidas en el formulario no coinciden -> Se muestra un mensaje de error.
-    Si el email introducido en el formulario ya está en uso -> Se muestra un mensaje de error.
-    Si hubo algún error al insertar al nuevo usuario  -> Se muestra un mensaje de error.
+    Si se ha dejado algún campo vacío en el formulario -> Se llama a la petición GET /signup con un mensaje de error.
+    Si las contraseñas introducidas en el formulario no coinciden -> Se llama a la petición
+        GET /signup con un mensaje de error.
+    Si el email introducido en el formulario ya está en uso -> Se llama a la petición
+        GET /signup con un mensaje de error.
+    Si hubo algún error al insertar al nuevo usuario  -> Se llama a la petición GET /signup con un mensaje de error.
     Si no hubo errores -> El usuario inicia sesión y se llama a la petición GET /user/home.
     */
     app.post('/signup', function (req, res) {
@@ -142,7 +144,6 @@ module.exports = function (app, swig, gestorBD, logger) {
                                     res.redirect("/");
                                 }
                             });
-
                         } else {
                             logger.error("El email utilizado en el formulario de registro de un" +
                                 " nuevo usuario ya existe");
@@ -156,10 +157,10 @@ module.exports = function (app, swig, gestorBD, logger) {
     });
 
     /*
-    Se inicia sesión en la aplicación.
-    Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
+    Inicia sesión en la aplicación.
+    Si se ha dejado algún campo vacío en el formulario -> Se llama a la petición GET /login con un mensaje de error.
     Si hubo algún error recuperando al usuario que está logueado actualmente o el email ntroducido en el formulario
-    no existe -> Se muestra un mensaje de error.
+    no existe -> Se llama a la petición GET /login con un mensaje de error.
     Si no hubo errores -> El usuario inicia sesión y se llama a la petición GET /user/home.
     */
     app.post("/login", function (req, res) {
@@ -171,6 +172,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                 "?mensaje=No puede dejar campos vacíos" +
                 "&tipoMensaje=alert-danger ");
         } else {
+            // Se obtiene al usuario
             let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
                 .update(req.body.password).digest('hex');
             let criterio = {
@@ -200,23 +202,22 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     /*
     Elimina los usuarios que tengan como id alguno de los ids que se pasan como parámetro.
-    Si ha habido algún error al eliminar las ofertas de los usuarios eliminados -> SSe llama a la petición GET /admin/user/list con
-        un mensaje de error.
+    Si ha habido algún error al eliminar los mensajes de los usuarios eliminados -> Se llama a la petición
+        GET /admin/user/list con un mensaje de error.
+    Si ha habido algún error al eliminar las ofertas de los usuarios eliminados -> Se llama a la petición
+        GET /admin/user/list con un mensaje de error.
     Si ha habido algún error al eliminar los usuarios -> Se llama a la petición GET /admin/user/list con
         un mensaje de error.
     Si no hubo errores -> Se llama a la petición GET /admin/user/list junto con un mensaje indicando que
         el borrado se realizó correctamente..
     */
     app.post("/admin/user/remove", function (req, res) {
-
-        // Declaramos la variable que contendrá el criterio de eliminación
-
         // Si llega un solo email, este se recibe como string
         // Si llega más de un email, los emails se reciben como un array
         let emails = [];
         emails = emails.concat(req.body.ids);
 
-        // Eliminamos las ofertas de los usuarios seleccionados
+        // Eliminamos los mensajes de los usuarios seleccionados
         let criterio = { $or: [{sender: { $in: emails }}, {receiver: { $in: emails }}] };
         gestorBD.eliminarMensaje(criterio,function(mensajes){
             if ( mensajes == null ){
@@ -226,6 +227,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                     "?mensaje=Error al eliminar a los usuarios seleccionados" +
                     "&tipoMensaje=alert-danger ");
             } else {
+                // Se eliminan las ofertas de los usuarios seleccionados
                 criterio = { owner: { $in: emails } };
                 gestorBD.eliminarOferta(criterio,function(ofertas){
                     if ( ofertas == null ){

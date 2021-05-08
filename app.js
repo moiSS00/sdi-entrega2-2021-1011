@@ -64,8 +64,8 @@ app.set('crypto', crypto);
 /*
 Usado para el cliente ligero JQuery/Ajax. Comprueba si el usuario actual está logueado en la aplicación
     haciendo uso de un token.
-Si no se ha encontrado token -> 403 (No hay Token).
-Si se encontró token y este no es válido -> 403 (Token invalido o caducado).
+Si no se ha encontrado token -> Error del cliente 403 (No hay Token).
+Si se encontró token y este no es válido -> Error del cliente 403 (Token invalido o caducado).
 Si se encontró token y este es válido -> Se deja pasar la petición.
 */
 let routerUsuarioToken = express.Router();
@@ -255,13 +255,13 @@ Si hay un usuario logueado -> Se llama a la petición GET /admin/user/list si es
 Si no hay un usuario logueado -> Se muestra la vista principal (index).
 */
 app.get('/', function (req, res) {
-    if (req.session.usuario) {
-        if (req.session.usuario.role === "ROLE_ADMIN") {
+    if (req.session.usuario) { // ¿ Usuario logueado ?
+        if (req.session.usuario.role === "ROLE_ADMIN") { // ¿ admin ?
             logger.info(req.session.usuario.email + " al tener el rol de " + req.session.usuario.role
                 + " es redirigido a la lista de usuarios");
             res.redirect("/admin/user/list");
 
-        } else if (req.session.usuario.role === "ROLE_STANDARD") {
+        } else if (req.session.usuario.role === "ROLE_STANDARD") { // ¿ estándar ?
             logger.info(req.session.usuario.email + " al tener el rol de " + req.session.usuario.role
                 + " es redirigido a su página personal");
             res.redirect("/standard/home");
@@ -273,7 +273,12 @@ app.get('/', function (req, res) {
     }
 });
 
-app.use( function (err, req , res, next) {
+/*
+Recoge los errores 500, los tranforma en errores 400 y muestra una vista indicando que ha habido un error.
+Esto se hace para evitar mostrar al usuario la traza cuando ocurra alguna excepción (motivos de seguridad)
+*/
+app.use( function
+    (err, req , res, next) {
     console.error(err);
     if(! res.headersSent) {
         res.status(400);

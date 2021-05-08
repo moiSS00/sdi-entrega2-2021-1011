@@ -3,22 +3,29 @@ module.exports = function (app, gestorBD, logger) {
     // ---- PETICIONES GET ----
 
     /*
-    Petición GET que vacia toda la base de datos
+    Vacia toda la base de datos.
+    Si hay algún error al eliminar a los mensajes de la base de datos -> Se muestra un mensaje de error.
+    Si hay algún error al eliminar a las ofertas de la base de datos -> Se muestra un mensaje de error.
+    Si hay algún error al eliminar a los usuarios de la base de datos -> Se muestra un mensaje de error.
+    Si no hubo errroes -> Se muestra un mensaje indicando que no hubo errores.
     */
     app.get('/bd/clear', function (req, res) {
+        // Eliminamos todos los mensajes
         let criterio = {};
-        gestorBD.eliminarUsuario(criterio, function (usuarios) {
-            if (usuarios == null) {
+        gestorBD.eliminarMensaje(criterio, function (mensajes) {
+            if (mensajes == null) {
                 logger.error("Error al limpiar la colección de usuarios");
                 res.send("Error al limpiar la colección de usuarios");
             } else {
+                // Eliminamos todos las ofertas
                 gestorBD.eliminarOferta(criterio, function (ofertas) {
                     if (ofertas == null) {
                         logger.error("Error al limpiar la colección de ofertas");
                         res.send("Error al limpiar la colección de ofertas");
                     } else {
-                        gestorBD.eliminarMensaje(criterio, function (mensajes) {
-                            if (mensajes == null) {
+                        // Eliminamos todos los usuarios
+                        gestorBD.eliminarUsuario(criterio, function (usuarios) {
+                            if (usuarios == null) {
                                 logger.error("Error al limpiar la colección de mensajes");
                                 res.send("Error al limpiar la colección de mensajes");
                             } else {
@@ -34,7 +41,11 @@ module.exports = function (app, gestorBD, logger) {
 
 
     /*
-    Petición GET que inserta datos de prueba en la base de datos
+    Inserta datos de prueba en la base de datos.
+    Si hay algún error al insertar los usuarios de prueba en la base de datos -> Se muestra un mensaje de error.
+    Si hay algún error al insertar las ofertas de prueba en la base de datos -> Se muestra un mensaje de error.
+    Si hay algún error al insertar los mensajes de prueba en la base de datos -> Se muestra un mensaje de error.
+    Si no hubo errroes -> Se muestra un mensaje indicando que no hubo errores.
     */
     app.get('/bd/insertSampleData', function (req, res) {
         let usuarios = [
@@ -93,6 +104,7 @@ module.exports = function (app, gestorBD, logger) {
                 role: "ROLE_STANDARD"
             },
         ];
+        // Insertamos usuarios de prueba
         gestorBD.insertarUsuario(usuarios, function (userId) {
             if (userId == null) {
                 logger.error("Error al insertar usuarios de prueba");
@@ -188,6 +200,7 @@ module.exports = function (app, gestorBD, logger) {
                         buyer: "juan@email.com"
                     },
                 ];
+                // Insertamos ofertas de prueba
                 gestorBD.insertarOferta(ofertas, function (offerId) {
                     if (offerId == null) {
                         logger.error("Error al insertar ofertas de prueba");
@@ -211,6 +224,7 @@ module.exports = function (app, gestorBD, logger) {
                                 read: false
                             }
                         ];
+                        // Insertamos mensajes de prueba
                         gestorBD.insertarMensaje(mensajes, function (id) {
                             if (id == null) {
                                 logger.error("Error al insertar mensajes de prueba");

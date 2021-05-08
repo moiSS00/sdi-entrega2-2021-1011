@@ -158,7 +158,7 @@ module.exports = function (app, gestorBD, logger) {
 
     /*
     Loguea al usuario en la aplicación (generando un Token único para este).
-    Si hay algún al recuperar al usuario de la base de datos -> Error del cliente 400 (valor booleano
+    Si hay algún error al recuperar al usuario de la base de datos -> Error del cliente 400 (valor booleano
         de autenticado a false indicando que el usuario no se ha podido autenticar correctamente).
     Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelve el token creado (junto con un booleano a true
         indicando que no hubo errores).
