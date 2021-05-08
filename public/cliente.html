@@ -23,7 +23,6 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav" id="barra-menu">
-        <li><a onclick=widgetOfertas()>Ofertas</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right" id="barra-menu-derecha">
 		<!-- Opciones de menú aqui -->
@@ -40,11 +39,12 @@
 
 <script>
 
+    // Comprobamos si el usuario esta logueado
     let token;
     let URLbase = "http://localhost:8081/api";
     $( "#contenedor-principal" ).load( "widget-login.html");
 
-    if ( Cookies.get('token') != null ) {
+    if ( Cookies.get('token') != null ) { // ¿ Usuario logueado ?
       token = Cookies.get('token');
       $( "#contenedor-principal" ).load( "widget-ofertas.html");
     }
@@ -54,6 +54,7 @@
 </html>
 
 <script>
+  // Muestra la sección de ofertas
   function widgetOfertas(){
     $( "#contenedor-principal" ).load( "widget-ofertas.html");
   }

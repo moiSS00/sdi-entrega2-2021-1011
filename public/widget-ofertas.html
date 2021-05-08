@@ -20,8 +20,9 @@
 
 <script>
 
-    if (Cookies.get('email') != null){
-        $("#barra-menu-derecha").prepend("<li class='navbar-text' id='email-menu'>Email: "
+    if (Cookies.get('email') != null) {
+        $("#barra-menu").html("<li id='availableOffers'><a onclick=widgetOfertas()>Ofertas</a></li>");
+        $("#barra-menu-derecha").html("<li class='navbar-text' id='email-menu'>Email: "
             + Cookies.get('email') + "</li>");
     }
 
