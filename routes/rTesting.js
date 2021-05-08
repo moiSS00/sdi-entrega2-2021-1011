@@ -117,7 +117,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 1500.00,
                         creationDate: new Date(2020, 5, 2, 23, 21, 2, 1),
                         owner: "andrea@email.com",
-                        buyer: null
+                        buyer: null,
+                        featured: false
                     },
                     {
                         title: "Pack material escolar",
@@ -125,7 +126,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 2.20,
                         creationDate: new Date(2018, 2, 7, 1, 3, 2, 1),
                         owner: "andrea@email.com",
-                        buyer: null
+                        buyer: null,
+                        featured: false
                     },
                     {
                         title: "Disco duro",
@@ -133,7 +135,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 100.00,
                         creationDate: new Date(2021, 2, 2, 23, 12, 1, 3),
                         owner: "manolo@email.com",
-                        buyer: "juan@email.com"
+                        buyer: "juan@email.com",
+                        featured: false
                     },
                     {
                         title: "Televisión 4K",
@@ -141,7 +144,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 80.99,
                         creationDate: new Date(2018, 7, 21, 12, 21, 2, 30),
                         owner: "andrea@email.com",
-                        buyer: null
+                        buyer: null,
+                        featured: false
                     },
                     {
                         title: "Película molona",
@@ -149,7 +153,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 3.20,
                         creationDate: new Date(2021, 2, 2, 2, 2, 5, 5),
                         owner: "manolo@email.com",
-                        buyer: null
+                        buyer: null,
+                        featured: false
                     },
                     {
                         title: "Ratón oficina",
@@ -157,7 +162,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 9.80,
                         creationDate: new Date(2020, 7, 12, 21, 12, 7, 16),
                         owner: "manolo@email.com",
-                        buyer: "juan@email.com"
+                        buyer: "juan@email.com",
+                        featured: false
                     },
                     {
                         title: "Libro informática",
@@ -165,7 +171,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 10.50,
                         creationDate: new Date(2017, 2, 30, 12, 12, 2, 5),
                         owner: "juan@email.com",
-                        buyer: null
+                        buyer: null,
+                        featured: false
                     },
                     {
                         title: "Ordenador fijo HP",
@@ -173,7 +180,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 400.21,
                         creationDate: new Date(2020, 8, 10, 23, 21, 10, 32),
                         owner: "juan@email.com",
-                        buyer: null
+                        buyer: null,
+                        featured: false
                     },
                     {
                         title: "Película",
@@ -181,7 +189,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 2.30,
                         creationDate: new Date(2017, 5, 2, 23, 32, 15, 1),
                         owner: "pepe@email.com",
-                        buyer: null
+                        buyer: null,
+                        featured: false
                     },
                     {
                         title: "coche BMW",
@@ -190,6 +199,7 @@ module.exports = function (app, gestorBD, logger) {
                         creationDate: new Date(),
                         owner: "pepe@email.com",
                         buyer: null,
+                        featured: false
                     },
                     {
                         title: "Micrófono",
@@ -197,7 +207,8 @@ module.exports = function (app, gestorBD, logger) {
                         price: 9.80,
                         creationDate: new Date(),
                         owner: "pepe@email.com",
-                        buyer: "juan@email.com"
+                        buyer: "juan@email.com",
+                        featured: false
                     },
                 ];
                 // Insertamos ofertas de prueba

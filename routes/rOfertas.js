@@ -78,7 +78,7 @@ module.exports = function (app, swig, gestorBD, logger) {
             if (ofertas == null) {
                 logger.error(req.session.usuario.email + " tuvo algún problema al recuperar las ofertas " +
                     "disponibles de la base de datos");
-                respuesta = swig.renderFile('views/bBuscarOferta.html', {
+                respuesta = swig.renderFile('views/bBuscarOfertas.html', {
                     usuario: req.session.usuario,
                     ofertas: []
                 });
@@ -93,7 +93,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                         paginas.push(i);
                     }
                 }
-                respuesta = swig.renderFile('views/bBuscarOferta.html', {
+                respuesta = swig.renderFile('views/bBuscarOfertas.html', {
                     usuario: req.session.usuario,
                     ofertas: ofertas,
                     paginas: paginas,
@@ -285,6 +285,32 @@ module.exports = function (app, swig, gestorBD, logger) {
         });
     });
 
+    /*
+    Destaca una oferta (identificada por su id).
+    Si hay algún error al recuperar la oferta -> Se llama a la petición GET /standard/offer/myOffers con
+        un mensaje de error.
+    Si no hubo errroes -> Se llama a la petición GET /standard/offer/myOffers junto con un mensaje indicando que
+        la opearción se realizó correctamente.
+    */
+    app.get("/standard/offer/featured/:id", function (req, res) {
+        // Recuperamos la oferta
+        let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
+        gestorBD.modificarOferta(
+            criterio, { featured: true}, function (result) {
+                if (result == null) {
+                    logger.error(req.session.usuario.email + " tuvo algún problema modificando " +
+                        "la oferta a destacar en la base de datos");
+                    res.redirect("/standard/offer/myOffers" +
+                        "?mensaje=Error al destacar la oferta" +
+                        "&tipoMensaje=alert-danger");
+                } else {
+                    logger.info(req.session.usuario.email + " ha destacado una oferta con éxito");
+                    res.redirect("/standard/offer/myOffers" +
+                        "?mensaje=Oferta destacada con éxito");
+                }
+            });
+    });
+
     // ---- PETICIONES POST ----
 
     /*
@@ -334,6 +360,12 @@ module.exports = function (app, swig, gestorBD, logger) {
                     if (precio) {
                         // Se comprueba que el precio sea positivo
                         if (precio >= 0) {
+                            // Se comprueba si se marco o no la opción de destacar la oferta
+                            // (El valor del checkbox llega como on / off)
+                            let featured = false;
+                            if(req.body.featured === "on") {
+                                featured = true;
+                            }
                             // Creamos la oferta a añadir
                             let oferta = {
                                 title: req.body.title,
@@ -341,7 +373,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                                 price: parseFloat(precio.toFixed(2)),
                                 creationDate: new Date(),
                                 owner: req.session.usuario.email,
-                                buyer: null
+                                buyer: null,
+                                featured: featured
                             }
                             // Añadimos la oferta a la base de datos
                             gestorBD.insertarOferta(oferta, function (id) {

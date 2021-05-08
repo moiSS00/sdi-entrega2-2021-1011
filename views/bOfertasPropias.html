@@ -20,11 +20,19 @@
                 <td>{{ oferta.description }}</td>
                 <td>{{ oferta.price }}</td>
                 <td>
+
                     {% if oferta.buyer %}
                         <span class="text-danger">Vendido</span>
                     {% else %}
                         <a href="/standard/offer/remove/{{ oferta._id.toString() }}">Eliminar</a>
                     {% endif %}
+
+                    {% if oferta.featured %}
+                        <span class="text-danger">Destacada</span>
+                    {% else %}
+                        <a href="/standard/offer/featured/{{ oferta._id.toString() }}">Destacar</a>
+                    {% endif %}
+
                 </td>
             </tr>
             {% endfor %}

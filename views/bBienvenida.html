@@ -5,6 +5,38 @@
 {% block contenido_principal %}
 <div class="row text-center">
     <h1>¡ Bienvenido {{ usuario.name }} !</h1>
-    <img src="/img/big-logo.png" alt="logo" />
+    <h2>Ofertas destacadas</h2>
+    <p>Esta es la lista de ofertas destacadas:</p>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover" id="tableOffers">
+        <thead>
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Precio(€)</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for oferta in ofertas %}
+        <tr>
+            <td>{{ oferta.title }}</td>
+            <td>{{ oferta.description }}</td>
+            <td>{{ oferta.price }}</td>
+            <td>
+
+                {% if oferta.buyer %}
+                <span class="text-danger">Vendido</span>
+                {% else %}
+                <a href="/standard/offer/buy/{{ oferta._id.toString() }}?pg={{ actual }}
+                    &searchText={{ searchText}}">Comprar</a>
+                {% endif %}
+
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
