@@ -20,12 +20,14 @@
 
 <script>
 
+    // Si el usuario esta logueado, mostrar las opciones del menú de navegación y el email de este
     if (Cookies.get('email') != null) {
         $("#barra-menu").html("<li id='availableOffers'><a onclick=widgetOfertas()>Ofertas</a></li>");
         $("#barra-menu-derecha").html("<li class='navbar-text' id='email-menu'>Email: "
             + Cookies.get('email') + "</li>");
     }
 
+    // Carga las ofertas disponibles que hay en la base de datos para el usuario logueado
     var ofertas;
     function cargarOfertas(){
         $.ajax({
@@ -43,10 +45,8 @@
             }
         });
     }
-    function widgetMensajes(idOferta){
-        ofertaSeleccionada = idOferta;
-        $( "#contenedor-principal" ).load( "widget-mensajes.html");
-    }
+
+    // Actualiza el contenido de la tabla de ofertas
     function actualizarTablaOfertas(ofertasMostrar) {
         $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
         for (i = 0; i < ofertasMostrar.length; i++) {
@@ -67,11 +67,11 @@
                 "<td>"+ cadena + "</td>"+
                 "</tr>"
             );
-            // Mucho cuidado con las comillas del eliminarCancion
             //la id tiene que ir entre comillas ' '
         }
     }
 
+    // Función encargada de manejar la búsqueda dinámica de ofertas por título
     $('#filtro-titulo').on('input',function(e){
         var ofertasFiltradas = [];
         var tituloFiltro = $("#filtro-titulo").val().toLowerCase();

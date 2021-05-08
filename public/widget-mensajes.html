@@ -25,6 +25,7 @@
 
 <script>
 
+    // Actualiza el contenido de la tabla de mensajes
     function actualizarTablaMensajes(mensajesMostrar) {
         $("#tablaCuerpo").empty(); // Vaciar la tabla
         for (i = 0; i < mensajesMostrar.length; i++) {
@@ -38,6 +39,7 @@
         }
     }
 
+    // Carga los mensajes que hay en la base de datos para la oferta seleccionada
     function cargarMensajes() {
         $.ajax({
             url: URLbase + "/message/list/" + ofertaSeleccionada,
@@ -55,6 +57,7 @@
         });
     }
 
+    // Se envía un mensaje desde el usuario logueado para la oferta seleccioanda
     function enviarMensaje() {
         $.ajax({
             url: URLbase + "/message/add",
@@ -76,6 +79,7 @@
         $("#message").val('');
     }
 
+    // Cada segundo se vuelven a cargar los mensajes
     setInterval(function() {
         cargarMensajes();
     }, 1000);

@@ -299,7 +299,8 @@ module.exports = function (app, swig, gestorBD, logger) {
         GET /standard/offer/add con un mensaje de error.
     Si hubo algún error al insertar la nueva oferta en la base de datos -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
-    Si no hubo errores -> Se llama a la petición GET /standard/offer/myOffers.
+    Si no hubo errores -> Se llama a la petición GET /standard/offer/myOffers con un mensaje informando de que la
+        oferta se creo correctamente.
     */
     app.post("/standard/offer/add", function (req, res) {
 
@@ -352,7 +353,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                                         "&tipoMensaje=alert-danger ");
                                 } else {
                                     logger.info(req.session.usuario.email + " ha creado una oferta correctamente");
-                                    res.redirect("/standard/offer/myOffers");
+                                    res.redirect("/standard/offer/myOffers" +
+                                        "?mensaje=Oferta creada con éxito");
                                 }
                             });
                         } else {

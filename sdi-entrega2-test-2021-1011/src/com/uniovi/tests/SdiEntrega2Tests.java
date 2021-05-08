@@ -165,7 +165,6 @@ public class SdiEntrega2Tests {
 	}
 
 	// PR07. Inicio de sesión con datos inválidos (campo email o contraseña vacíos).
-	// /
 	@Test
 	public void PR07() {
 		// Rellenamos el formulario dejando uno de los campos en blanco
@@ -212,8 +211,7 @@ public class SdiEntrega2Tests {
 	}
 
 	// PR11. Mostrar el listado de usuarios y comprobar que se muestran todos los
-	// que existen en el
-	// sistema. /
+	// que existen en el sistema. /
 	@Test
 	public void PR11() {
 		// Iniciamos sesión como usuario estándar
@@ -265,8 +263,7 @@ public class SdiEntrega2Tests {
 	}
 
 	// PR13. Ir a la lista de usuarios, borrar el último usuario de la lista,
-	// comprobar que la lista se
-	// actualiza y dicho usuario desaparece /
+	// comprobar que la lista se actualiza y dicho usuario desaparece /
 	@Test
 	public void PR13() {
 		// Iniciamos sesión como usuario estándar
@@ -298,8 +295,7 @@ public class SdiEntrega2Tests {
 	}
 
 	// PR14. Ir a la lista de usuarios, borrar 3 usuarios, comprobar que la lista se
-	// actualiza y dichos
-	// usuarios desaparecen. /
+	// actualiza y dichos usuarios desaparecen. /
 	@Test
 	public void PR14() {
 		// Iniciamos sesión como usuario estándar
@@ -348,6 +344,7 @@ public class SdiEntrega2Tests {
 
 		// Comprobamos que la oferta recien añadida sale en la lista de ofertas propias
 		// del usuario
+		PO_View.checkElement(driver, "text", "Oferta creada con éxito");
 		PO_View.checkElement(driver, "text", "PruebaTitulo");
 		PO_View.checkElement(driver, "text", "PruebaDescripcion");
 		PO_View.checkElement(driver, "text", "0.21");
@@ -359,8 +356,7 @@ public class SdiEntrega2Tests {
 	// PR16. Ir al formulario de alta de oferta, rellenarla con datos inválidos
 	// (campo título vacío y
 	// precio en negativo) y pulsar el botón Submit. Comprobar que se muestra el
-	// mensaje de campo
-	// obligatorio. /
+	// mensaje de campo obligatorio. /
 	@Test
 	public void PR16() {
 		// Iniciamos sesión como usuario estándar
@@ -721,8 +717,7 @@ public class SdiEntrega2Tests {
 	}
 
 	// PR26. Ir a la opción de ofertas compradas del usuario y mostrar la lista.
-	// Comprobar que
-	// aparecen las ofertas que deben aparecer. /
+	// Comprobar que aparecen las ofertas que deben aparecer. /
 	@Test
 	public void PR26() {
 		// Iniciamos sesión como usuario estándar
@@ -749,6 +744,12 @@ public class SdiEntrega2Tests {
 	@Test
 	public void PR27() {
 		assertTrue("PR27 sin hacer", false);
+	}
+	
+	// PR28. Sin hacer /
+	@Test
+	public void PR28() {
+		assertTrue("PR28 sin hacer", false);
 	}
 
 	// PR029. Sin hacer /
@@ -803,8 +804,7 @@ public class SdiEntrega2Tests {
 	}
 
 	// PR033. Mostrar el listado de ofertas disponibles y comprobar que se muestran
-	// todas las que
-	// existen, menos las del usuario identificado. /
+	// todas las que existen, menos las del usuario identificado. /
 	@Test
 	public void PR33() {
 		// Navegamos al cliente
@@ -838,7 +838,6 @@ public class SdiEntrega2Tests {
 	// PR034. Sobre una búsqueda determinada de ofertas (a elección de
 	// desarrollador), enviar un mensaje a una oferta concreta. Se abriría dicha
 	// conversación por primera vez. Comprobar que el mensaje aparece en el listado de mensajes.
-	// /
 	@Test
 	public void PR34() {
 		// Navegamos al cliente
