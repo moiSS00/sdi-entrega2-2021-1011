@@ -10,10 +10,10 @@
     <table class="table table-hover">
         <thead>
         <tr>
-            <th>Autor del mensaje</th>
+            <th>Remitente</th>
             <th>Fecha</th>
             <th>Contenido</th>
-            <th class="col-md-1"></th>
+            <th>Receptor</th>
         </tr>
         </thead>
         <tbody id="tablaCuerpo">
@@ -32,7 +32,8 @@
                 "<tr id="+mensajesMostrar[i]._id+">" + "<td>"
                 + mensajesMostrar[i].sender + "</td>" + "<td>"
                 + mensajesMostrar[i].creationDate + "</td>" + "<td>"
-                + mensajesMostrar[i].message + "</td>" + "<td>" +
+                + mensajesMostrar[i].message + "</td>" + "<td>"
+                + mensajesMostrar[i].receiver + "</td>" +
                 "</tr>");
         }
     }

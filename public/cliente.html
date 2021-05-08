@@ -44,7 +44,7 @@
     let URLbase = "http://localhost:8081/api";
     $( "#contenedor-principal" ).load( "widget-login.html");
 
-    if ( Cookies.get('token') != null ){
+    if ( Cookies.get('token') != null ) {
       token = Cookies.get('token');
       $( "#contenedor-principal" ).load( "widget-ofertas.html");
     }

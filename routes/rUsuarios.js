@@ -217,7 +217,7 @@ module.exports = function (app, swig, gestorBD, logger) {
         emails = emails.concat(req.body.ids);
 
         // Eliminamos las ofertas de los usuarios seleccionados
-        let criterio = { $or: [{sender: res.usuario}, {receiver: res.usuario}] };
+        let criterio = { $or: [{sender: { $in: emails }}, {receiver: { $in: emails }}] };
         gestorBD.eliminarMensaje(criterio,function(mensajes){
             if ( mensajes == null ){
                 logger.error(req.session.usuario.email + " tuvo algún problema al eliminar en la " +

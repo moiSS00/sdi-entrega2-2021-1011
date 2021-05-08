@@ -20,7 +20,7 @@
 
 <script>
 
-    if (Cookies.get('email')){
+    if (Cookies.get('email') != null){
         $("#barra-menu-derecha").prepend("<li class='navbar-text' id='email-menu'>Email: "
             + Cookies.get('email') + "</li>");
     }
