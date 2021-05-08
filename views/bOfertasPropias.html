@@ -23,14 +23,12 @@
 
                     {% if oferta.buyer %}
                         <span class="text-danger">Vendido</span>
-                    {% else %}
-                        <a href="/standard/offer/remove/{{ oferta._id.toString() }}">Eliminar</a>
-                    {% endif %}
-
-                    {% if oferta.featured %}
-                        <span class="text-danger">Destacada</span>
-                    {% else %}
+                    {% elseif !oferta.featured %}
                         <a href="/standard/offer/featured/{{ oferta._id.toString() }}">Destacar</a>
+                        <a href="/standard/offer/remove/{{ oferta._id.toString() }}">Eliminar</a>
+                    {% else %}
+                        <span class="text-danger">Destacada</span>
+                        <a href="/standard/offer/remove/{{ oferta._id.toString() }}">Eliminar</a>
                     {% endif %}
 
                 </td>

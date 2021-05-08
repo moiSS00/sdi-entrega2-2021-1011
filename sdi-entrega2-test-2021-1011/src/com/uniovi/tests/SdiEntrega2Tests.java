@@ -340,7 +340,7 @@ public class SdiEntrega2Tests {
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/add");
 
 		// Rellenamos el formulario de alta de oferta con datos validos
-		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "0.21");
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "0.21", false);
 
 		// Comprobamos que la oferta recien añadida sale en la lista de ofertas propias
 		// del usuario
@@ -368,37 +368,37 @@ public class SdiEntrega2Tests {
 		// Rellenamos el formulario de alta de oferta dejando algún campo vacío
 
 		// Título vacío
-		PO_AddOfferView.fillForm(driver, "", "PruebaDescripcion", "0.21");
+		PO_AddOfferView.fillForm(driver, "", "PruebaDescripcion", "0.21", false);
 		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
 
 		// Descripción vacía
-		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "", "0.21");
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "", "0.21", false);
 		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
 
 		// Precio vacío
-		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "");
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "", false);
 		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
 
 		// Rellenamos el formulario de alta de oferta dejando todos los campos vacíos
-		PO_AddOfferView.fillForm(driver, "", "", "");
+		PO_AddOfferView.fillForm(driver, "", "", "", false);
 		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
 
 		// Titulo demasiado corto
-		PO_AddOfferView.fillForm(driver, "Pru", "PruebaDescripcion", "0.21");
+		PO_AddOfferView.fillForm(driver, "Pru", "PruebaDescripcion", "0.21", false);
 		PO_View.checkElement(driver, "text",
 				"El título debe de tener una longitud mínima de 5 carácteres y una longitud máxima de 20 carácteres");
 
 		// Desctipción demasiado corta
-		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "Pru", "0.21");
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "Pru", "0.21", false);
 		PO_View.checkElement(driver, "text",
 				"La descripción debe de tener una longitud mínima de 5 carácteres y una longitud máxima de 50 carácteres");
 
 		// Rellenamos el campo precio con una cadena
-		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "prueba");
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "prueba", false);
 		PO_View.checkElement(driver, "text", "El precio debe de ser un número");
 
 		// Introducimos un precio negativo
-		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "-0.21");
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "-0.21", false);
 		PO_View.checkElement(driver, "text", "El precio debe de ser un valor positivo");
 
 		// Cerramos sesión y comprobamos que nos redirige a la página de login
@@ -450,7 +450,7 @@ public class SdiEntrega2Tests {
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/myOffers");
 
 		// Borramos la primera oferta
-		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a[2]");
 		assertTrue(elements.size() == 3);
 		elements.get(0).click();
 
@@ -477,7 +477,7 @@ public class SdiEntrega2Tests {
 		PO_NavView.displayOffersMenu(driver, "/standard/offer/myOffers");
 
 		// Borramos la última oferta
-		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a[2]");
 		assertTrue(elements.size() == 3);
 		elements.get(2).click();
 
@@ -740,22 +740,106 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 
-	// PR27. Sin hacer /
+	// PR27. Al crear una oferta marcar dicha oferta como destacada y a continuación comprobar: i) 
+	// que aparece en el listado de ofertas destacadas para los usuarios y que el saldo del usuario se 
+	// actualiza adecuadamente en la vista del ofertante (-20). /
 	@Test
 	public void PR27() {
-		assertTrue("PR27 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "manolo@email.com", "123456");
+
+		// Ir a la opcion de dar de alta una nota
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/add");
+
+		// Rellenamos el formulario de alta de oferta con datos validos
+		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "0.21", true);
+		
+		// Comprobamos que el saldo se ha actualizado (-20)
+		PO_View.checkElement(driver, "text", "980 Є");
+
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+		
+		// Nos logueamos como otro usuario estándar
+		PO_NavView.logInAs(driver, "moises@email.com", "123456");
+		
+		// Comprobamos aparece la oferta destaca recien creada 
+		PO_View.checkElement(driver, "text", "PruebaTitulo");
+		PO_View.checkElement(driver, "text", "PruebaDescripcion");
+		PO_View.checkElement(driver, "text", "0.21");
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+		
 	}
 	
-	// PR28. Sin hacer /
+	// PR28. Sobre el listado de ofertas de un usuario con más de 20 euros de saldo, pinchar en el 
+	// enlace Destacada y a continuación comprobar: i) que aparece en el listado de ofertas destacadas 
+	// para los usuarios y que el saldo del usuario se actualiza adecuadamente en la vista del ofertante (-
+	// 20). /
 	@Test
 	public void PR28() {
-		assertTrue("PR28 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "manolo@email.com", "123456");
+
+		// Ir a la opcion de dar de alta una nota
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/myOffers");
+
+		// Destacamos la oferta 
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr[2]/td[4]/a[1]");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+				
+		// Comprobamos que el saldo se ha actualizado (-20)
+		PO_View.checkElement(driver, "text", "980 Є");
+
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+		
+		// Nos logueamos como otro usuario estándar
+		PO_NavView.logInAs(driver, "moises@email.com", "123456");
+		
+		// Comprobamos aparece la oferta destaca recien creada 
+		PO_View.checkElement(driver, "text", "Película molona");
+		PO_View.checkElement(driver, "text", "Matrix.");
+		PO_View.checkElement(driver, "text", "3.2");
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
 	}
 
-	// PR029. Sin hacer /
+	// PR029. Sobre el listado de ofertas de un usuario con menos de 20 euros de saldo, pinchar en el 
+	// enlace Destacada y a continuación comprobar que se muestra el mensaje de saldo no suficiente. /
 	@Test
 	public void PR29() {
-		assertTrue("PR29 sin hacer", false);
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "pepe@email.com", "123456");
+
+		// Ir a la opcion de dar de alta una nota
+		PO_NavView.displayOffersMenu(driver, "/standard/offer/myOffers");
+
+		// Destacamos la oferta 
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr[1]/td[4]/a[1]");
+		assertTrue(elements.size() == 1);
+		elements.get(0).click();
+				
+		// Comprobamos que salta el error correspondiente
+		PO_View.checkElement(driver, "text", 
+				"No tiene saldo suficiente para marcar la oferta como destacada");
+		PO_View.checkElement(driver, "text", "0 Є");
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+		
+		// Nos logueamos como otro usuario estándar
+		PO_NavView.logInAs(driver, "moises@email.com", "123456");
+		
+		// Comprobamos que no aparece en la lista de ofertas destacadas
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "coche BMW", PO_View.getTimeout()); 
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Sin usar. Esta nuevo.", PO_View.getTimeout()); 
+
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
 	}
 
 	// PR030. Inicio de sesión con datos válido /

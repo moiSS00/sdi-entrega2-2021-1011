@@ -60,19 +60,20 @@ module.exports = function (app, swig, gestorBD, logger) {
     });
 
     /*
-    Muestra la página personal del usuario actual (siendo este estándar).
+    Muestra la página personal del usuario actual (siendo este estándar) con las ofertas destacadas (sin incluir
+        sus propias ofertas destacadas).
     Si hay algún error al recuperar la lista de ofertas destacadas -> Se le pasa a la vista una lista vacía.
     Si no hubo errroes -> Se muestra la vista con todos las ofertas destacadas de la aplicación.
     */
     app.get("/standard/home", function (req, res) {
         // Se recuperan las ofertas destcadas
-        let criterio = { featured: true };
+        let criterio = { featured: true, owner: {$ne: req.session.usuario.email} };
         let sort = { creationDate: -1};
         gestorBD.obtenerOfertas(criterio, sort, function (ofertas) {
             // Variable que contendrá la respuesta
             let respuesta;
-            if (ofertas == null || ofertas.length == 0) {
-                logger.error(req.session.usuario.email + " no ha podido recuperar las ofertas destcadas");
+            if (ofertas == null) {
+                logger.error(req.session.usuario.email + " no ha podido recuperar las ofertas destacadas");
                 respuesta = swig.renderFile('views/bBienvenida.html', {
                     usuario: req.session.usuario,
                     ofertas: []

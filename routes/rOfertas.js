@@ -287,28 +287,77 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     /*
     Destaca una oferta (identificada por su id).
-    Si hay algún error al recuperar la oferta -> Se llama a la petición GET /standard/offer/myOffers con
+    Si el saldo del usuario no es suficiente -> Se llama a la petición GET /standard/offer/myOffers con
         un mensaje de error.
+    Si hay algún error al modificar el saldo del usuario -> Se llama a la petición GET /standard/offer/myOffers con
+        un mensaje de error.
+    Si hay algún error al modificar la oferta marcandola como destacada -> Se llama a la petición
+        GET /standard/offer/myOffers con un mensaje de error.
     Si no hubo errroes -> Se llama a la petición GET /standard/offer/myOffers junto con un mensaje indicando que
-        la opearción se realizó correctamente.
+        la oferta se destacó correctamente.
     */
     app.get("/standard/offer/featured/:id", function (req, res) {
-        // Recuperamos la oferta
-        let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
-        gestorBD.modificarOferta(
-            criterio, { featured: true}, function (result) {
-                if (result == null) {
-                    logger.error(req.session.usuario.email + " tuvo algún problema modificando " +
-                        "la oferta a destacar en la base de datos");
+        // Se comprueba si el usuario tiene saldo suficiente para marcar la oferta como destacada
+        if (req.session.usuario.amount >= 20) {
+            // Se recupera l aoferta a destacar
+            let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
+            gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
+                if (ofertas == null) {
+                    logger.error(req.session.usuario.email + " tuvo algún problema al recuperar la oferta " +
+                        "a destacar de la base de datos");
                     res.redirect("/standard/offer/myOffers" +
-                        "?mensaje=Error al destacar la oferta" +
+                        "?mensaje=Error al crear la oferta" +
                         "&tipoMensaje=alert-danger");
                 } else {
-                    logger.info(req.session.usuario.email + " ha destacado una oferta con éxito");
-                    res.redirect("/standard/offer/myOffers" +
-                        "?mensaje=Oferta destacada con éxito");
+                    // Se comprueba si la oferta esta comprada
+                    if (ofertas[0].buyer) {
+                        logger.error(req.session.usuario.email + " intento destacar una oferta que ya estaba comprada");
+                        res.redirect("/standard/offer/myOffers" +
+                            "?mensaje=No se puede destacar una oferta que ya esta comprada" +
+                            "&tipoMensaje=alert-danger");
+                    } else {
+                        // Se actualiza el saldo del usuario
+                        criterio = {email: req.session.usuario.email};
+                        let newAmount = req.session.usuario.amount - 20;
+                        newAmount = parseFloat(newAmount.toFixed(2));
+                        // Modificamos el saldo del usuario
+                        gestorBD.modificarUsuario(
+                            criterio, {amount: newAmount}, function (result) {
+                                if (result == null) {
+                                    logger.error(req.session.usuario.email + " tuvo algún problema " +
+                                        "modificando su monto en la base de datos");
+                                    res.redirect("/standard/offer/myOffers" +
+                                        "?mensaje=Error al crear la oferta" +
+                                        "&tipoMensaje=alert-danger");
+                                } else {
+                                    // Se modifica la oferta marcandola como destacada
+                                    criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
+                                    gestorBD.modificarOferta(
+                                        criterio, {featured: true}, function (result) {
+                                            if (result == null) {
+                                                logger.error(req.session.usuario.email + " tuvo algún problema " +
+                                                    "modificando la oferta a destacar en la base de datos");
+                                                res.redirect("/standard/offer/myOffers" +
+                                                    "?mensaje=Error al destacar la oferta" +
+                                                    "&tipoMensaje=alert-danger");
+                                            } else {
+                                                logger.info(req.session.usuario.email + " ha destacado una oferta " +
+                                                    "con éxito");
+                                                res.redirect("/standard/offer/myOffers" +
+                                                    "?mensaje=Oferta destacada con éxito");
+                                            }
+                                        });
+                                }
+                            });
+                    }
                 }
             });
+        } else {
+            logger.error(req.session.usuario.email + " intento destacar una oferta con saldo insufciente");
+            res.redirect("/standard/offer/myOffers" +
+                "?mensaje=No tiene saldo suficiente para marcar la oferta como destacada" +
+                "&tipoMensaje=alert-danger ");
+        }
     });
 
     // ---- PETICIONES POST ----
@@ -323,19 +372,20 @@ module.exports = function (app, swig, gestorBD, logger) {
         GET /standard/offer/add con un mensaje de error.
     Si se pasa un precio con un formato incorrecto o negativo -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
+   Si el usuario intenta destacar una oferta con saldo insuficiente -> Se llama a la petición
+        GET /standard/offer/add con un mensaje de error.
     Si hubo algún error al insertar la nueva oferta en la base de datos -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
     Si no hubo errores -> Se llama a la petición GET /standard/offer/myOffers con un mensaje informando de que la
         oferta se creo correctamente.
     */
     app.post("/standard/offer/add", function (req, res) {
-
         // Comprobamos que no se ha dejado ningún campo vacío
         if (!req.body.title || !req.body.description || !req.body.price) {
             logger.error(req.session.usuario.email + " se ha dejado algún campo vacío en el formulario para dar de alta una nueva oferta");
             res.redirect("/standard/offer/add" +
                 "?mensaje=No puede dejar campos vacíos" +
-                "&tipoMensaje=alert-danger ");
+                "&tipoMensaje=alert-danger");
         } else {
             // Comprobamos la longitud del título
             if (req.body.title.length < 5 || req.body.title.length > 20) {
@@ -363,7 +413,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                             // Se comprueba si se marco o no la opción de destacar la oferta
                             // (El valor del checkbox llega como on / off)
                             let featured = false;
-                            if(req.body.featured === "on") {
+                            if (req.body.featured === "on") {
                                 featured = true;
                             }
                             // Creamos la oferta a añadir
@@ -376,20 +426,64 @@ module.exports = function (app, swig, gestorBD, logger) {
                                 buyer: null,
                                 featured: featured
                             }
-                            // Añadimos la oferta a la base de datos
-                            gestorBD.insertarOferta(oferta, function (id) {
-                                if (id == null) {
-                                    logger.error(req.session.usuario.email + "tuvo algún problema al insertar en " +
-                                        "la base de datos la oferta en el formulario para dar de alta una nueva oferta");
-                                    res.redirect("/standard/offer/add" +
-                                        "?mensaje=Error al crear la oferta" +
-                                        "&tipoMensaje=alert-danger ");
+                            // Si se quiere destacar la oferta
+                            if (featured) {
+                                // Comprobamos que el usuario tenga saldo suficiente para destacar la oferta
+                                if (req.session.usuario.amount >= 20) {
+                                    // Se modificar el saldo del usuario
+                                    let criterio = {email: req.session.usuario.email};
+                                    let newAmount = req.session.usuario.amount - 20;
+                                    newAmount = parseFloat(newAmount.toFixed(2));
+                                    gestorBD.modificarUsuario(
+                                        criterio, {amount: newAmount}, function (result) {
+                                            if (result == null) {
+                                                logger.error(req.session.usuario.email + " tuvo algún problema " +
+                                                    "modificando su monto en la base de datos");
+                                                res.redirect("/standard/offer/searchOffers" +
+                                                    "?mensaje=Error al crear la oferta" +
+                                                    "&tipoMensaje=alert-danger");
+                                            } else {
+                                                // Añadimos la oferta a la base de datos
+                                                gestorBD.insertarOferta(oferta, function (id) {
+                                                    if (id == null) {
+                                                        logger.error(req.session.usuario.email + "tuvo algún problema " +
+                                                            "al destacar la oferta en la base de datos en el formulario " +
+                                                            "para dar de alta una nueva oferta");
+                                                        res.redirect("/standard/offer/add" +
+                                                            "?mensaje=Error al destacar la oferta" +
+                                                            "&tipoMensaje=alert-danger ");
+                                                    } else {
+                                                        logger.info(req.session.usuario.email + " ha creado una oferta " +
+                                                            "correctamente");
+                                                        res.redirect("/standard/offer/myOffers" +
+                                                            "?mensaje=Oferta creada con éxito");
+                                                    }
+                                                });
+                                            }
+                                        });
                                 } else {
-                                    logger.info(req.session.usuario.email + " ha creado una oferta correctamente");
-                                    res.redirect("/standard/offer/myOffers" +
-                                        "?mensaje=Oferta creada con éxito");
+                                    logger.error(req.session.usuario.email + " intento destacar una oferta con " +
+                                        "saldo insufciente");
+                                    res.redirect("/standard/offer/add" +
+                                        "?mensaje=No tiene saldo suficiente para marcar la oferta como destacada" +
+                                        "&tipoMensaje=alert-danger");
                                 }
-                            });
+                            } else { // Si el usuario no qeuiere destacar la oferta
+                                // Añadimos directamente la oferta a la base de datos
+                                gestorBD.insertarOferta(oferta, function (id) {
+                                    if (id == null) {
+                                        logger.error(req.session.usuario.email + "tuvo algún problema al insertar en " +
+                                            "la base de datos la oferta en el formulario para dar de alta una nueva oferta");
+                                        res.redirect("/standard/offer/add" +
+                                            "?mensaje=Error al crear la oferta" +
+                                            "&tipoMensaje=alert-danger");
+                                    } else {
+                                        logger.info(req.session.usuario.email + " ha creado una oferta correctamente");
+                                        res.redirect("/standard/offer/myOffers" +
+                                            "?mensaje=Oferta creada con éxito");
+                                    }
+                                });
+                            }
                         } else {
                             logger.error(req.session.usuario.email + " ha dado un precio negativo para " +
                                 "en el formulario para dar de alta una nueva oferta");

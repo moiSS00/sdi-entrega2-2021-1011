@@ -91,7 +91,7 @@ module.exports = function (app, gestorBD, logger) {
                 lastName: "Pérez Pérez",
                 password: app.get("crypto").createHmac('sha256', app.get('clave'))
                     .update("123456").digest('hex'),
-                amount: 142.25,
+                amount: 0.0,
                 role: "ROLE_STANDARD"
             },
             {

@@ -24,16 +24,8 @@
             <td>{{ oferta.title }}</td>
             <td>{{ oferta.description }}</td>
             <td>{{ oferta.price }}</td>
-            <td>
-
-                {% if oferta.buyer %}
-                <span class="text-danger">Vendido</span>
-                {% else %}
-                <a href="/standard/offer/buy/{{ oferta._id.toString() }}?pg={{ actual }}
-                    &searchText={{ searchText}}">Comprar</a>
-                {% endif %}
-
-            </td>
+            <td><a href="/standard/offer/buy/{{ oferta._id.toString() }}?pg={{ actual }}&searchText={{ searchText}}">
+                Comprar</a></td>
         </tr>
         {% endfor %}
         </tbody>

@@ -238,6 +238,7 @@ routerUsuarioOwner.use(function (req, res, next) {
 
 //Aplicar routerUsuarioOwner
 app.use("/standard/offer/remove", routerUsuarioOwner);
+app.use("/standard/offer/featured", routerUsuarioOwner);
 
 // Directorio estático
 app.use(express.static('public'));

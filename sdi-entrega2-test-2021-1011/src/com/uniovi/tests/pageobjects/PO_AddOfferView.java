@@ -6,7 +6,8 @@ import org.openqa.selenium.WebElement;
 
 public class PO_AddOfferView {
 	
-	static public void fillForm(WebDriver driver, String titlep, String descriptionp, String pricep) {
+	static public void fillForm(WebDriver driver, String titlep, String descriptionp, 
+			String pricep, boolean destacarp) {
 
 		// Rellenamos el formulario con los datos recibidos como paramteros.
 		WebElement title = driver.findElement(By.name("title"));
@@ -21,6 +22,10 @@ public class PO_AddOfferView {
 		price.click();
 		price.clear();
 		price.sendKeys(pricep);
+		if (destacarp) {
+			WebElement checkFeatured = driver.findElement(By.name("featured"));
+			checkFeatured.click();
+		}
 
 		// Pulsamos el botón para enviar el formulario.
 		By boton = By.className("btn");
