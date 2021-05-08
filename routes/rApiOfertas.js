@@ -9,6 +9,7 @@ module.exports = function (app, gestorBD, logger) {
     Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelven las ofertas encontradas.
     */
     app.get("/api/offer/availableOffers", function (req, res) {
+        // Obtenemos todas las ofertas (excepto en las que el propitario es el usuario que está logueado actualmente)
         let criterio = {owner: {$ne: res.usuario}};
         gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
             if (ofertas == null) {
@@ -27,14 +28,16 @@ module.exports = function (app, gestorBD, logger) {
     });
 
     /*
-    Busca todos los mensajes enviado por el usuario logueado y recibidos por el propitario de la oferta
-        con el id especificado (offerId).
+    Busca todos los mensajes enviados por el usuario logueado y recibidos por el propitario de la oferta
+        indicada (mediante su id 'offerId').
     Si hay algún error al recupear la oferta -> Error del servidor 500 (Se ha producido un error al
         recuperar los mensajes)
     Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelven los mensajes encontradas ordenados
         por fecha de forma ascendente.
     */
     app.get("/api/message/list/:offerId", function (req, res) {
+        // Buscamos los mensajes para la oferta indicada donde el remitente o el receptor es el usuario
+        // que está actualmente logueado
         let criterio = {
             $and: [{offerId: gestorBD.mongo.ObjectID(req.params.offerId)},
                 {$or: [{sender: res.usuario}, {receiver: res.usuario}]}]
@@ -59,7 +62,6 @@ module.exports = function (app, gestorBD, logger) {
 
     // ---- PETICIONES POST ----
 
-
     /*
     Añade un mensaje a una conversación. Solo el intersado puede iniciar una conversación, es decir, crear el primer
         mensaje.
@@ -69,12 +71,13 @@ module.exports = function (app, gestorBD, logger) {
         errores encontrados).
     Si hay algún error al recuperar la oferta -> Error del servidor 500 (Error al recuperar la oferta).
     Si el usuario logueado es el propitario de la oferta -> Error del cliente 401 (Es el dueño de esta oferta).
-    Si la oferta esta comprada -> Error del cliente402 (No se puede mandar un mensaje a una oferta comprada).
-    Si hay algún error al insertar el mensaje -> Error del servidor 500 (Error al crear el mensaje).
-    Si no hubo errroes -> Respuesta satisfactoria  200 y se devuelve un mensaje informativo y el id del
+    Si la oferta esta comprada -> Error del cliente 402 (No se puede mandar un mensaje a una oferta comprada).
+    Si hay algún error al insertar el mensaje -> Error del servidor 501 (Error al crear el mensaje).
+    Si no hubo errroes -> Respuesta satisfactoria  200, se devuelve un mensaje informativo y el id del
         mensaje insertado en la base de datos.
     */
     app.post("/api/message/add", function (req, res) {
+        // Variable que contendrá los errores encontrados en las entradas del usuario
         let errores = [];
 
         if (!req.body.message) {
@@ -86,6 +89,7 @@ module.exports = function (app, gestorBD, logger) {
         }
 
         if (errores.length == 0) {
+            // Se obtiene la oferta que tienen el id especificado
             let criterio = {_id: gestorBD.mongo.ObjectID(req.body.offerId)};
             gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
                 if (ofertas == null || ofertas.length == 0) {
@@ -96,8 +100,8 @@ module.exports = function (app, gestorBD, logger) {
                         error: "Error al recuperar la oferta"
                     });
                 } else {
-                    if (ofertas[0].owner != res.usuario) {
-                        if (!ofertas[0].buyer) {
+                    if (ofertas[0].owner != res.usuario) { // ¿ El usuario logueado es el propitario ?
+                        if (!ofertas[0].buyer) { // ¿ La oferta esta comprada ?
                             let mensaje = {
                                 sender: res.usuario,
                                 receiver: ofertas[0].owner,
@@ -106,6 +110,7 @@ module.exports = function (app, gestorBD, logger) {
                                 creationDate: new Date(),
                                 read: false
                             }
+                            // Se inserta el mensaje
                             gestorBD.insertarMensaje(mensaje, function (id) {
                                 if (id == null) {
                                     logger.error(res.usuario + " tuvo algún problema al insertar el mensaje " +
@@ -153,12 +158,13 @@ module.exports = function (app, gestorBD, logger) {
 
     /*
     Loguea al usuario en la aplicación (generando un Token único para este).
-    Si hay algún error al eliminar la oferta -> Error del cliente 400 (valor booleano de autenticado a
-        false, indicando que el usuario no se ha podido autenticar correctamente).
+    Si hay algún al recuperar al usuario de la base de datos -> Error del cliente 400 (valor booleano
+        de autenticado a false indicando que el usuario no se ha podido autenticar correctamente).
     Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelve el token creado (junto con un booleano a true
         indicando que no hubo errores).
     */
     app.post("/api/login", function (req, res) {
+        // ¿ Credenciales correctas ?
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
 
@@ -166,7 +172,7 @@ module.exports = function (app, gestorBD, logger) {
             email: req.body.email,
             password: seguro
         }
-
+        // Se recupera al usuario
         gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 logger.error("No se ha encontrado el usuario con las credenciales inroducidas " +

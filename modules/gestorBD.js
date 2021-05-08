@@ -8,7 +8,7 @@ module.exports = {
 
     /*
     Inserta usuarios en la base de datos.
-    Recibe el mensaje a insertar y la función de callback a usar.
+    Recibe los usuarios a insertar y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
     Si no hubo problemas -> La función de callback recibe el id del primer usuario insertado en la base de datos.
     */
@@ -32,10 +32,11 @@ module.exports = {
 
     /*
     Devuelve los usuarios de la base de datos que cumplan un criterio.
-    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado
+    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado de la búsqueda
         y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
-    Si no hubo problemas -> La función de callback recibe los usuarios encontrados.
+    Si no hubo problemas -> La función de callback recibe los usuarios encontrados y ordenados según el criterio
+        especificado.
     */
     obtenerUsuarios: function (criterio, sort, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
@@ -56,7 +57,7 @@ module.exports = {
     },
 
     /*
-    Eliminar los usuarios de la base de datos que cumplan un criterio.
+    Elimina los usuarios de la base de datos que cumplan un criterio.
     Recibe el criterio de eliminación y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
     Si no hubo problemas -> La función de callback recibe el resultado de la operación de borrado.
@@ -81,7 +82,7 @@ module.exports = {
 
     /*
     Modifica los usuarios de la base de datos que cumplan un criterio.
-    Recibe el criterio, los campos a modificar (en forma de JSON) y la función de callback a usar.
+    Recibe el criterio, los campos a modificar y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
     Si no hubo problemas -> La función de callback recibe el resultado de la operación.
     */
@@ -105,11 +106,11 @@ module.exports = {
 
     /*
     Inserta ofertas en la base de datos.
-    Recibe el mensaje a insertar y la función de callback a usar.
+    Recibe la oferta a insertar y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
-    Si no hubo problemas -> La función de callback recibe el id de la primera oferta insertado en la base de datos.
+    Si no hubo problemas -> La función de callback recibe el id de la primera oferta insertada en la base de datos.
     */
-    insertarOferta: function (oferta, funcionCallback) { //Inserta una oferta en la base de datos
+    insertarOferta: function (oferta, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -129,10 +130,11 @@ module.exports = {
 
     /*
     Devuelve las ofertas de la base de datos que cumplan un criterio.
-    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado
+    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado de la búsqueda
         y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
-    Si no hubo problemas -> La función de callback recibe las ofertas encontrados.
+    Si no hubo problemas -> La función de callback recibe las ofertas encontradas y ordenadas según el criterio
+        especificado.
     */
     obtenerOfertas: function (criterio, sort, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
@@ -155,10 +157,11 @@ module.exports = {
     /*
     Devuelve las ofertas de la base de datos que cumplan un criterio (apoyandose en un sistema de paginación de
         5 ofertas por página).
-    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado,
+    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado de la búsqueda,
         el número de la página deseada y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
-    Si no hubo problemas -> La función de callback recibe las ofertas encontrados y el número de ofertas encontradas.
+    Si no hubo problemas -> La función de callback recibe las ofertas encontrados correspondientes a la página indcada
+        (ordenadas según el criterio especificado) y el número de ofertas encontradas que cumplen el criterio de búsqueda.
     */
     obtenerOfertasPg: function (criterio, sort, pg, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
@@ -183,7 +186,7 @@ module.exports = {
     },
 
     /*
-    Eliminar las ofertas de la base de datos que cumplan un criterio.
+    Elimina las ofertas de la base de datos que cumplan un criterio.
     Recibe el criterio de eliminación y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
     Si no hubo problemas -> La función de callback recibe el resultado de la operación de borrado.
@@ -208,7 +211,7 @@ module.exports = {
 
     /*
     Modifica las ofertas de la base de datos que cumplan un criterio.
-    Recibe el criterio, los campos a modificar (en forma de JSON) y la función de callback a usar.
+    Recibe el criterio, los campos a modificar y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
     Si no hubo problemas -> La función de callback recibe el resultado de la operación.
     */
@@ -234,7 +237,7 @@ module.exports = {
     Inserta mensajes en la base de datos.
     Recibe el mensaje a insertar y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
-    Si no hubo problemas -> La función de callback recibe el id ddel primer mensaje insertado en la base de datos.
+    Si no hubo problemas -> La función de callback recibe el id del primer mensaje insertado en la base de datos.
     */
     insertarMensaje: function (mensaje, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
@@ -256,10 +259,11 @@ module.exports = {
 
     /*
     Devuelve los mensajes de la base de datos que cumplan un criterio.
-    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado
+    Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado de la búsqueda
         y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
-    Si no hubo problemas -> La función de callback recibe los mensajes encontrados.
+    Si no hubo problemas -> La función de callback recibe los mensajes encontrados y ordenados según el criterio
+        especificado.
     */
     obtenerMensajes: function (criterio, sort, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
@@ -280,7 +284,7 @@ module.exports = {
     },
 
     /*
-    Eliminar los mensajes de la base de datos que cumplan un criterio.
+    Elimina los mensajes de la base de datos que cumplan un criterio.
     Recibe el criterio de eliminación y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
     Si no hubo problemas -> La función de callback recibe el resultado de la operación de borrado.

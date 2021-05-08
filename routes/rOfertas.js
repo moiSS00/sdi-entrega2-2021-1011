@@ -14,7 +14,8 @@ module.exports = function (app, swig, gestorBD, logger) {
     });
 
     /*
-    Muestra la vista con las ofertas creadas por el usuario que está actualmente logueado.
+    Muestra la vista con las ofertas creadas por el usuario que está actualmente logueado ordenadas por fecha de
+    creación de forma descendente.
     Si hay algún error al recuperar la lista de ofertas del usuario actual -> Se le pasa a la vista una lista vacía.
     Si no hubo errroes -> Se muestra la vista con todos las ofertas del usuario actual.
     */
@@ -45,7 +46,10 @@ module.exports = function (app, swig, gestorBD, logger) {
     });
 
     /*
-    Muestra la vista que contiene todas las ofertas de la aplicación (excepto las del usuario logueado).
+    Muestra la vista que contiene todas las ofertas de la aplicación ordenadas por fecha de creación de forma
+        descendente (excepto las del usuario logueado).
+    Si hay algún error al recuperar la lista de ofertas disponibles -> Se le pasa a la vista una lista vacía.
+    Si no hubo errroes -> Se muestra la vista con todos las ofertas disponibles para el usuario actual.
     */
     app.get("/standard/offer/searchOffers", function (req, res) {
 
@@ -53,6 +57,8 @@ module.exports = function (app, swig, gestorBD, logger) {
         let respuesta;
 
         let criterio = {owner: {$ne: req.session.usuario.email}};
+
+        // Puede no venir el param
         if (req.query.searchText != null) {
             criterio = {
                 $and: [{title: {$regex: ".*" + req.query.searchText + ".*", $options: "i"}},
@@ -101,13 +107,18 @@ module.exports = function (app, swig, gestorBD, logger) {
     });
 
     /*
-    Elimina una oferta con un id específico.
-    Si hay algún error al eliminar la oferta -> Se llama a la petición GET /standard/offer/myOffers con
+    Elimina una oferta con un id específico y la información relacionada con esta.
+    Si hay algún error al recuperar la oferta -> Se llama a la petición GET /standard/offer/myOffers con
         un mensaje de error.
+    Si hubo algún error al eliminar los mensajes relacionados con la oferta -> Se llama a la petición
+        GET /standard/offer/myOffers con un mensaje de error.
+    Si hubo algún error al eliminar la oferta -> Se llama a la petición GET /standard/offer/myOffers
+        con un mensaje de error.
     Si no hubo errroes -> Se llama a la petición GET /standard/offer/myOffers junto con un mensaje indicando que
         el borrado se realizó correctamente.
     */
     app.get("/standard/offer/remove/:id", function (req, res) {
+        // Se recupera la oferta con el id indicado
         let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
 
         gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
@@ -118,12 +129,13 @@ module.exports = function (app, swig, gestorBD, logger) {
                     "?mensaje=Error al recuperar la oferta a eliminar" +
                     "&tipoMensaje=alert-danger ");
             } else {
-                if (ofertas[0].buyer) {
+                if (ofertas[0].buyer) { // ¿ Está comprada ?
                     logger.error(req.session.usuario.email + " intento eliminar una oferta comprada");
                     res.redirect("/standard/offer/myOffers" +
                         "?mensaje=No se puede dar de baja una oferta que se haya vendido" +
                         "&tipoMensaje=alert-danger ");
                 } else {
+                    // Se eliminan los mensajes relacionados con la oferta
                     criterio = {offerId: gestorBD.mongo.ObjectID(req.params.id)};
                     gestorBD.eliminarMensaje(criterio, function (mensajes) {
                         if (mensajes == null) {
@@ -133,6 +145,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                 "?mensaje=Error al eliminar la ofertas" +
                                 "&tipoMensaje=alert-danger ");
                         } else {
+                            // Se elimina la oferta
                             criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
                             gestorBD.eliminarOferta(criterio, function (ofertas) {
                                 if (ofertas == null) {
@@ -156,18 +169,31 @@ module.exports = function (app, swig, gestorBD, logger) {
 
 
     /*
-    Comprar una oferta con un id en específico
+    Compra una oferta con un id en específico.
+    Si hay algún error al recuperar la oferta -> Se llama a la petición GET /standard/offer/searchOffers con
+        un mensaje de error.
+    Si la oferta ya esta comprada -> Se llama a la petición GET /standard/offer/searchOffers con un mensaje de error.
+    Si el saldo del cliente logueado no es suficiente para pagar la oferta -> Se llama a la petición
+        GET /standard/offer/searchOffers con un mensaje de error.
+    Si hubo algún error al modificar la oferta asignandole un comprador -> Se llama a la petición
+        GET /standard/offer/searchOffers con un mensaje de error.
+    Si hubo algún error al actualizar el saldo del usuario logueado -> Se llama a la petición
+        GET /standard/offer/searchOffers con un mensaje de error.
+    Si no hubo errroes -> Se llama a la petición GET /standard/offer/searchOffers junto con un mensaje indicando que
+        la compra se realizó correctamente.
     */
     app.get("/standard/offer/buy/:id", function (req, res) {
-
+        // Pueden no llegar estos param
         let params = "";
         if (req.query.pg != null) {
             params += "&pg=" + req.query.pg;
         }
+
         if (req.query.searchText != null) {
             params += "&searchText=" + req.query.searchText;
         }
 
+        // Buscamos la oferta indicada por id
         let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
         gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
             if (ofertas == null) {
@@ -177,22 +203,24 @@ module.exports = function (app, swig, gestorBD, logger) {
                     "?mensaje=Error al recuperar la oferta a comprar" +
                     "&tipoMensaje=alert-danger" + params);
             } else {
-                if (ofertas[0].buyer) {
+                if (ofertas[0].buyer) { // ¿ Está comprada ?
                     logger.error(req.session.usuario.email + " intentó comprar una oferta que ya se había vendido");
                     res.redirect("/standard/offer/searchOffers" +
                         "?mensaje=No se puede comprar una oferta que se haya vendido" +
                         "&tipoMensaje=alert-danger" + params);
                 } else {
-                    if (req.session.usuario.amount >= ofertas[0].price) {
+                    if (req.session.usuario.amount >= ofertas[0].price) { // ¿ Saldo suficiente ?
+                        // Se modifica la oferta
                         gestorBD.modificarOferta(
                             criterio, {buyer: req.session.usuario.email}, function (result) {
                                 if (result == null) {
                                     logger.error(req.session.usuario.email + " tuvo algún problema modificando " +
                                         "la oferta a comprar en la base de datos");
-                                    res.redirect("/standard/offer/myOffers" +
+                                    res.redirect("/standard/offer/searchOffers" +
                                         "?mensaje=Error al comprar la oferta" +
                                         "&tipoMensaje=alert-danger" + params);
                                 } else {
+                                    // Se modifica el usuario
                                     criterio = {email: req.session.usuario.email};
                                     let newAmount = req.session.usuario.amount - ofertas[0].price;
                                     newAmount = parseFloat(newAmount.toFixed(2));
@@ -225,7 +253,10 @@ module.exports = function (app, swig, gestorBD, logger) {
     });
 
     /*
-    Muestra la vista con las ofertas compradas por el usuario que está actualmente logueado.
+    Muestra la vista con las ofertas compradas (ordenadas por fecha de creación de forma descendente) por el usuario
+        que está actualmente logueado.
+    Si hubo algún error al recuperar las ofertas -> Se le pasa a la vista una lista vacía.
+    Si no hubo errroes -> Se muestra la vista con todos las ofertas compradas por el usuario actual.
     */
     app.get("/standard/offer/purchasedOffers", function (req, res) {
 
@@ -258,13 +289,16 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     /*
     Añade una oferta con los datos introducidos en el formulario
-    Si se ha dejado algún campo vacío en el formulario -> Se muestra un mensaje de error.
-    Si el título tiene una lóngitud de menos de 5 carácteres o de más de 20 carácteres -> Se muestra
-        un mensaje de error.
-    Si la descripctión tiene una lóngitud de menos de 5 carácteres o de más de 50 carácteres -> Se muestra
-        un mensaje de error.
-    Si se pasa un precio con un formato incorrecto o negativo -> Se muestra un mensaje de error.
-    Si hubo algún error al insertar la nueva oferta en la base de datos -> Se muestra un mensaje de error.
+    Si se ha dejado algún campo vacío en el formulario -> Se llama a la petición
+        GET /standard/offer/add con un mensaje de error.
+    Si el título tiene una lóngitud de menos de 5 carácteres o de más de 20 carácteres -> Se llama a la petición
+        GET /standard/offer/add con un mensaje de error.
+    Si la descripctión tiene una lóngitud de menos de 5 carácteres o de más de 50 carácteres -> Se llama a la petición
+        GET /standard/offer/add con un mensaje de error.
+    Si se pasa un precio con un formato incorrecto o negativo -> Se llama a la petición
+        GET /standard/offer/add con un mensaje de error.
+    Si hubo algún error al insertar la nueva oferta en la base de datos -> Se llama a la petición
+        GET /standard/offer/add con un mensaje de error.
     Si no hubo errores -> Se llama a la petición GET /standard/offer/myOffers.
     */
     app.post("/standard/offer/add", function (req, res) {
@@ -313,7 +347,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                 if (id == null) {
                                     logger.error(req.session.usuario.email + "tuvo algún problema al insertar en " +
                                         "la base de datos la oferta en el formulario para dar de alta una nueva oferta");
-                                    res.redirect("/signup" +
+                                    res.redirect("/standard/offer/add" +
                                         "?mensaje=Error al crear la oferta" +
                                         "&tipoMensaje=alert-danger ");
                                 } else {
