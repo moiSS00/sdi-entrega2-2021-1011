@@ -612,14 +612,17 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "1000 Є");
 		elements.get(0).click();
 		PO_View.checkElement(driver, "text", "Oferta comprada con éxito");
+		PO_View.checkElement(driver, "text",
+				"Las ofertas compradas son las siguientes:");
 		PO_View.checkElement(driver, "text", "919.01 Є");
 
-		// Comprobamos que se mantiene la búsqueda
+		// Comprobamos que se muestra la oferta
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
 		assertTrue(elements.size() == 1);
 		PO_View.checkElement(driver, "text", "Televisión 4K");
 		PO_View.checkElement(driver, "text", "Para una buena tarde de Netflix.");
-		PO_View.checkElement(driver, "text", "Vendido");
+		PO_View.checkElement(driver, "text", "919.01 Є");
+		PO_View.checkElement(driver, "text", "andrea@email.com");
 
 		// Hacemos logout
 		PO_NavView.logOut(driver);
@@ -655,16 +658,15 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "1500 Є");
 		elements.get(1).click();
 		PO_View.checkElement(driver, "text", "Oferta comprada con éxito");
+		PO_View.checkElement(driver, "text",
+				"Las ofertas compradas son las siguientes:");
 		PO_View.checkElement(driver, "text", "0 Є");
 
 		// Comprobamos que se mantiene la búsqueda
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
-		assertTrue(elements.size() == 2);
+		assertTrue(elements.size() == 4);
 		PO_View.checkElement(driver, "text", "Coche SEAT");
 		PO_View.checkElement(driver, "text", "Coche SEAT con 500 Km.");
-		PO_View.checkElement(driver, "text", "coche BMW");
-		PO_View.checkElement(driver, "text", "Sin usar. Esta nuevo.");
-		PO_View.checkElement(driver, "text", "Vendido");
 
 		// Hacemos logout
 		PO_NavView.logOut(driver);

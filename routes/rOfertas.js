@@ -179,7 +179,7 @@ module.exports = function (app, swig, gestorBD, logger) {
         GET /standard/offer/searchOffers con un mensaje de error.
     Si hubo algún error al actualizar el saldo del usuario logueado -> Se llama a la petición
         GET /standard/offer/searchOffers con un mensaje de error.
-    Si no hubo errroes -> Se llama a la petición GET /standard/offer/searchOffers junto con un mensaje indicando que
+    Si no hubo errroes -> Se llama a la petición GET /standard/offer/purchasedOffers junto con un mensaje indicando que
         la compra se realizó correctamente.
     */
     app.get("/standard/offer/buy/:id", function (req, res) {
@@ -235,8 +235,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                                             } else {
                                                 logger.info(req.session.usuario.email + " ha comprado exitosamente " +
                                                     "la oferta");
-                                                res.redirect("/standard/offer/searchOffers" +
-                                                    "?mensaje=Oferta comprada con éxito" + params);
+                                                res.redirect("/standard/offer/purchasedOffers" +
+                                                    "?mensaje=Oferta comprada con éxito");
                                             }
                                         });
                                 }

@@ -172,7 +172,7 @@ module.exports = function (app, gestorBD, logger) {
                         creationDate: new Date(2017, 2, 30, 12, 12, 2, 5),
                         owner: "juan@email.com",
                         buyer: null,
-                        featured: false
+                        featured: true
                     },
                     {
                         title: "Ordenador fijo HP",
@@ -181,7 +181,7 @@ module.exports = function (app, gestorBD, logger) {
                         creationDate: new Date(2020, 8, 10, 23, 21, 10, 32),
                         owner: "juan@email.com",
                         buyer: null,
-                        featured: false
+                        featured: true
                     },
                     {
                         title: "Película",
