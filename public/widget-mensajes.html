@@ -1,6 +1,6 @@
 <div id="widget-mensajes" >
     <h2 id="titulo">Lista de mensajes:</h2>
-    <div class="form-group">
+    <div class="form-group" id="contenedorEnvio">
         <input type="text" class="form-control"
                placeholder="Escribe tu mensaje aquí" id="message"  name="mensaje"/>
         <span class="input-group-btn">
@@ -72,8 +72,16 @@
                 cargarMensajes();
             },
             error: function (error) {
-                $("#widget-login")
-                    .prepend("<div class='alert alert-danger'>Error al enviar el mensaje</div>");
+                if(error.status === 403) {
+                    $("#widget-mensajes")
+                        .prepend("<div class='alert alert-danger'>La oferta es de su propiedad o ya ha sido " +
+                            "comprada</div>");
+                }
+                else {
+                    $("#widget-mensajes")
+                        .prepend("<div class='alert alert-danger'>Error al enviar el mensaje o intento de mandar un" +
+                            "mensaje vacío</div>");
+                }
             }
         });
         $("#message").val('');

@@ -70,9 +70,9 @@ module.exports = function (app, gestorBD, logger) {
     Si se recibe un mensaje vacío o un id de oferta inválido -> Error del cliente 400 (Array con todos los
         errores encontrados).
     Si hay algún error al recuperar la oferta -> Error del servidor 500 (Error al recuperar la oferta).
-    Si el usuario logueado es el propitario de la oferta -> Error del cliente 401 (Es el dueño de esta oferta).
-    Si la oferta esta comprada -> Error del cliente 402 (No se puede mandar un mensaje a una oferta comprada).
-    Si hay algún error al insertar el mensaje -> Error del servidor 501 (Error al crear el mensaje).
+    Si el usuario logueado es el propitario de la oferta -> Error del cliente 403 (Es el dueño de esta oferta).
+    Si la oferta esta comprada -> Error del cliente 403 (No se puede mandar un mensaje a una oferta comprada).
+    Si hay algún error al insertar el mensaje -> Error del servidor 500 (Error al crear el mensaje).
     Si no hubo errroes -> Respuesta satisfactoria  200, se devuelve un mensaje informativo y el id del
         mensaje insertado en la base de datos.
     */
@@ -115,7 +115,7 @@ module.exports = function (app, gestorBD, logger) {
                                 if (id == null) {
                                     logger.error(res.usuario + " tuvo algún problema al insertar el mensaje " +
                                         "en la base de datos");
-                                    res.status(501);
+                                    res.status(500);
                                     res.json({
                                         error: "Error al crear el mensaje"
                                     });
@@ -132,7 +132,7 @@ module.exports = function (app, gestorBD, logger) {
                         } else {
                             logger.error(res.usuario + " ha intenta mandar un mensaje utilizando " +
                                 "una oferta comprada");
-                            res.status(402);
+                            res.status(403);
                             res.json({
                                 error: "No se puede mandar un mensaje a una oferta comprada"
                             });
@@ -140,7 +140,7 @@ module.exports = function (app, gestorBD, logger) {
                     } else {
                         logger.error(res.usuario + " ha intenta mandar un mensaje utilizando " +
                             "una oferta de su propiedad");
-                        res.status(401);
+                        res.status(403);
                         res.json({
                             error: "Es el dueño de esta oferta"
                         });
@@ -158,7 +158,7 @@ module.exports = function (app, gestorBD, logger) {
 
     /*
     Loguea al usuario en la aplicación (generando un Token único para este).
-    Si hay algún error al recuperar al usuario de la base de datos -> Error del cliente 400 (valor booleano
+    Si hay algún error al recuperar al usuario de la base de datos -> Error del cliente 401 (valor booleano
         de autenticado a false indicando que el usuario no se ha podido autenticar correctamente).
     Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelve el token creado (junto con un booleano a true
         indicando que no hubo errores).
@@ -177,7 +177,7 @@ module.exports = function (app, gestorBD, logger) {
             if (usuarios == null || usuarios.length == 0) {
                 logger.error("No se ha encontrado el usuario con las credenciales inroducidas " +
                     "en el formulario de inicio de sesión");
-                res.status(400);
+                res.status(401);
                 res.json({
                     autenticado: false
                 });

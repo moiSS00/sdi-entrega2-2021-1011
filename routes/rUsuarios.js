@@ -67,7 +67,7 @@ module.exports = function (app, swig, gestorBD, logger) {
     */
     app.get("/standard/home", function (req, res) {
         // Se recuperan las ofertas destcadas
-        let criterio = { featured: true, owner: {$ne: req.session.usuario.email} };
+        let criterio = { featured: true, owner: {$ne: req.session.usuario.email}, buyer: null };
         let sort = { creationDate: -1};
         gestorBD.obtenerOfertas(criterio, sort, function (ofertas) {
             // Variable que contendrá la respuesta
