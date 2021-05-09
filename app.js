@@ -280,7 +280,7 @@ Esto se hace para evitar mostrar al usuario la traza cuando ocurra alguna excepc
 */
 app.use( function
     (err, req , res, next) {
-    console.error(err);
+    logger.error("Se produjo una excepción por lo que pasará a mostrarse la vista de error personalizada");
     if(! res.headersSent) {
         res.status(400);
         let respuesta = swig.renderFile('views/error.html',

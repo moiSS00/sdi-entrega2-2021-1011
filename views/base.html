@@ -24,10 +24,7 @@
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-
-                {% if (usuario && usuario.role === "ROLE_STANDARD") || !usuario %}
                 <li><a href="/" id="home">Home</a></li>
-                {% endif %}
 
                 {% if usuario && usuario.role === "ROLE_STANDARD" %}
                 <li id="offers-menu" class="dropdown">

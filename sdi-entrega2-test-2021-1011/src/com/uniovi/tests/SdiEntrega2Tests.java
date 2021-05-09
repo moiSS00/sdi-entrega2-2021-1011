@@ -1005,5 +1005,174 @@ public class SdiEntrega2Tests {
 		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tablaCuerpo\"]/tr");
 		assertTrue(elements.size() == 3);
 	}
+	
+	// PR041. Se compra una oferta con saldo sugiciente desde la lista de ofertas 
+	// destacadas. /  
+	@Test
+	public void PR41() {
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "andrea@email.com", "123456");
 
+		// Comprobamos que salen todas las ofertas destacadas
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 2);
+		
+		// Compramos la segunda oferta destacada y comprobamos que la redirección
+		// se hace correctamente
+		PO_View.checkElement(driver, "text", "191.5 Є");
+		elements.get(1).click();
+		PO_View.checkElement(driver, "text", "Oferta comprada con éxito");
+		PO_View.checkElement(driver, "text",
+				"Las ofertas compradas son las siguientes:");
+		PO_View.checkElement(driver, "text", "181 Є");
+
+		// Comprobamos que se muestra la oferta
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 1);
+		PO_View.checkElement(driver, "text", "Libro informática");
+		PO_View.checkElement(driver, "text", "juan@email.com");
+		
+		// Comprobamos que ya no sale en la lista de ofertas destacadas
+		driver.navigate().to(URL);
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 1);
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Libro informática", PO_View.getTimeout());
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+		
+		// Iniciamos sesión como otro usuario estándar
+		PO_NavView.logInAs(driver, "pepe@email.com", "123456");
+
+		// Comprobamos que la oferta ya no sale en la lista de ofertas destacadas
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 1);
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Libro informática", PO_View.getTimeout());
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+	}
+	
+	// PR042. Se intenta comprar una oferta con saldo sugiciente desde la lista de ofertas 
+	// destacadas con saldo insuficiente. /  
+	@Test
+	public void PR42() {
+		// Iniciamos sesión como usuario estándar
+		PO_NavView.logInAs(driver, "andrea@email.com", "123456");
+
+		// Comprobamos que salen todas las ofertas destacadas
+		List<WebElement> elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 2);
+		
+		// Intentamos comprar la primera oferta y comprobamos que la redirección
+		// se hace correctamente
+		PO_View.checkElement(driver, "text", "191.5 Є");
+		elements.get(0).click();
+		PO_View.checkElement(driver, "text", "Saldo insuficiente para realizar la compra");
+		PO_View.checkElement(driver, "text","Buscar ofertas");
+		PO_View.checkElement(driver, "text", "191.5 Є");
+
+		// Comprobamos que la oferta figura como no vendidad a traves de la 
+		// busqueda de ofertas 
+		PO_SearchListView.makeSearch(driver, "ordENadOr");
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr");
+		assertTrue(elements.size() == 1);
+		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
+		PO_View.checkElement(driver, "text", "Con procesador AMD.");
+		PO_View.checkElement(driver, "text", "Comprar");
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendida", PO_View.getTimeout());
+		
+		// Comprobamos que ya sigues saliendo  en la lista de ofertas destacadas
+		driver.navigate().to(URL);
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 2);
+		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
+		PO_View.checkElement(driver, "text", "Con procesador AMD.");
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+		
+		// Iniciamos sesión como otro usuario estándar
+		PO_NavView.logInAs(driver, "pepe@email.com", "123456");
+
+		// Comprobamos que la oferta ya no sale en la lista de ofertas destacadas
+		elements = PO_View.checkElement(driver, "free", "//*[@id=\"tableOffers\"]/tbody/tr/td[4]/a");
+		assertTrue(elements.size() == 2);
+		SeleniumUtils.EsperaCargaPaginaNoTexto(driver, "Vendida", PO_View.getTimeout());
+		PO_View.checkElement(driver, "text", "Ordenador fijo HP");
+		PO_View.checkElement(driver, "text", "Con procesador AMD.");
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+	}
+	
+	// PR043. Intentar acceder sin estar autenticado a la opción de listado de usuarios del administrador. Se 
+	// deberá volver al formulario de login / 
+	@Test
+	public void PR43() {
+		// Intentamos acceder a la lista de usuarios sin estar autenticado
+		driver.navigate().to(URL + "/admin/user/list");
+
+		// Comprobamos que nos devuelve al formulario de login
+		PO_View.checkElement(driver, "text", "Identificación de usuario");
+	}
+	
+	// PR044. Intentar acceder sin estar autenticado a la opción de listado de ofertas propias de un usuario 
+	// estándar. Se deberá volver al formulario de login. / 
+	@Test
+	public void PR44() {
+		// Intentamos acceder a la lista de ofertas propias del usuario usuarios sin
+		// estar autenticado
+		driver.navigate().to(URL + "/standard/offer/myOffers");
+
+		// Comprobamos que nos devuelve al formulario de login
+		PO_View.checkElement(driver, "text", "Identificación de usuario");
+	}
+	
+	// PR045.Estando autenticado como usuario estándar intentar acceder a la opción de listado de 
+	// usuarios del administrador. Se deberá volver a la página principal del usuario . / 
+	@Test
+	public void PR45() {
+		// Iniciamos sesión como usuario estandar
+		PO_NavView.logInAs(driver, "moises@email.com", "123456");
+
+		// Intentamos acceder a la lista de usuarios sim ser adiminitrador
+		driver.navigate().to(URL + "/admin/user/list");
+
+		// Comprobamos que nos devuelve a la página principal del usuario logueado
+		PO_View.checkElement(driver, "text", "¡ Bienvenido Moisés !");
+
+		// Volvemos al comienzo para cerrar sesión
+		driver.navigate().to(URL);
+		
+		// Cerramos sesión
+		PO_NavView.logOut(driver);
+	}
+	
+	// PR046. Revisar que las excepciones / errores 500 se redirigen a la vista de error 
+	// personalziada. /  
+	@Test
+	public void PR46() {
+		// Comprobamos que se muestra la ventana de error cuando: 
+				
+		// Como usuario estandar
+		PO_NavView.logInAs(driver, "moises@email.com", "123456");
+
+		// Intentamos eliminar una oferta inexistente
+		driver.navigate().to(URL + "/standard/offer/remove/RRRRRRRRRRRRRRRRRRR");
+		PO_View.checkElement(driver, "text", "Error: Recurso no disponible");
+		
+		// Intentamos comprar una oferta inexistente
+		driver.navigate().to(URL + "/standard/offer/buy/RRRRRRRRRRRRRRRRRRR");
+		PO_View.checkElement(driver, "text", "Error: Recurso no disponible");
+		
+		// Intentamos marcar como destcada una oferta inexistente
+		driver.navigate().to(URL + "/standard/offer/featured/RRRRRRRRRRRRRRRRRRR");
+		PO_View.checkElement(driver, "text", "Error: Recurso no disponible");
+		
+		// Cerramos sesion
+		driver.navigate().to(URL); 
+		PO_NavView.logOut(driver);
+	}
+	
 }
