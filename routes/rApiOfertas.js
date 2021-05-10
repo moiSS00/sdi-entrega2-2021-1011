@@ -4,7 +4,7 @@ module.exports = function (app, gestorBD, logger) {
 
     /*
     Busca todas las ofertas disponibles (ofertas en las que el usuario logueado no es el propietario).
-    Si hay algún error al eliminar la oferta -> Error del servidor 500 (Se ha producido un error al
+    Si hay algún error al recuperar las ofertas -> Error del servidor 500 (Se ha producido un error al
         recuperar las ofertas disponibles)
     Si no hubo errores -> Respuesta satisfactoria 200 y se devuelven las ofertas encontradas.
     */
@@ -73,7 +73,7 @@ module.exports = function (app, gestorBD, logger) {
     Si el usuario logueado es el propitario de la oferta -> Error del cliente 403 (Es el dueño de esta oferta).
     Si la oferta esta comprada -> Error del cliente 403 (No se puede mandar un mensaje a una oferta comprada).
     Si hay algún error al insertar el mensaje -> Error del servidor 500 (Error al crear el mensaje).
-    Si no hubo errroes -> Respuesta satisfactoria  200, se devuelve un mensaje informativo y el id del
+    Si no hubo errroes -> Respuesta satisfactoria  201, se devuelve un mensaje informativo y el id del
         mensaje insertado en la base de datos.
     */
     app.post("/api/message/add", function (req, res) {
@@ -122,7 +122,7 @@ module.exports = function (app, gestorBD, logger) {
                                 } else {
                                     logger.info(res.usuario + " ha mandado un mensaje correctamente a la oferta " +
                                         req.body.offerId);
-                                    res.status(200);
+                                    res.status(201);
                                     res.json({
                                         mensaje: "mensaje insertado",
                                         _id: id
