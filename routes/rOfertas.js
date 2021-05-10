@@ -395,8 +395,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                 logger.error(req.session.usuario.email + " ha dado un valor demasiado corto o demasiado largo para " +
                     "el título en el formulario para dar de alta una nueva oferta");
                 res.redirect("/standard/offer/add" +
-                    "?mensaje=El título debe de tener una longitud mínima de 5 carácteres y una " +
-                    "longitud máxima de 20 carácteres" +
+                    "?mensaje=El título debe de tener una longitud mínima de 5 caracteres y una " +
+                    "longitud máxima de 20 caracteres" +
                     "&tipoMensaje=alert-danger ");
             } else {
                 // Comprobamos la longitud de la descripción
@@ -404,8 +404,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                     logger.error(req.session.usuario.email + " ha dado un valor demasiado corto o demasiado " +
                         "largo para para la  descripción en el formulario para dar de alta una nueva oferta");
                     res.redirect("/standard/offer/add" +
-                        "?mensaje=La descripción debe de tener una longitud mínima de 5 carácteres y una " +
-                        "longitud máxima de 50 carácteres" +
+                        "?mensaje=La descripción debe de tener una longitud mínima de 5 caracteres y una " +
+                        "longitud máxima de 50 caracteres" +
                         "&tipoMensaje=alert-danger ");
                 } else {
                     // Se comprueba que el precio es un número

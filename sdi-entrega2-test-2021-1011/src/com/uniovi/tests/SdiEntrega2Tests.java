@@ -386,12 +386,12 @@ public class SdiEntrega2Tests {
 		// Titulo demasiado corto
 		PO_AddOfferView.fillForm(driver, "Pru", "PruebaDescripcion", "0.21", false);
 		PO_View.checkElement(driver, "text",
-				"El título debe de tener una longitud mínima de 5 carácteres y una longitud máxima de 20 carácteres");
+				"El título debe de tener una longitud mínima de 5 caracteres y una longitud máxima de 20 caracteres");
 
 		// Desctipción demasiado corta
 		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "Pru", "0.21", false);
 		PO_View.checkElement(driver, "text",
-				"La descripción debe de tener una longitud mínima de 5 carácteres y una longitud máxima de 50 carácteres");
+				"La descripción debe de tener una longitud mínima de 5 caracteres y una longitud máxima de 50 caracteres");
 
 		// Rellenamos el campo precio con una cadena
 		PO_AddOfferView.fillForm(driver, "PruebaTitulo", "PruebaDescripcion", "prueba", false);
@@ -1006,7 +1006,7 @@ public class SdiEntrega2Tests {
 		assertTrue(elements.size() == 3);
 	}
 	
-	// PR041. Se compra una oferta con saldo sugiciente desde la lista de ofertas 
+	// PR041. Se compra una oferta con saldo suficiente desde la lista de ofertas 
 	// destacadas. /  
 	@Test
 	public void PR41() {
@@ -1053,8 +1053,8 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 	
-	// PR042. Se intenta comprar una oferta con saldo sugiciente desde la lista de ofertas 
-	// destacadas con saldo insuficiente. /  
+	// PR042. Se intenta comprar una oferta con saldo insuficiente 
+	// desde la lista de ofertas destacadas /   
 	@Test
 	public void PR42() {
 		// Iniciamos sesión como usuario estándar
@@ -1107,7 +1107,7 @@ public class SdiEntrega2Tests {
 	}
 	
 	// PR043. Intentar acceder sin estar autenticado a la opción de listado de usuarios del administrador. Se 
-	// deberá volver al formulario de login / 
+	// deberá volver al formulario de login. / 
 	@Test
 	public void PR43() {
 		// Intentamos acceder a la lista de usuarios sin estar autenticado
@@ -1129,8 +1129,8 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Identificación de usuario");
 	}
 	
-	// PR045.Estando autenticado como usuario estándar intentar acceder a la opción de listado de 
-	// usuarios del administrador. Se deberá volver a la página principal del usuario . / 
+	// PR045. Estando autenticado como usuario estándar intentar acceder a la opción de listado de 
+	// usuarios del administrador. Se deberá volver a la página principal del usuario. / 
 	@Test
 	public void PR45() {
 		// Iniciamos sesión como usuario estandar
@@ -1149,7 +1149,7 @@ public class SdiEntrega2Tests {
 		PO_NavView.logOut(driver);
 	}
 	
-	// PR046. Revisar que las excepciones / errores 500 se redirigen a la vista de error 
+	// PR046. Comprobar que las excepciones / errores 500 se redirigen a la vista de error 
 	// personalziada. /  
 	@Test
 	public void PR46() {
