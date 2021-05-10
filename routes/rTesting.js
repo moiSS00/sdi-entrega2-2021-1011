@@ -3,7 +3,7 @@ module.exports = function (app, gestorBD, logger) {
     // ---- PETICIONES GET ----
 
     /*
-    Vacia toda la base de datos.
+    Vacía toda la base de datos.
     Si hay algún error al eliminar a los mensajes de la base de datos -> Se muestra un mensaje de error.
     Si hay algún error al eliminar a las ofertas de la base de datos -> Se muestra un mensaje de error.
     Si hay algún error al eliminar a los usuarios de la base de datos -> Se muestra un mensaje de error.
@@ -14,8 +14,8 @@ module.exports = function (app, gestorBD, logger) {
         let criterio = {};
         gestorBD.eliminarMensaje(criterio, function (mensajes) {
             if (mensajes == null) {
-                logger.error("Error al limpiar la colección de usuarios");
-                res.send("Error al limpiar la colección de usuarios");
+                logger.error("Error al limpiar la colección de mensajes");
+                res.send("Error al limpiar la colección de mensajes");
             } else {
                 // Eliminamos todos las ofertas
                 gestorBD.eliminarOferta(criterio, function (ofertas) {
@@ -26,8 +26,8 @@ module.exports = function (app, gestorBD, logger) {
                         // Eliminamos todos los usuarios
                         gestorBD.eliminarUsuario(criterio, function (usuarios) {
                             if (usuarios == null) {
-                                logger.error("Error al limpiar la colección de mensajes");
-                                res.send("Error al limpiar la colección de mensajes");
+                                logger.error("Error al limpiar la colección de usuarios");
+                                res.send("Error al limpiar la colección de usuarios");
                             } else {
                                 logger.info("Base de datos limpiada con éxito");
                                 res.send("Base de datos limpiada con éxito");

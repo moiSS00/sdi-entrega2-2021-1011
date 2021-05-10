@@ -2,13 +2,13 @@
 let express = require('express');
 let app = express();
 
-// Habilitar cabeceras cabeceras Access-Controll-Allow-* para evitar bloqueos al cliente jQuery-Ajax
+// Habilitar cabeceras Access-Controll-Allow-* para evitar bloqueos en el cliente jQuery-Ajax
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, UPDATE, PUT");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
-    // Debemos especificar todas las headers que se aceptan. Content-Type , token
+    // Debemos especificar todas las headers que se aceptan.
     next();
 });
 
@@ -94,7 +94,6 @@ routerUsuarioToken.use(function(req, res, next) {
                 next();
             }
         });
-
     } else {
         logger.error("Un usuario no logueado " +
             "ha intentado acceder una funcionalidad para los usuarios logueados en la aplicación");
@@ -141,8 +140,8 @@ routerUsuarioSession.use(function (req, res, next) {
             }
         });
     } else {
-        logger.error("Un usuario no  logueado" +
-            "ha intentado acceder una funcionalidad para los usuarios logueados en la aplicación");
+        logger.error("Un usuario no logueado" +
+            "ha intentado acceder una funcionalidad para los usuarios logueados");
         res.redirect("/login");
     }
 });
@@ -160,7 +159,7 @@ Si el usuario actual no es estándar -> Se llama a la petición GET /.
 Si el usuario actual es estándar -> Se deja pasar la petición.
 */
 routerUsuarioStandardSession.use(function (req, res, next) {
-    logger.info("Se procederá a comprobar si el usuario tiene rol ROLE_STANDARD para poder acceder " +
+    logger.info("Se procederá a comprobar si el usuario actual tiene rol ROLE_STANDARD para poder acceder " +
         "a la funcionalidad de la que se quiere hacer uso");
     if (req.session.usuario.role === "ROLE_STANDARD") {
         logger.info("Se le permite avanzar a " + req.session.usuario.email
@@ -168,7 +167,7 @@ routerUsuarioStandardSession.use(function (req, res, next) {
         next();
     } else {
         logger.error(req.session.usuario.email + " como usuario " + req.session.usuario.email +
-            "ha intentado acceder una funcionalidad para los usuarios con rol ROLE_STANDARD");
+            "ha intentado acceder a una funcionalidad para los usuarios con rol ROLE_STANDARD");
         res.redirect("/");
     }
 });
@@ -185,7 +184,7 @@ Si el usuario actual no es admin -> Se llama a la petición GET /.
 Si el usuario actual es admin -> Se deja pasar la petición.
 */
 routerUsuarioAdminSession.use(function (req, res, next) {
-    logger.info("Se procederá a comprobar si el usuario tiene rol ROLE_ADMIN para poder acceder " +
+    logger.info("Se procederá a comprobar si el usuario actual tiene rol ROLE_ADMIN para poder acceder " +
         "a la funcionalidad de la que se quiere hacer uso");
     if (req.session.usuario.role === "ROLE_ADMIN") {
         logger.info("Se le permite avanzar a " + req.session.usuario.email
@@ -212,7 +211,7 @@ Si el usuario actual es el dueño de la oferta -> Se deja pasar la petición.
 */
 routerUsuarioOwner.use(function (req, res, next) {
     logger.info("Se procederá a comprobar si " + req.session.usuario.email
-        + "el usuario logueado en el propietario de la oferta que se quiere manipular");
+        + "es el propietario de la oferta que se quiere manipular");
 
     //Obtenemos el id de la URL
     let path = require('path');
@@ -275,8 +274,8 @@ app.get('/', function (req, res) {
 });
 
 /*
-Recoge los errores 500, los tranforma en errores 400 y muestra una vista indicando que ha habido un error.
-Esto se hace para evitar mostrar al usuario la traza cuando ocurra alguna excepción (motivos de seguridad)
+Recoge los errores 500, los tranforma en errores 400 y muestra una vista indicando que hubo un error.
+Esto se hace para evitar mostrar al usuario la traza cuando ocurra alguna excepción (motivos de seguridad).
 */
 app.use( function
     (err, req , res, next) {

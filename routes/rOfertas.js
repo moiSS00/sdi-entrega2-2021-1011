@@ -6,7 +6,8 @@ module.exports = function (app, swig, gestorBD, logger) {
     Muestra la vista que contiene el formulario para dar de alta una nueva oferta.
     */
     app.get("/standard/offer/add", function (req, res) {
-        logger.info(req.session.usuario.email + " ha accedido al formulario para dar de alta una oferta");
+        logger.info(req.session.usuario.email + " ha accedido correctamente al formulario para dar de " +
+            "alta una nueva oferta");
         let respuesta = swig.renderFile('views/bAgregarOferta.html', {
             usuario: req.session.usuario,
         });
@@ -35,7 +36,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                     ofertas: []
                 });
             } else {
-                logger.info(req.session.usuario.email + " ha accedido a la lista de sus ofertas");
+                logger.info(req.session.usuario.email + " ha accedido correctamente a la lista de sus ofertas");
                 respuesta = swig.renderFile('views/bOfertasPropias.html', {
                     usuario: req.session.usuario,
                     ofertas: ofertas
@@ -100,7 +101,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                     actual: pg,
                     searchText: req.query.searchText
                 });
-                logger.info(req.session.usuario.email + " ha accedido a la lista de ofertas disponibles");
+                logger.info(req.session.usuario.email + " ha accedido correctamente a la lista de ofertas disponibles");
             }
             res.send(respuesta);
         });
@@ -130,29 +131,29 @@ module.exports = function (app, swig, gestorBD, logger) {
                     "&tipoMensaje=alert-danger ");
             } else {
                 if (ofertas[0].buyer) { // ¿ Está comprada ?
-                    logger.error(req.session.usuario.email + " intento eliminar una oferta comprada");
+                    logger.error(req.session.usuario.email + " intentó eliminar una oferta comprada");
                     res.redirect("/standard/offer/myOffers" +
-                        "?mensaje=No se puede dar de baja una oferta que se haya vendido" +
+                        "?mensaje=No se puede dar de baja una oferta vendida" +
                         "&tipoMensaje=alert-danger ");
                 } else {
                     // Se eliminan los mensajes relacionados con la oferta
                     criterio = {offerId: gestorBD.mongo.ObjectID(req.params.id)};
                     gestorBD.eliminarMensaje(criterio, function (mensajes) {
                         if (mensajes == null) {
-                            logger.error(req.session.usuario.email + " tuvo algún problema elimando de la base " +
-                                "de datos los mensajes relacionados con la oferta dque se quiere eliminar");
+                            logger.error(req.session.usuario.email + " tuvo algún problema eliminando de la base " +
+                                "de datos los mensajes relacionados con la oferta que se quiere eliminar");
                             res.redirect("/standard/offer/myOffers" +
-                                "?mensaje=Error al eliminar la ofertas" +
+                                "?mensaje=Error al eliminar los mensajes relacionados con la oferta" +
                                 "&tipoMensaje=alert-danger ");
                         } else {
                             // Se elimina la oferta
                             criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
                             gestorBD.eliminarOferta(criterio, function (ofertas) {
                                 if (ofertas == null) {
-                                    logger.error(req.session.usuario.email + " tuvo algún problema elimando " +
+                                    logger.error(req.session.usuario.email + " tuvo algún problema eliminando " +
                                         "la oferta de la base de datos");
                                     res.redirect("/standard/offer/myOffers" +
-                                        "?mensaje=Error al eliminar la ofertas" +
+                                        "?mensaje=Error al eliminar la oferta" +
                                         "&tipoMensaje=alert-danger ");
                                 } else {
                                     logger.info(req.session.usuario.email + " ha eliminado la oferta con éxito");
@@ -206,7 +207,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                 if (ofertas[0].buyer) { // ¿ Está comprada ?
                     logger.error(req.session.usuario.email + " intentó comprar una oferta que ya se había vendido");
                     res.redirect("/standard/offer/searchOffers" +
-                        "?mensaje=No se puede comprar una oferta que se haya vendido" +
+                        "?mensaje=No se puede comprar una oferta vendida" +
                         "&tipoMensaje=alert-danger" + params);
                 } else {
                     if (req.session.usuario.amount >= ofertas[0].price) { // ¿ Saldo suficiente ?
@@ -242,7 +243,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                 }
                             });
                     } else {
-                        logger.error(req.session.usuario.email + " intenta comprar una oferta con saldo insuficiente");
+                        logger.error(req.session.usuario.email + " intentó comprar una oferta con saldo insuficiente");
                         res.redirect("/standard/offer/searchOffers" +
                             "?mensaje=Saldo insuficiente para realizar la compra" +
                             "&tipoMensaje=alert-danger" + params);
@@ -254,7 +255,7 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     /*
     Muestra la vista con las ofertas compradas (ordenadas por fecha de creación de forma descendente) por el usuario
-        que está actualmente logueado.
+        que está logueado  actualmente.
     Si hubo algún error al recuperar las ofertas -> Se le pasa a la vista una lista vacía.
     Si no hubo errroes -> Se muestra la vista con todos las ofertas compradas por el usuario actual.
     */
@@ -275,7 +276,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                     ofertas: []
                 });
             } else {
-                logger.info(req.session.usuario.email + " ha accedido a la lista de sus ofertas compradas");
+                logger.info(req.session.usuario.email + " ha accedido correctamente a la lista de sus " +
+                    "ofertas compradas");
                 respuesta = swig.renderFile('views/bOfertasCompradas.html', {
                     usuario: req.session.usuario,
                     ofertas: ofertas
@@ -299,21 +301,21 @@ module.exports = function (app, swig, gestorBD, logger) {
     app.get("/standard/offer/featured/:id", function (req, res) {
         // Se comprueba si el usuario tiene saldo suficiente para marcar la oferta como destacada
         if (req.session.usuario.amount >= 20) {
-            // Se recupera l aoferta a destacar
+            // Se recupera la oferta a destacar
             let criterio = {_id: gestorBD.mongo.ObjectID(req.params.id)};
             gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
                 if (ofertas == null) {
                     logger.error(req.session.usuario.email + " tuvo algún problema al recuperar la oferta " +
                         "a destacar de la base de datos");
                     res.redirect("/standard/offer/myOffers" +
-                        "?mensaje=Error al crear la oferta" +
+                        "?mensaje=Error al recuperar la oferta" +
                         "&tipoMensaje=alert-danger");
                 } else {
                     // Se comprueba si la oferta esta comprada
                     if (ofertas[0].buyer) {
-                        logger.error(req.session.usuario.email + " intento destacar una oferta que ya estaba comprada");
+                        logger.error(req.session.usuario.email + " intentó destacar una oferta que ya estaba comprada");
                         res.redirect("/standard/offer/myOffers" +
-                            "?mensaje=No se puede destacar una oferta que ya esta comprada" +
+                            "?mensaje=No se puede destacar una oferta vendida" +
                             "&tipoMensaje=alert-danger");
                     } else {
                         // Se actualiza el saldo del usuario
@@ -327,7 +329,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                     logger.error(req.session.usuario.email + " tuvo algún problema " +
                                         "modificando su monto en la base de datos");
                                     res.redirect("/standard/offer/myOffers" +
-                                        "?mensaje=Error al crear la oferta" +
+                                        "?mensaje=Error al destacar la oferta" +
                                         "&tipoMensaje=alert-danger");
                                 } else {
                                     // Se modifica la oferta marcandola como destacada
@@ -353,26 +355,26 @@ module.exports = function (app, swig, gestorBD, logger) {
                 }
             });
         } else {
-            logger.error(req.session.usuario.email + " intento destacar una oferta con saldo insufciente");
+            logger.error(req.session.usuario.email + " intentó destacar una oferta con saldo insufciente");
             res.redirect("/standard/offer/myOffers" +
                 "?mensaje=No tiene saldo suficiente para marcar la oferta como destacada" +
-                "&tipoMensaje=alert-danger ");
+                "&tipoMensaje=alert-danger");
         }
     });
 
     // ---- PETICIONES POST ----
 
     /*
-    Añade una oferta con los datos introducidos en el formulario
+    Añade una oferta con los datos introducidos en el formulario.
     Si se ha dejado algún campo vacío en el formulario -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
-    Si el título tiene una lóngitud de menos de 5 carácteres o de más de 20 carácteres -> Se llama a la petición
+    Si el título tiene una longitud de menos de 5 carácteres o de más de 20 carácteres -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
-    Si la descripctión tiene una lóngitud de menos de 5 carácteres o de más de 50 carácteres -> Se llama a la petición
+    Si la descripción tiene una longitud de menos de 5 carácteres o de más de 50 carácteres -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
     Si se pasa un precio con un formato incorrecto o negativo -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
-   Si el usuario intenta destacar una oferta con saldo insuficiente -> Se llama a la petición
+   Si el usuario intenta destacar la oferta que se esta creando con saldo insuficiente -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
     Si hubo algún error al insertar la nueva oferta en la base de datos -> Se llama a la petición
         GET /standard/offer/add con un mensaje de error.
@@ -382,14 +384,15 @@ module.exports = function (app, swig, gestorBD, logger) {
     app.post("/standard/offer/add", function (req, res) {
         // Comprobamos que no se ha dejado ningún campo vacío
         if (!req.body.title || !req.body.description || !req.body.price) {
-            logger.error(req.session.usuario.email + " se ha dejado algún campo vacío en el formulario para dar de alta una nueva oferta");
+            logger.error(req.session.usuario.email + " se ha dejado algún campo vacío en el formulario para dar de " +
+                "alta una nueva oferta");
             res.redirect("/standard/offer/add" +
                 "?mensaje=No puede dejar campos vacíos" +
                 "&tipoMensaje=alert-danger");
         } else {
             // Comprobamos la longitud del título
             if (req.body.title.length < 5 || req.body.title.length > 20) {
-                logger.error(req.session.usuario.email + " ha dado valor demasiado corto o demasiado largo para " +
+                logger.error(req.session.usuario.email + " ha dado un valor demasiado corto o demasiado largo para " +
                     "el título en el formulario para dar de alta una nueva oferta");
                 res.redirect("/standard/offer/add" +
                     "?mensaje=El título debe de tener una longitud mínima de 5 carácteres y una " +
@@ -398,8 +401,8 @@ module.exports = function (app, swig, gestorBD, logger) {
             } else {
                 // Comprobamos la longitud de la descripción
                 if (req.body.description.length < 5 || req.body.description.length > 50) {
-                    logger.error(req.session.usuario.email + " ha dado valor demasiado corto o demasiado largo para " +
-                        "para la  descripción en el formulario para dar de alta una nueva oferta");
+                    logger.error(req.session.usuario.email + " ha dado un valor demasiado corto o demasiado " +
+                        "largo para para la  descripción en el formulario para dar de alta una nueva oferta");
                     res.redirect("/standard/offer/add" +
                         "?mensaje=La descripción debe de tener una longitud mínima de 5 carácteres y una " +
                         "longitud máxima de 50 carácteres" +
@@ -410,7 +413,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                     if (precio) {
                         // Se comprueba que el precio sea positivo
                         if (precio >= 0) {
-                            // Se comprueba si se marco o no la opción de destacar la oferta
+                            // Se comprueba si se marcó o no la opción de destacar la oferta
                             // (El valor del checkbox llega como on / off)
                             let featured = false;
                             if (req.body.featured === "on") {
@@ -430,7 +433,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                             if (featured) {
                                 // Comprobamos que el usuario tenga saldo suficiente para destacar la oferta
                                 if (req.session.usuario.amount >= 20) {
-                                    // Se modificar el saldo del usuario
+                                    // Se modifica el saldo del usuario
                                     let criterio = {email: req.session.usuario.email};
                                     let newAmount = req.session.usuario.amount - 20;
                                     newAmount = parseFloat(newAmount.toFixed(2));
@@ -450,7 +453,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                                             "al destacar la oferta en la base de datos en el formulario " +
                                                             "para dar de alta una nueva oferta");
                                                         res.redirect("/standard/offer/add" +
-                                                            "?mensaje=Error al destacar la oferta" +
+                                                            "?mensaje=Error al crear la oferta" +
                                                             "&tipoMensaje=alert-danger ");
                                                     } else {
                                                         logger.info(req.session.usuario.email + " ha creado una oferta " +
@@ -462,7 +465,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                             }
                                         });
                                 } else {
-                                    logger.error(req.session.usuario.email + " intento destacar una oferta con " +
+                                    logger.error(req.session.usuario.email + " intentó destacar una oferta con " +
                                         "saldo insufciente");
                                     res.redirect("/standard/offer/add" +
                                         "?mensaje=No tiene saldo suficiente para marcar la oferta como destacada" +
@@ -473,7 +476,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                                 gestorBD.insertarOferta(oferta, function (id) {
                                     if (id == null) {
                                         logger.error(req.session.usuario.email + "tuvo algún problema al insertar en " +
-                                            "la base de datos la oferta en el formulario para dar de alta una nueva oferta");
+                                            "la base de datos la oferta en el formulario para dar de alta una " +
+                                            "nueva oferta");
                                         res.redirect("/standard/offer/add" +
                                             "?mensaje=Error al crear la oferta" +
                                             "&tipoMensaje=alert-danger");
@@ -485,14 +489,14 @@ module.exports = function (app, swig, gestorBD, logger) {
                                 });
                             }
                         } else {
-                            logger.error(req.session.usuario.email + " ha dado un precio negativo para " +
+                            logger.error(req.session.usuario.email + " ha dado un precio negativo " +
                                 "en el formulario para dar de alta una nueva oferta");
                             res.redirect("/standard/offer/add" +
                                 "?mensaje=El precio debe de ser un valor positivo" +
                                 "&tipoMensaje=alert-danger ");
                         }
                     } else {
-                        logger.error(req.session.usuario.email + " ha dado un precio en formato incorrecto para " +
+                        logger.error(req.session.usuario.email + " ha dado un precio en formato incorrecto " +
                             "en el formulario para dar de alta una nueva oferta");
                         res.redirect("/standard/offer/add" +
                             "?mensaje=El precio debe de ser un número" +

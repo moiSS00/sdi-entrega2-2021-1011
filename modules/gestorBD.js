@@ -160,7 +160,7 @@ module.exports = {
     Recibe el criterio de búsqueda, un criterio de ordenación que se aplicará al resultado de la búsqueda,
         el número de la página deseada y la función de callback a usar.
     Si hubo algún error al conectarse a la base de datos -> La función de callback recibe null.
-    Si no hubo problemas -> La función de callback recibe las ofertas encontrados correspondientes a la página indcada
+    Si no hubo problemas -> La función de callback recibe las ofertas encontrados correspondientes a la página indicada
         (ordenadas según el criterio especificado) y el número de ofertas encontradas que cumplen el criterio de búsqueda.
     */
     obtenerOfertasPg: function (criterio, sort, pg, funcionCallback) {

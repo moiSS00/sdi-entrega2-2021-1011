@@ -3,10 +3,10 @@ module.exports = function (app, gestorBD, logger) {
     // ---- PETICIONES GET ----
 
     /*
-    Busca todas las ofertas disponibles (ofertas en las que el usuario logueado no es el propietario)
+    Busca todas las ofertas disponibles (ofertas en las que el usuario logueado no es el propietario).
     Si hay algún error al eliminar la oferta -> Error del servidor 500 (Se ha producido un error al
         recuperar las ofertas disponibles)
-    Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelven las ofertas encontradas.
+    Si no hubo errores -> Respuesta satisfactoria 200 y se devuelven las ofertas encontradas.
     */
     app.get("/api/offer/availableOffers", function (req, res) {
         // Obtenemos todas las ofertas (excepto en las que el propitario es el usuario que está logueado actualmente)
@@ -20,7 +20,7 @@ module.exports = function (app, gestorBD, logger) {
                     error: "Se ha producido un error al recuperar las ofertas disponibles"
                 })
             } else {
-                logger.info(res.usuario + " ha accedido a la lista de ofertas dosponibles");
+                logger.info(res.usuario + " ha accedido a la lista de ofertas disponibles");
                 res.status(200);
                 res.send(JSON.stringify(ofertas));
             }
@@ -30,9 +30,9 @@ module.exports = function (app, gestorBD, logger) {
     /*
     Busca todos los mensajes enviados por el usuario logueado y recibidos por el propitario de la oferta
         indicada (mediante su id 'offerId').
-    Si hay algún error al recupear la oferta -> Error del servidor 500 (Se ha producido un error al
-        recuperar los mensajes)
-    Si no hubo errroes -> Respuesta satisfactoria 200 y se devuelven los mensajes encontradas ordenados
+    Si hay algún error al recuperar la oferta -> Error del servidor 500 (Se ha producido un error al
+        recuperar los mensajes).
+    Si no hubo errores -> Respuesta satisfactoria 200 y se devuelven los mensajes encontradas ordenados
         por fecha de forma ascendente.
     */
     app.get("/api/message/list/:offerId", function (req, res) {
@@ -63,10 +63,10 @@ module.exports = function (app, gestorBD, logger) {
     // ---- PETICIONES POST ----
 
     /*
-    Añade un mensaje a una conversación. Solo el intersado puede iniciar una conversación, es decir, crear el primer
+    Añade un mensaje a una conversación. Solo el interesado puede iniciar una conversación, es decir, crear el primer
         mensaje.
     Se debe recibir en formato JSON un mensaje (que no puede ser vacío) y el id de la oferta (que debe ser un id
-        válido)
+        válido).
     Si se recibe un mensaje vacío o un id de oferta inválido -> Error del cliente 400 (Array con todos los
         errores encontrados).
     Si hay algún error al recuperar la oferta -> Error del servidor 500 (Error al recuperar la oferta).
@@ -80,20 +80,20 @@ module.exports = function (app, gestorBD, logger) {
         // Variable que contendrá los errores encontrados en las entradas del usuario
         let errores = [];
 
-        if (!req.body.message) {
+        if (!req.body.message) { // ¿ Mensaje vacío / válido ?
             errores.push("Debe incluir un mensaje que no sea vacío");
         }
 
-        if (!gestorBD.mongo.ObjectID.isValid(req.body.offerId)) {
+        if (!gestorBD.mongo.ObjectID.isValid(req.body.offerId)) { // ¿ Id de oferta válido ?
             errores.push("Debe incluir un id de oferta válido");
         }
 
         if (errores.length == 0) {
-            // Se obtiene la oferta que tienen el id especificado
+            // Se obtiene la oferta que tiene el id especificado
             let criterio = {_id: gestorBD.mongo.ObjectID(req.body.offerId)};
             gestorBD.obtenerOfertas(criterio, {}, function (ofertas) {
                 if (ofertas == null || ofertas.length == 0) {
-                    logger.error(res.usuario + " tuvo algún problema al recuperar las oferats " +
+                    logger.error(res.usuario + " tuvo algún problema al recuperar las ofertas " +
                         "disponibles de la base de datos");
                     res.status(500);
                     res.json({
@@ -120,7 +120,7 @@ module.exports = function (app, gestorBD, logger) {
                                         error: "Error al crear el mensaje"
                                     });
                                 } else {
-                                    logger.info(res.usuario + " ha mandado un mensaje correctamente a la oferat " +
+                                    logger.info(res.usuario + " ha mandado un mensaje correctamente a la oferta " +
                                         req.body.offerId);
                                     res.status(200);
                                     res.json({
@@ -138,7 +138,7 @@ module.exports = function (app, gestorBD, logger) {
                             });
                         }
                     } else {
-                        logger.error(res.usuario + " ha intenta mandar un mensaje utilizando " +
+                        logger.error(res.usuario + " ha intentado mandar un mensaje utilizando " +
                             "una oferta de su propiedad");
                         res.status(403);
                         res.json({
@@ -175,7 +175,7 @@ module.exports = function (app, gestorBD, logger) {
         // Se recupera al usuario
         gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
             if (usuarios == null || usuarios.length == 0) {
-                logger.error("No se ha encontrado el usuario con las credenciales inroducidas " +
+                logger.error("No se ha encontrado al usuario con las credenciales introducidas " +
                     "en el formulario de inicio de sesión");
                 res.status(401);
                 res.json({

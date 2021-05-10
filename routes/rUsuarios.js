@@ -6,7 +6,7 @@ module.exports = function (app, swig, gestorBD, logger) {
     Muestra la vista que contiene el formulario para registrar a un usuario.
     */
     app.get("/signup", function (req, res) {
-        logger.info("Se ha accedido al formulario de registro de usuario");
+        logger.info("Se ha accedido correctamente al formulario de registro de usuario");
         let respuesta = swig.renderFile('views/bRegistro.html', {});
         res.send(respuesta);
     });
@@ -15,7 +15,7 @@ module.exports = function (app, swig, gestorBD, logger) {
     Muestra la vista que contiene el formulario de inicio de sesión.
     */
     app.get("/login", function (req, res) {
-        logger.info("Se ha accedido al formulario de inicio de sesión");
+        logger.info("Se ha accedido correctamente al formulario de inicio de sesión");
         let respuesta = swig.renderFile('views/bIdentificacion.html', {});
         res.send(respuesta);
     });
@@ -30,9 +30,9 @@ module.exports = function (app, swig, gestorBD, logger) {
     });
 
     /*
-    Muestra una vista que lista a todos los usuarios de la aplicación.
-    Si hay algún error al recuperar la lista de usuarios -> Se le pasa a la vista una lista vacía.
-    Si no hubo errroes -> Se muestra la vista con todos los usuarios de la aplicación (excepto el admin).
+    Muestra una lista con todos los usuarios de la aplicación (excepto a los administradores).
+    Si hay algún error al recuperar la lista de usuarios -> Se le pasa una lista vacía a la vista.
+    Si no hubo errores -> Se muestra la vista con todos los usuarios de la aplicación (excepto el admin).
     */
     app.get("/admin/user/list", function (req, res) {
         // Variable que contendrá la respuesta
@@ -49,7 +49,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                     usuarios: []
                 });
             } else {
-                logger.info(req.session.usuario.email + " ha accedido a la lista de usuarios");
+                logger.info(req.session.usuario.email + " ha accedido correctamente a la lista de usuarios");
                 respuesta = swig.renderFile('views/bUsuarios.html', {
                     usuario: req.session.usuario,
                     usuarios: usuarios
@@ -63,10 +63,10 @@ module.exports = function (app, swig, gestorBD, logger) {
     Muestra la página personal del usuario actual (siendo este estándar) con las ofertas destacadas (sin incluir
         sus propias ofertas destacadas).
     Si hay algún error al recuperar la lista de ofertas destacadas -> Se le pasa a la vista una lista vacía.
-    Si no hubo errroes -> Se muestra la vista con todos las ofertas destacadas de la aplicación.
+    Si no hubo errores -> Se muestra la vista con todos las ofertas destacadas de la aplicación.
     */
     app.get("/standard/home", function (req, res) {
-        // Se recuperan las ofertas destcadas
+        // Se recuperan las ofertas destacadas
         let criterio = { featured: true, owner: {$ne: req.session.usuario.email}, buyer: null };
         let sort = { creationDate: -1};
         gestorBD.obtenerOfertas(criterio, sort, function (ofertas) {
@@ -79,7 +79,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                     ofertas: []
                 });
             } else {
-                logger.info(req.session.usuario.email + " ha accedido a su página personal");
+                logger.info(req.session.usuario.email + " ha accedido correctamente a su página personal");
                 respuesta = swig.renderFile('views/bBienvenida.html', {
                     usuario: req.session.usuario,
                     ofertas: ofertas
@@ -92,7 +92,7 @@ module.exports = function (app, swig, gestorBD, logger) {
     // ---- PETICIONES POST ----
 
     /*
-    Registra a un usuario añadiendolo a la base de datos
+    Registra a un usuario añadiendolo a la base de datos.
     Si se ha dejado algún campo vacío en el formulario -> Se llama a la petición GET /signup con un mensaje de error.
     Si las contraseñas introducidas en el formulario no coinciden -> Se llama a la petición
         GET /signup con un mensaje de error.
@@ -125,7 +125,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                         logger.error("Hubo algún problema al recuperar de la base de datos a los usuarios " +
                             "en el formulario de registro de un nuevo usuario");
                         res.redirect("/signup" +
-                            "?mensaje=Error inesperado" +
+                            "?mensaje=Error al crear el usuario" +
                             "&tipoMensaje=alert-danger ");
                     } else {
                         // Se comprueba si el usuario ya existe a traves de su email
@@ -166,7 +166,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                             });
                         } else {
                             logger.error("El email utilizado en el formulario de registro de un" +
-                                " nuevo usuario ya existe");
+                                " nuevo usuario ya está en uso");
                             res.redirect("/signup" +
                                 "?mensaje=El email introducido ya está en uso" +
                                 "&tipoMensaje=alert-danger ");
@@ -179,18 +179,17 @@ module.exports = function (app, swig, gestorBD, logger) {
     /*
     Inicia sesión en la aplicación.
     Si se ha dejado algún campo vacío en el formulario -> Se llama a la petición GET /login con un mensaje de error.
-    Si hubo algún error recuperando al usuario que está logueado actualmente o el email ntroducido en el formulario
+    Si hubo algún error recuperando al usuario que está logueado actualmente o el email introducido en el formulario
     no existe -> Se llama a la petición GET /login con un mensaje de error.
     Si no hubo errores -> El usuario inicia sesión y se llama a la petición GET /user/home.
     */
     app.post("/login", function (req, res) {
-
         // Se comprueba si ha dejado algún campo vacío
         if (!req.body.email || !req.body.password) {
             logger.error("Se ha dejado algún campo vacío en el formulario de inicio de sesión");
             res.redirect("/login" +
                 "?mensaje=No puede dejar campos vacíos" +
-                "&tipoMensaje=alert-danger ");
+                "&tipoMensaje=alert-danger");
         } else {
             // Se obtiene al usuario
             let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
@@ -201,11 +200,11 @@ module.exports = function (app, swig, gestorBD, logger) {
             }
             gestorBD.obtenerUsuarios(criterio, {}, function (usuarios) {
                 if (usuarios == null || usuarios.length == 0) {
-                    logger.error("No se ha encontrado el usuario con las credenciales inroducidas " +
+                    logger.error("No se ha encontrado el usuario con las credenciales introducidas " +
                         "en el formulario de inicio de sesión");
                     res.redirect("/login" +
                         "?mensaje=Email incorrecto o contraseña incorrecta" +
-                        "&tipoMensaje=alert-danger ");
+                        "&tipoMensaje=alert-danger");
                 } else {
                     req.session.usuario = {
                         email: usuarios[0].email,
@@ -222,14 +221,14 @@ module.exports = function (app, swig, gestorBD, logger) {
 
     /*
     Elimina los usuarios que tengan como id alguno de los ids que se pasan como parámetro.
-    Si ha habido algún error al eliminar los mensajes de los usuarios eliminados -> Se llama a la petición
+    Si hubo algún error al eliminar los mensajes de los usuarios eliminados -> Se llama a la petición
         GET /admin/user/list con un mensaje de error.
-    Si ha habido algún error al eliminar las ofertas de los usuarios eliminados -> Se llama a la petición
+    Si hubo algún error al eliminar las ofertas de los usuarios eliminados -> Se llama a la petición
         GET /admin/user/list con un mensaje de error.
-    Si ha habido algún error al eliminar los usuarios -> Se llama a la petición GET /admin/user/list con
+    Si hubo algún error al eliminar los usuarios -> Se llama a la petición GET /admin/user/list con
         un mensaje de error.
     Si no hubo errores -> Se llama a la petición GET /admin/user/list junto con un mensaje indicando que
-        el borrado se realizó correctamente..
+        el borrado se realizó correctamente.
     */
     app.post("/admin/user/remove", function (req, res) {
         // Si llega un solo email, este se recibe como string
@@ -251,8 +250,8 @@ module.exports = function (app, swig, gestorBD, logger) {
                 criterio = { owner: { $in: emails } };
                 gestorBD.eliminarOferta(criterio,function(ofertas){
                     if ( ofertas == null ){
-                        logger.error(req.session.usuario.email + " tuvo algún problema al eliminar las ofertas de los usuarios " +
-                            "que se quieren eliminar de la lista de usuarios");
+                        logger.error(req.session.usuario.email + " tuvo algún problema al eliminar en la base de datos " +
+                            "las ofertas de los usuarios que se quieren eliminar");
                         res.redirect("/admin/user/list" +
                             "?mensaje=Error al eliminar las ofertas de los usuarios seleccionados" +
                             "&tipoMensaje=alert-danger ");
@@ -266,7 +265,7 @@ module.exports = function (app, swig, gestorBD, logger) {
                                     "?mensaje=Error al eliminar a los usuarios seleccionados" +
                                     "&tipoMensaje=alert-danger ");
                             } else {
-                                logger.info(req.session.usuario.email + " ha eliminado usuarios marcados en la " +
+                                logger.info(req.session.usuario.email + " ha eliminado a los usuarios marcados en la " +
                                     "lista de usuarios con éxito");
                                 res.redirect("/admin/user/list" +
                                     "?mensaje=Usuarios eliminados con éxito");
