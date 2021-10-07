@@ -1,3 +1,2 @@
 # sdi-entrega2-2021-1011
-
-Segunda entrega de la asignatura "Sistemas distribuidos e Internet" (SDI) perteneciente al tercer curso de la carrera "Ingeniería del software". 
+Segunda entrega de la asignatura "Sistemas Distribuidos e Internet" (SDI) usando Node.js y Express. 
